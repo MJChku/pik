@@ -1,0 +1,3381 @@
+; ModuleID = 'blob_simplify.bc'
+source_filename = "llvm-link"
+target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%struct.ident_t = type { i32, i32, i32, i32, i8* }
+%struct.dcomplex = type { double, double }
+%struct.timeval = type { i64, i64 }
+%struct.timezone = type { i32, i32 }
+
+@fftblock = common local_unnamed_addr global i32 0, align 4
+@fftblockpad = common local_unnamed_addr global i32 0, align 4
+@.gomp_critical_user_.var = common global [8 x i32] zeroinitializer
+@str = private unnamed_addr constant [75 x i8] c"\0A\0A NAS Parallel Benchmarks 3.0 structured OpenMP C version - FT Benchmark\0A\00", align 1
+@niter = internal unnamed_addr global i1 false, align 4
+@.str.13 = private unnamed_addr constant [36 x i8] c" Size                : %3dx%3dx%3d\0A\00", align 1
+@.str.14 = private unnamed_addr constant [32 x i8] c" Iterations          :     %7d\0A\00", align 1
+@dims = internal global [3 x [3 x i32]] zeroinitializer, align 16
+@xstart.0 = internal unnamed_addr global i1 false, align 4
+@xend.0 = internal unnamed_addr global i1 false, align 4
+@ystart.0 = internal unnamed_addr global i1 false, align 4
+@yend.0 = internal unnamed_addr global i1 false, align 4
+@zstart.0 = internal unnamed_addr global i1 false, align 4
+@zend.0 = internal unnamed_addr global i1 false, align 4
+@xstart.2 = internal unnamed_addr global i1 false, align 4
+@ystart.2 = internal unnamed_addr global i1 false, align 4
+@zstart.2 = internal unnamed_addr global i1 false, align 4
+@main.indexmap = internal global [32 x [128 x [128 x i32]]] zeroinitializer, align 16
+@0 = private unnamed_addr global %struct.ident_t { i32 0, i32 2, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str, i32 0, i32 0) }, align 8
+@ex = internal unnamed_addr global [50689 x double] zeroinitializer, align 16
+@u = internal unnamed_addr global [128 x %struct.dcomplex] zeroinitializer, align 16
+@main.u0 = internal global [32 x [128 x [128 x %struct.dcomplex]]] zeroinitializer, align 16
+@main.u1 = internal global [32 x [128 x [128 x %struct.dcomplex]]] zeroinitializer, align 16
+@main.u2 = internal global [32 x [128 x [128 x %struct.dcomplex]]] zeroinitializer, align 16
+@sums = internal unnamed_addr global [7 x %struct.dcomplex] zeroinitializer, align 16
+@str.26 = private unnamed_addr constant [31 x i8] c"Result verification successful\00", align 1
+@str.25 = private unnamed_addr constant [27 x i8] c"Result verification failed\00", align 1
+@.str.24 = private unnamed_addr constant [13 x i8] c"class = %1c\0A\00", align 1
+@.str.1 = private unnamed_addr constant [3 x i8] c"FT\00", align 1
+@.str.2 = private unnamed_addr constant [25 x i8] c"          floating point\00", align 1
+@.str.3 = private unnamed_addr constant [15 x i8] c"3.0 structured\00", align 1
+@.str.4 = private unnamed_addr constant [12 x i8] c"12 Jan 2021\00", align 1
+@.str.5 = private unnamed_addr constant [6 x i8] c"wllvm\00", align 1
+@.str.6 = private unnamed_addr constant [30 x i8] c"~/nautilus/user/framework/nld\00", align 1
+@.str.7 = private unnamed_addr constant [7 x i8] c"(none)\00", align 1
+@.str.8 = private unnamed_addr constant [12 x i8] c"-I../common\00", align 1
+@.str.9 = private unnamed_addr constant [33 x i8] c"-O3 -fopenmp -fPIC -mno-red-zone\00", align 1
+@.str.10 = private unnamed_addr constant [7 x i8] c"randdp\00", align 1
+@1 = private unnamed_addr global %struct.ident_t { i32 0, i32 514, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str, i32 0, i32 0) }, align 8
+@2 = private unnamed_addr global %struct.ident_t { i32 0, i32 34, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str, i32 0, i32 0) }, align 8
+@.str.21 = private unnamed_addr constant [40 x i8] c"T = %5d     Checksum = %22.12e %22.12e\0A\00", align 1
+@3 = private unnamed_addr global %struct.ident_t { i32 0, i32 322, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str, i32 0, i32 0) }, align 8
+@.str = private unnamed_addr constant [23 x i8] c";unknown;unknown;0;0;;\00", align 1
+@4 = private unnamed_addr global %struct.ident_t { i32 0, i32 66, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str, i32 0, i32 0) }, align 8
+@.str.17 = private unnamed_addr constant [99 x i8] c"CFFTZ: Either U has not been initialized, or else\0Aone of the input parameters is invalid%5d%5d%5d\0A\00", align 1
+@compute_initial_conditions.tmp = internal global [32769 x double] zeroinitializer, align 16
+@.str.1.7 = private unnamed_addr constant [27 x i8] c"\0A\0A %s Benchmark Completed\0A\00", align 1
+@.str.2.8 = private unnamed_addr constant [46 x i8] c" Class           =                        %c\0A\00", align 1
+@.str.3.9 = private unnamed_addr constant [37 x i8] c" Size            =             %12d\0A\00", align 1
+@.str.4.10 = private unnamed_addr constant [45 x i8] c" Size            =              %3dx%3dx%3d\0A\00", align 1
+@.str.5.11 = private unnamed_addr constant [37 x i8] c" Iterations      =             %12d\0A\00", align 1
+@.str.6.12 = private unnamed_addr constant [37 x i8] c" Threads         =             %12d\0A\00", align 1
+@.str.7.13 = private unnamed_addr constant [39 x i8] c" Time in seconds =             %12.2f\0A\00", align 1
+@.str.8.14 = private unnamed_addr constant [39 x i8] c" Mop/s total     =             %12.2f\0A\00", align 1
+@.str.9.15 = private unnamed_addr constant [25 x i8] c" Operation type  = %24s\0A\00", align 1
+@str.16 = private unnamed_addr constant [44 x i8] c" Verification    =             UNSUCCESSFUL\00", align 1
+@str.23 = private unnamed_addr constant [44 x i8] c" Verification    =               SUCCESSFUL\00", align 1
+@.str.12 = private unnamed_addr constant [35 x i8] c" Version         =           %12s\0A\00", align 1
+@.str.13.17 = private unnamed_addr constant [37 x i8] c" Compile date    =             %12s\0A\00", align 1
+@str.22 = private unnamed_addr constant [19 x i8] c"\0A Compile options:\00", align 1
+@.str.15 = private unnamed_addr constant [23 x i8] c"    CC           = %s\0A\00", align 1
+@.str.16 = private unnamed_addr constant [23 x i8] c"    CLINK        = %s\0A\00", align 1
+@.str.17.18 = private unnamed_addr constant [23 x i8] c"    C_LIB        = %s\0A\00", align 1
+@.str.18 = private unnamed_addr constant [23 x i8] c"    C_INC        = %s\0A\00", align 1
+@.str.19 = private unnamed_addr constant [23 x i8] c"    CFLAGS       = %s\0A\00", align 1
+@.str.20 = private unnamed_addr constant [23 x i8] c"    CLINKFLAGS   = %s\0A\00", align 1
+@.str.21.19 = private unnamed_addr constant [23 x i8] c"    RAND         = %s\0A\00", align 1
+@elapsed = common local_unnamed_addr global [64 x double] zeroinitializer, align 16
+@start = common local_unnamed_addr global [64 x double] zeroinitializer, align 16
+@wtime_.sec = internal unnamed_addr global i32 -1, align 4
+@__NAUT_SIGNATURE = local_unnamed_addr global [16 x i8] zeroinitializer, section ".naut_secure", align 16
+@__gcc_personality_v0 = common local_unnamed_addr global i8* null, align 8
+@str.30 = private unnamed_addr constant [28 x i8] c"Call to fake _Unwind_Resume\00", align 1
+@str.3 = private unnamed_addr constant [24 x i8] c"Call to fake __unordtf2\00", align 1
+@str.4 = private unnamed_addr constant [21 x i8] c"Call to fake __letf2\00", align 1
+@__nk_func_table = common local_unnamed_addr global i8* (...)** null, align 8
+@llvm.global.annotations = appending global [3 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (i8*)* @kmem_sys_free to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.31, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1.32, i32 0, i32 0), i32 88 }, { i8*, i8*, i8*, i32 } { i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.31, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1.32, i32 0, i32 0), i32 93 }, { i8*, i8*, i8*, i32 } { i8* bitcast (void ()* @make_carat_pass_work to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.31, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1.32, i32 0, i32 0), i32 104 }], section "llvm.metadata"
+@.str.31 = private unnamed_addr constant [8 x i8] c"nocarat\00", section "llvm.metadata"
+@.str.1.32 = private unnamed_addr constant [12 x i8] c"framework.c\00", section "llvm.metadata"
+@llvm.used = appending global [3 x i8*] [i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*), i8* bitcast (void (i8*)* @kmem_sys_free to i8*), i8* bitcast (void ()* @make_carat_pass_work to i8*)], section "llvm.metadata"
+
+; Function Attrs: noredzone nounwind uwtable
+define i32 @main(i32, i8** nocapture readnone) local_unnamed_addr #0 {
+  %3 = alloca [7 x double], align 16
+  %4 = alloca [7 x double], align 16
+  %5 = alloca i32, align 4
+  %6 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %7 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %8 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %9 = alloca i32, align 4
+  %10 = alloca [128 x [128 x i32]]*, align 8
+  %11 = alloca i32*, align 8
+  %12 = alloca [128 x [128 x i32]]*, align 8
+  %13 = alloca [128 x [128 x i32]]*, align 8
+  %14 = alloca i32, align 4
+  %15 = bitcast i32* %14 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %15) #17
+  store i32 1, i32* %14, align 4, !tbaa !3
+  tail call void @timer_clear(i32 0) #18
+  tail call void @timer_clear(i32 1) #18
+  tail call void @timer_clear(i32 2) #18
+  tail call void @timer_clear(i32 3) #18
+  tail call void @timer_clear(i32 4) #18
+  tail call void @timer_clear(i32 5) #18
+  tail call void @timer_clear(i32 6) #18
+  %16 = tail call i32 @puts(i8* getelementptr inbounds ([75 x i8], [75 x i8]* @str, i64 0, i64 0)) #17
+  store i1 true, i1* @niter, align 4
+  %17 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([36 x i8], [36 x i8]* @.str.13, i64 0, i64 0), i32 128, i32 128, i32 32) #18
+  %18 = load i1, i1* @niter, align 4
+  %19 = select i1 %18, i32 6, i32 0
+  %20 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @.str.14, i64 0, i64 0), i32 %19) #18
+  store <4 x i32> <i32 128, i32 128, i32 32, i32 128>, <4 x i32>* bitcast ([3 x [3 x i32]]* @dims to <4 x i32>*), align 16, !tbaa !3
+  store <4 x i32> <i32 128, i32 32, i32 128, i32 128>, <4 x i32>* bitcast (i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 1) to <4 x i32>*), align 4, !tbaa !3
+  store i32 32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 2), align 8, !tbaa !3
+  store i1 true, i1* @xstart.0, align 4
+  store i1 true, i1* @xend.0, align 4
+  store i1 true, i1* @ystart.0, align 4
+  store i1 true, i1* @yend.0, align 4
+  store i1 true, i1* @zstart.0, align 4
+  store i1 true, i1* @zend.0, align 4
+  store i1 true, i1* @xstart.2, align 4
+  store i1 true, i1* @ystart.2, align 4
+  store i1 true, i1* @zstart.2, align 4
+  store i32 16, i32* @fftblock, align 4, !tbaa !3
+  store i32 18, i32* @fftblockpad, align 4, !tbaa !3
+  %21 = bitcast [128 x [128 x i32]]** %13 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %21)
+  store [128 x [128 x i32]]* getelementptr inbounds ([32 x [128 x [128 x i32]]], [32 x [128 x [128 x i32]]]* @main.indexmap, i64 0, i64 0), [128 x [128 x i32]]** %13, align 8, !tbaa !7
+  %22 = bitcast [128 x [128 x i32]]** %13 to i8*
+  call void @nk_carat_instrument_escapes(i8* %22)
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 1, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, [128 x [128 x i32]]**)* @.omp_outlined..15 to void (i32*, i32*, ...)*), [128 x [128 x i32]]** nonnull %13) #17
+  store <2 x double> <double 1.000000e+00, double 0x3FEFFFAD359AB364>, <2 x double>* bitcast ([50689 x double]* @ex to <2 x double>*), align 16, !tbaa !9
+  store <2 x double> <double 0x3FEFFF5A6C0B990F, double 0x3FEFFF07A352AED7>, <2 x double>* bitcast (double* getelementptr inbounds ([50689 x double], [50689 x double]* @ex, i64 0, i64 2) to <2 x double>*), align 16, !tbaa !9
+  br label %23
+
+23:                                               ; preds = %23, %2
+  %24 = phi i64 [ 4, %2 ], [ %36, %23 ]
+  %25 = phi double [ 0x3FEFFF07A352AED7, %2 ], [ %34, %23 ]
+  %26 = load double, double* getelementptr inbounds ([50689 x double], [50689 x double]* @ex, i64 0, i64 1), align 8, !tbaa !9
+  %27 = fmul double %26, %25
+  %28 = getelementptr inbounds [50689 x double], [50689 x double]* @ex, i64 0, i64 %24
+  store double %27, double* %28, align 8, !tbaa !9
+  %29 = add nuw nsw i64 %24, 1
+  %30 = load double, double* getelementptr inbounds ([50689 x double], [50689 x double]* @ex, i64 0, i64 1), align 8, !tbaa !9
+  %31 = fmul double %30, %27
+  %32 = getelementptr inbounds [50689 x double], [50689 x double]* @ex, i64 0, i64 %29
+  store double %31, double* %32, align 8, !tbaa !9
+  %33 = add nuw nsw i64 %24, 2
+  %34 = fmul double %30, %31
+  %35 = getelementptr inbounds [50689 x double], [50689 x double]* @ex, i64 0, i64 %33
+  store double %34, double* %35, align 8, !tbaa !9
+  %36 = add nuw nsw i64 %24, 3
+  %37 = icmp eq i64 %36, 50689
+  br i1 %37, label %38, label %23
+
+38:                                               ; preds = %23
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %21)
+  call fastcc void @compute_initial_conditions() #19
+  %39 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), align 16, !tbaa !3
+  %40 = icmp eq i32 %39, 1
+  br i1 %40, label %49, label %41
+
+41:                                               ; preds = %38
+  %42 = icmp sgt i32 %39, 2
+  br i1 %42, label %43, label %50
+
+43:                                               ; preds = %43, %41
+  %44 = phi i32 [ %47, %43 ], [ 1, %41 ]
+  %45 = phi i32 [ %46, %43 ], [ 2, %41 ]
+  %46 = shl i32 %45, 1
+  %47 = add nuw nsw i32 %44, 1
+  %48 = icmp slt i32 %46, %39
+  br i1 %48, label %43, label %50
+
+49:                                               ; preds = %38
+  call void @llvm.memset.p0i8.i64(i8* align 16 bitcast ([128 x %struct.dcomplex]* @u to i8*), i8 0, i64 16, i1 false)
+  br label %107
+
+50:                                               ; preds = %43, %41
+  %51 = phi i32 [ 1, %41 ], [ %47, %43 ]
+  %52 = sitofp i32 %51 to double
+  store double %52, double* getelementptr inbounds ([128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 0, i32 0), align 16, !tbaa !11
+  store double 0.000000e+00, double* getelementptr inbounds ([128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 0, i32 1), align 8, !tbaa !13
+  br label %53
+
+53:                                               ; preds = %102, %50
+  %54 = phi i32 [ %103, %102 ], [ 1, %50 ]
+  %55 = phi i32 [ %104, %102 ], [ 1, %50 ]
+  %56 = phi i32 [ %105, %102 ], [ 1, %50 ]
+  %57 = sitofp i32 %55 to double
+  %58 = fdiv double 0x400921FB54442D18, %57
+  %59 = icmp eq i32 %55, 0
+  br i1 %59, label %102, label %60
+
+60:                                               ; preds = %53
+  %61 = sext i32 %54 to i64
+  %62 = zext i32 %55 to i64
+  %63 = and i64 %62, 1
+  %64 = icmp eq i32 %55, 1
+  br i1 %64, label %90, label %65
+
+65:                                               ; preds = %60
+  %66 = sub nsw i64 %62, %63
+  br label %67
+
+67:                                               ; preds = %67, %65
+  %68 = phi i64 [ 0, %65 ], [ %87, %67 ]
+  %69 = phi i64 [ %66, %65 ], [ %88, %67 ]
+  %70 = trunc i64 %68 to i32
+  %71 = sitofp i32 %70 to double
+  %72 = fmul double %58, %71
+  %73 = call double @cos(double %72) #18
+  %74 = add nsw i64 %68, %61
+  %75 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %74, i32 0
+  store double %73, double* %75, align 16, !tbaa !11
+  %76 = call double @sin(double %72) #18
+  %77 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %74, i32 1
+  store double %76, double* %77, align 8, !tbaa !13
+  %78 = or i64 %68, 1
+  %79 = trunc i64 %78 to i32
+  %80 = sitofp i32 %79 to double
+  %81 = fmul double %58, %80
+  %82 = call double @cos(double %81) #18
+  %83 = add nsw i64 %78, %61
+  %84 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %83, i32 0
+  store double %82, double* %84, align 16, !tbaa !11
+  %85 = call double @sin(double %81) #18
+  %86 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %83, i32 1
+  store double %85, double* %86, align 8, !tbaa !13
+  %87 = add nuw nsw i64 %68, 2
+  %88 = add i64 %69, -2
+  %89 = icmp eq i64 %88, 0
+  br i1 %89, label %90, label %67
+
+90:                                               ; preds = %67, %60
+  %91 = phi i64 [ 0, %60 ], [ %87, %67 ]
+  %92 = icmp eq i64 %63, 0
+  br i1 %92, label %102, label %93
+
+93:                                               ; preds = %90
+  %94 = trunc i64 %91 to i32
+  %95 = sitofp i32 %94 to double
+  %96 = fmul double %58, %95
+  %97 = call double @cos(double %96) #18
+  %98 = add nsw i64 %91, %61
+  %99 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %98, i32 0
+  store double %97, double* %99, align 16, !tbaa !11
+  %100 = call double @sin(double %96) #18
+  %101 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %98, i32 1
+  store double %100, double* %101, align 8, !tbaa !13
+  br label %102
+
+102:                                              ; preds = %93, %90, %53
+  %103 = add nuw nsw i32 %55, %54
+  %104 = shl nsw i32 %55, 1
+  %105 = add nuw i32 %56, 1
+  %106 = icmp eq i32 %56, %51
+  br i1 %106, label %107, label %53
+
+107:                                              ; preds = %102, %49
+  call fastcc void @fft(i32 1, [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u0, i64 0, i64 0)) #19
+  call void @timer_clear(i32 0) #18
+  call void @timer_clear(i32 1) #18
+  call void @timer_clear(i32 2) #18
+  call void @timer_clear(i32 3) #18
+  call void @timer_clear(i32 4) #18
+  call void @timer_clear(i32 5) #18
+  call void @timer_clear(i32 6) #18
+  call void @timer_start(i32 0) #18
+  %108 = bitcast [128 x [128 x i32]]** %12 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %108)
+  store [128 x [128 x i32]]* getelementptr inbounds ([32 x [128 x [128 x i32]]], [32 x [128 x [128 x i32]]]* @main.indexmap, i64 0, i64 0), [128 x [128 x i32]]** %12, align 8, !tbaa !7
+  %109 = bitcast [128 x [128 x i32]]** %12 to i8*
+  call void @nk_carat_instrument_escapes(i8* %109)
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 1, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, [128 x [128 x i32]]**)* @.omp_outlined..15 to void (i32*, i32*, ...)*), [128 x [128 x i32]]** nonnull %12) #17
+  store <2 x double> <double 1.000000e+00, double 0x3FEFFFAD359AB364>, <2 x double>* bitcast ([50689 x double]* @ex to <2 x double>*), align 16, !tbaa !9
+  store <2 x double> <double 0x3FEFFF5A6C0B990F, double 0x3FEFFF07A352AED7>, <2 x double>* bitcast (double* getelementptr inbounds ([50689 x double], [50689 x double]* @ex, i64 0, i64 2) to <2 x double>*), align 16, !tbaa !9
+  br label %110
+
+110:                                              ; preds = %110, %107
+  %111 = phi i64 [ 4, %107 ], [ %123, %110 ]
+  %112 = phi double [ 0x3FEFFF07A352AED7, %107 ], [ %121, %110 ]
+  %113 = load double, double* getelementptr inbounds ([50689 x double], [50689 x double]* @ex, i64 0, i64 1), align 8, !tbaa !9
+  %114 = fmul double %113, %112
+  %115 = getelementptr inbounds [50689 x double], [50689 x double]* @ex, i64 0, i64 %111
+  store double %114, double* %115, align 8, !tbaa !9
+  %116 = add nuw nsw i64 %111, 1
+  %117 = load double, double* getelementptr inbounds ([50689 x double], [50689 x double]* @ex, i64 0, i64 1), align 8, !tbaa !9
+  %118 = fmul double %117, %114
+  %119 = getelementptr inbounds [50689 x double], [50689 x double]* @ex, i64 0, i64 %116
+  store double %118, double* %119, align 8, !tbaa !9
+  %120 = add nuw nsw i64 %111, 2
+  %121 = fmul double %117, %118
+  %122 = getelementptr inbounds [50689 x double], [50689 x double]* @ex, i64 0, i64 %120
+  store double %121, double* %122, align 8, !tbaa !9
+  %123 = add nuw nsw i64 %111, 3
+  %124 = icmp eq i64 %123, 50689
+  br i1 %124, label %125, label %110
+
+125:                                              ; preds = %110
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %108)
+  call fastcc void @compute_initial_conditions() #19
+  %126 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), align 16, !tbaa !3
+  %127 = icmp eq i32 %126, 1
+  br i1 %127, label %136, label %128
+
+128:                                              ; preds = %125
+  %129 = icmp sgt i32 %126, 2
+  br i1 %129, label %130, label %137
+
+130:                                              ; preds = %130, %128
+  %131 = phi i32 [ %134, %130 ], [ 1, %128 ]
+  %132 = phi i32 [ %133, %130 ], [ 2, %128 ]
+  %133 = shl i32 %132, 1
+  %134 = add nuw nsw i32 %131, 1
+  %135 = icmp slt i32 %133, %126
+  br i1 %135, label %130, label %137
+
+136:                                              ; preds = %125
+  call void @llvm.memset.p0i8.i64(i8* align 16 bitcast ([128 x %struct.dcomplex]* @u to i8*), i8 0, i64 16, i1 false)
+  br label %194
+
+137:                                              ; preds = %130, %128
+  %138 = phi i32 [ 1, %128 ], [ %134, %130 ]
+  %139 = sitofp i32 %138 to double
+  store double %139, double* getelementptr inbounds ([128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 0, i32 0), align 16, !tbaa !11
+  store double 0.000000e+00, double* getelementptr inbounds ([128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 0, i32 1), align 8, !tbaa !13
+  br label %140
+
+140:                                              ; preds = %189, %137
+  %141 = phi i32 [ %190, %189 ], [ 1, %137 ]
+  %142 = phi i32 [ %191, %189 ], [ 1, %137 ]
+  %143 = phi i32 [ %192, %189 ], [ 1, %137 ]
+  %144 = sitofp i32 %142 to double
+  %145 = fdiv double 0x400921FB54442D18, %144
+  %146 = icmp eq i32 %142, 0
+  br i1 %146, label %189, label %147
+
+147:                                              ; preds = %140
+  %148 = sext i32 %141 to i64
+  %149 = zext i32 %142 to i64
+  %150 = and i64 %149, 1
+  %151 = icmp eq i32 %142, 1
+  br i1 %151, label %177, label %152
+
+152:                                              ; preds = %147
+  %153 = sub nsw i64 %149, %150
+  br label %154
+
+154:                                              ; preds = %154, %152
+  %155 = phi i64 [ 0, %152 ], [ %174, %154 ]
+  %156 = phi i64 [ %153, %152 ], [ %175, %154 ]
+  %157 = trunc i64 %155 to i32
+  %158 = sitofp i32 %157 to double
+  %159 = fmul double %145, %158
+  %160 = call double @cos(double %159) #18
+  %161 = add nsw i64 %155, %148
+  %162 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %161, i32 0
+  store double %160, double* %162, align 16, !tbaa !11
+  %163 = call double @sin(double %159) #18
+  %164 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %161, i32 1
+  store double %163, double* %164, align 8, !tbaa !13
+  %165 = or i64 %155, 1
+  %166 = trunc i64 %165 to i32
+  %167 = sitofp i32 %166 to double
+  %168 = fmul double %145, %167
+  %169 = call double @cos(double %168) #18
+  %170 = add nsw i64 %165, %148
+  %171 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %170, i32 0
+  store double %169, double* %171, align 16, !tbaa !11
+  %172 = call double @sin(double %168) #18
+  %173 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %170, i32 1
+  store double %172, double* %173, align 8, !tbaa !13
+  %174 = add nuw nsw i64 %155, 2
+  %175 = add i64 %156, -2
+  %176 = icmp eq i64 %175, 0
+  br i1 %176, label %177, label %154
+
+177:                                              ; preds = %154, %147
+  %178 = phi i64 [ 0, %147 ], [ %174, %154 ]
+  %179 = icmp eq i64 %150, 0
+  br i1 %179, label %189, label %180
+
+180:                                              ; preds = %177
+  %181 = trunc i64 %178 to i32
+  %182 = sitofp i32 %181 to double
+  %183 = fmul double %145, %182
+  %184 = call double @cos(double %183) #18
+  %185 = add nsw i64 %178, %148
+  %186 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %185, i32 0
+  store double %184, double* %186, align 16, !tbaa !11
+  %187 = call double @sin(double %183) #18
+  %188 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %185, i32 1
+  store double %187, double* %188, align 8, !tbaa !13
+  br label %189
+
+189:                                              ; preds = %180, %177, %140
+  %190 = add nuw nsw i32 %142, %141
+  %191 = shl nsw i32 %142, 1
+  %192 = add nuw i32 %143, 1
+  %193 = icmp eq i32 %143, %138
+  br i1 %193, label %194, label %140
+
+194:                                              ; preds = %189, %136
+  call fastcc void @fft(i32 1, [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u0, i64 0, i64 0)) #19
+  %195 = load i1, i1* @niter, align 4
+  br i1 %195, label %196, label %215
+
+196:                                              ; preds = %194
+  %197 = bitcast [128 x [128 x %struct.dcomplex]]** %7 to i8*
+  %198 = bitcast [128 x [128 x %struct.dcomplex]]** %8 to i8*
+  %199 = bitcast i32* %9 to i8*
+  %200 = bitcast [128 x [128 x i32]]** %10 to i8*
+  %201 = bitcast i32** %11 to i8*
+  %202 = bitcast i32* %5 to i8*
+  %203 = bitcast [128 x [128 x %struct.dcomplex]]** %6 to i8*
+  br label %204
+
+204:                                              ; preds = %204, %196
+  %205 = phi i32 [ 1, %196 ], [ %211, %204 ]
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %197)
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %198)
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %199)
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %200)
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %201)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u0, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %7, align 8, !tbaa !7
+  %206 = bitcast [128 x [128 x %struct.dcomplex]]** %7 to i8*
+  call void @nk_carat_instrument_escapes(i8* %206)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %8, align 8, !tbaa !7
+  %207 = bitcast [128 x [128 x %struct.dcomplex]]** %8 to i8*
+  call void @nk_carat_instrument_escapes(i8* %207)
+  store i32 %205, i32* %9, align 4, !tbaa !3
+  store [128 x [128 x i32]]* getelementptr inbounds ([32 x [128 x [128 x i32]]], [32 x [128 x [128 x i32]]]* @main.indexmap, i64 0, i64 0), [128 x [128 x i32]]** %10, align 8, !tbaa !7
+  %208 = bitcast [128 x [128 x i32]]** %10 to i8*
+  call void @nk_carat_instrument_escapes(i8* %208)
+  store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), i32** %11, align 8, !tbaa !7
+  %209 = bitcast i32** %11 to i8*
+  call void @nk_carat_instrument_escapes(i8* %209)
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 5, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32**, [128 x [128 x %struct.dcomplex]]**, [128 x [128 x %struct.dcomplex]]**, i32*, [128 x [128 x i32]]**)* @.omp_outlined..11 to void (i32*, i32*, ...)*), i32** nonnull %11, [128 x [128 x %struct.dcomplex]]** nonnull %8, [128 x [128 x %struct.dcomplex]]** nonnull %7, i32* nonnull %9, [128 x [128 x i32]]** nonnull %10) #17
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %197)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %198)
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %199)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %200)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %201)
+  call fastcc void @fft(i32 -1, [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u2, i64 0, i64 0)) #19
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %202)
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %203)
+  store i32 %205, i32* %5, align 4, !tbaa !3
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u2, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %6, align 8, !tbaa !7
+  %210 = bitcast [128 x [128 x %struct.dcomplex]]** %6 to i8*
+  call void @nk_carat_instrument_escapes(i8* %210)
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 2, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, [128 x [128 x %struct.dcomplex]]**, i32*)* @.omp_outlined..20 to void (i32*, i32*, ...)*), [128 x [128 x %struct.dcomplex]]** nonnull %6, i32* nonnull %5) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %202)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %203)
+  %211 = add nuw nsw i32 %205, 1
+  %212 = load i1, i1* @niter, align 4
+  %213 = select i1 %212, i32 6, i32 0
+  %214 = icmp ult i32 %205, %213
+  br i1 %214, label %204, label %215
+
+215:                                              ; preds = %204, %194
+  %216 = phi i1 [ false, %194 ], [ %212, %204 ]
+  %217 = bitcast [7 x double]* %3 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 56, i8* nonnull %217) #17
+  call void @llvm.memset.p0i8.i64(i8* nonnull align 16 %217, i8 0, i64 56, i1 false) #17
+  %218 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 1
+  %219 = bitcast double* %218 to <2 x double>*
+  store <2 x double> <double 0x4081BAE3C635196D, double 0x40819926462BA5A4>, <2 x double>* %219, align 8
+  %220 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 3
+  %221 = bitcast double* %220 to <2 x double>*
+  store <2 x double> <double 0x40817B3822354DD9, double 0x4081608EF5C48194>, <2 x double>* %221, align 8
+  %222 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 5
+  %223 = bitcast double* %222 to <2 x double>*
+  store <2 x double> <double 0x408148B81D084E83, double 0x40813353E9E3E09A>, <2 x double>* %223, align 8
+  %224 = bitcast [7 x double]* %4 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 56, i8* nonnull %224) #17
+  call void @llvm.memset.p0i8.i64(i8* nonnull align 16 %224, i8 0, i64 56, i1 false) #17
+  %225 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 1
+  %226 = bitcast double* %225 to <2 x double>*
+  store <2 x double> <double 0x40808A98F467F156, double 0x408081B851380EB7>, <2 x double>* %226, align 8
+  %227 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 3
+  %228 = bitcast double* %227 to <2 x double>*
+  store <2 x double> <double 0x408078CC18578DFC, double 0x40807005B7059038>, <2 x double>* %228, align 8
+  %229 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 5
+  %230 = bitcast double* %229 to <2 x double>*
+  store <2 x double> <double 0x408067854B0E36C9, double 0x40805F5EAB0F5DA2>, <2 x double>* %230, align 8
+  br i1 %216, label %231, label %259
+
+231:                                              ; preds = %215
+  %232 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 1, i32 0), align 16, !tbaa !11
+  %233 = fadd double %232, 0xC081BAE3C635196D
+  %234 = fdiv double %233, 0x4081BAE3C635196D
+  %235 = call double @llvm.fabs.f64(double %234) #17
+  %236 = fcmp ogt double %235, 0x3D719799812DEA11
+  br i1 %236, label %259, label %237
+
+237:                                              ; preds = %231
+  %238 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 1, i32 1), align 8, !tbaa !13
+  %239 = fadd double %238, 0xC0808A98F467F156
+  %240 = fdiv double %239, 0x40808A98F467F156
+  %241 = call double @llvm.fabs.f64(double %240) #17
+  %242 = fcmp ogt double %241, 0x3D719799812DEA11
+  br i1 %242, label %259, label %243
+
+243:                                              ; preds = %237
+  %244 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 2
+  %245 = load double, double* %244, align 16, !tbaa !9
+  %246 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 2, i32 0), align 16, !tbaa !11
+  %247 = fsub double %246, %245
+  %248 = fdiv double %247, %245
+  %249 = call double @llvm.fabs.f64(double %248) #17
+  %250 = fcmp ogt double %249, 0x3D719799812DEA11
+  br i1 %250, label %259, label %251
+
+251:                                              ; preds = %243
+  %252 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 2
+  %253 = load double, double* %252, align 16, !tbaa !9
+  %254 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 2, i32 1), align 8, !tbaa !13
+  %255 = fsub double %254, %253
+  %256 = fdiv double %255, %253
+  %257 = call double @llvm.fabs.f64(double %256) #17
+  %258 = fcmp ogt double %257, 0x3D719799812DEA11
+  br i1 %258, label %259, label %276
+
+259:                                              ; preds = %340, %332, %324, %316, %308, %300, %292, %284, %276, %251, %243, %237, %231, %215
+  %260 = phi i8* [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %237 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %231 ], [ getelementptr inbounds ([27 x i8], [27 x i8]* @str.25, i64 0, i64 0), %215 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %340 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %332 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %324 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %316 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %308 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %300 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %292 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %284 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %276 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %243 ], [ getelementptr inbounds ([31 x i8], [31 x i8]* @str.26, i64 0, i64 0), %251 ]
+  %261 = phi i32 [ 0, %237 ], [ 0, %231 ], [ 1, %215 ], [ 0, %251 ], [ 0, %243 ], [ 0, %276 ], [ 0, %284 ], [ 0, %292 ], [ 0, %300 ], [ 0, %308 ], [ 0, %316 ], [ 0, %324 ], [ 0, %332 ], [ 1, %340 ]
+  %262 = phi i8 [ 87, %237 ], [ 87, %231 ], [ 85, %215 ], [ 87, %340 ], [ 87, %332 ], [ 87, %324 ], [ 87, %316 ], [ 87, %308 ], [ 87, %300 ], [ 87, %292 ], [ 87, %284 ], [ 87, %276 ], [ 87, %243 ], [ 87, %251 ]
+  %263 = call i32 @puts(i8* %260) #17
+  %264 = zext i8 %262 to i32
+  %265 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.24, i64 0, i64 0), i32 %264) #18
+  call void @llvm.lifetime.end.p0i8(i64 56, i8* nonnull %224) #17
+  call void @llvm.lifetime.end.p0i8(i64 56, i8* nonnull %217) #17
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 1, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32*)* @.omp_outlined. to void (i32*, i32*, ...)*), i32* nonnull %14) #17
+  call void @timer_stop(i32 0) #18
+  %266 = call double @timer_read(i32 0) #18
+  %267 = fcmp une double %266, 0.000000e+00
+  %268 = load i1, i1* @niter, align 4
+  br i1 %267, label %269, label %272
+
+269:                                              ; preds = %259
+  %270 = select i1 %268, double 0x40774AC3482D201F, double 0x404CBA86441AE4D1
+  %271 = fdiv double %270, %266
+  br label %272
+
+272:                                              ; preds = %269, %259
+  %273 = phi double [ %271, %269 ], [ 0.000000e+00, %259 ]
+  %274 = select i1 %268, i32 6, i32 0
+  %275 = load i32, i32* %14, align 4, !tbaa !3
+  call void @c_print_results(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.1, i64 0, i64 0), i8 signext %262, i32 128, i32 128, i32 32, i32 %274, i32 %275, double %266, double %273, i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.2, i64 0, i64 0), i32 %261, i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.3, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.4, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.5, i64 0, i64 0), i8* getelementptr inbounds ([30 x i8], [30 x i8]* @.str.6, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.7, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i8* getelementptr inbounds ([33 x i8], [33 x i8]* @.str.9, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.7, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.10, i64 0, i64 0)) #18
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %15) #17
+  ret i32 0
+
+276:                                              ; preds = %251
+  %277 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 3
+  %278 = load double, double* %277, align 8, !tbaa !9
+  %279 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 3, i32 0), align 16, !tbaa !11
+  %280 = fsub double %279, %278
+  %281 = fdiv double %280, %278
+  %282 = call double @llvm.fabs.f64(double %281) #17
+  %283 = fcmp ogt double %282, 0x3D719799812DEA11
+  br i1 %283, label %259, label %284
+
+284:                                              ; preds = %276
+  %285 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 3
+  %286 = load double, double* %285, align 8, !tbaa !9
+  %287 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 3, i32 1), align 8, !tbaa !13
+  %288 = fsub double %287, %286
+  %289 = fdiv double %288, %286
+  %290 = call double @llvm.fabs.f64(double %289) #17
+  %291 = fcmp ogt double %290, 0x3D719799812DEA11
+  br i1 %291, label %259, label %292
+
+292:                                              ; preds = %284
+  %293 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 4
+  %294 = load double, double* %293, align 16, !tbaa !9
+  %295 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 4, i32 0), align 16, !tbaa !11
+  %296 = fsub double %295, %294
+  %297 = fdiv double %296, %294
+  %298 = call double @llvm.fabs.f64(double %297) #17
+  %299 = fcmp ogt double %298, 0x3D719799812DEA11
+  br i1 %299, label %259, label %300
+
+300:                                              ; preds = %292
+  %301 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 4
+  %302 = load double, double* %301, align 16, !tbaa !9
+  %303 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 4, i32 1), align 8, !tbaa !13
+  %304 = fsub double %303, %302
+  %305 = fdiv double %304, %302
+  %306 = call double @llvm.fabs.f64(double %305) #17
+  %307 = fcmp ogt double %306, 0x3D719799812DEA11
+  br i1 %307, label %259, label %308
+
+308:                                              ; preds = %300
+  %309 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 5
+  %310 = load double, double* %309, align 8, !tbaa !9
+  %311 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 5, i32 0), align 16, !tbaa !11
+  %312 = fsub double %311, %310
+  %313 = fdiv double %312, %310
+  %314 = call double @llvm.fabs.f64(double %313) #17
+  %315 = fcmp ogt double %314, 0x3D719799812DEA11
+  br i1 %315, label %259, label %316
+
+316:                                              ; preds = %308
+  %317 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 5
+  %318 = load double, double* %317, align 8, !tbaa !9
+  %319 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 5, i32 1), align 8, !tbaa !13
+  %320 = fsub double %319, %318
+  %321 = fdiv double %320, %318
+  %322 = call double @llvm.fabs.f64(double %321) #17
+  %323 = fcmp ogt double %322, 0x3D719799812DEA11
+  br i1 %323, label %259, label %324
+
+324:                                              ; preds = %316
+  %325 = getelementptr inbounds [7 x double], [7 x double]* %3, i64 0, i64 6
+  %326 = load double, double* %325, align 16, !tbaa !9
+  %327 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 6, i32 0), align 16, !tbaa !11
+  %328 = fsub double %327, %326
+  %329 = fdiv double %328, %326
+  %330 = call double @llvm.fabs.f64(double %329) #17
+  %331 = fcmp ogt double %330, 0x3D719799812DEA11
+  br i1 %331, label %259, label %332
+
+332:                                              ; preds = %324
+  %333 = getelementptr inbounds [7 x double], [7 x double]* %4, i64 0, i64 6
+  %334 = load double, double* %333, align 16, !tbaa !9
+  %335 = load double, double* getelementptr inbounds ([7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 6, i32 1), align 8, !tbaa !13
+  %336 = fsub double %335, %334
+  %337 = fdiv double %336, %334
+  %338 = call double @llvm.fabs.f64(double %337) #17
+  %339 = fcmp ogt double %338, 0x3D719799812DEA11
+  br i1 %339, label %259, label %340
+
+340:                                              ; preds = %332
+  br label %259
+}
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.start.p0i8(i64 immarg, i8* nocapture) #1
+
+; Function Attrs: nofree nounwind
+declare i32 @puts(i8* nocapture readonly) local_unnamed_addr #2
+
+; Function Attrs: nofree noredzone nounwind
+declare i32 @printf(i8* nocapture readonly, ...) local_unnamed_addr #3
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined..15(i32* noalias nocapture readonly, i32* noalias nocapture readnone, [128 x [128 x i32]]** nocapture readonly dereferenceable(8)) #4 {
+  %4 = alloca i32, align 4
+  %5 = alloca i32, align 4
+  %6 = alloca i32, align 4
+  %7 = alloca i32, align 4
+  %8 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 0), align 8, !tbaa !3
+  %9 = add nsw i32 %8, -1
+  %10 = icmp sgt i32 %8, 0
+  br i1 %10, label %11, label %87
+
+11:                                               ; preds = %3
+  %12 = bitcast i32* %4 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %12) #17
+  store i32 0, i32* %4, align 4, !tbaa !3
+  %13 = bitcast i32* %5 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %13) #17
+  store i32 %9, i32* %5, align 4, !tbaa !3
+  %14 = bitcast i32* %6 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %14) #17
+  store i32 1, i32* %6, align 4, !tbaa !3
+  %15 = bitcast i32* %7 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %15) #17
+  store i32 0, i32* %7, align 4, !tbaa !3
+  %16 = load i32, i32* %0, align 4, !tbaa !3
+  call void @__kmpc_for_static_init_4(%struct.ident_t* nonnull @1, i32 %16, i32 34, i32* nonnull %7, i32* nonnull %4, i32* nonnull %5, i32* nonnull %6, i32 1, i32 1) #17
+  %17 = load i32, i32* %5, align 4, !tbaa !3
+  %18 = icmp sgt i32 %17, %9
+  %19 = select i1 %18, i32 %9, i32 %17
+  store i32 %19, i32* %5, align 4, !tbaa !3
+  %20 = load i32, i32* %4, align 4, !tbaa !3
+  %21 = icmp sgt i32 %20, %19
+  br i1 %21, label %86, label %22
+
+22:                                               ; preds = %11
+  %23 = load i1, i1* @xstart.2, align 4
+  %24 = zext i1 %23 to i32
+  %25 = load i1, i1* @ystart.2, align 4
+  %26 = zext i1 %25 to i32
+  %27 = load i1, i1* @zstart.2, align 4
+  %28 = zext i1 %27 to i32
+  %29 = load [128 x [128 x i32]]*, [128 x [128 x i32]]** %2, align 8
+  %30 = sext i32 %20 to i64
+  %31 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 1), align 4, !tbaa !3
+  br label %40
+
+32:                                               ; preds = %55
+  %33 = load i32, i32* %5, align 4, !tbaa !3
+  br label %34
+
+34:                                               ; preds = %40, %32
+  %35 = phi i32 [ %33, %32 ], [ %41, %40 ]
+  %36 = phi i32 [ %56, %32 ], [ %42, %40 ]
+  %37 = phi i32 [ %56, %32 ], [ %43, %40 ]
+  %38 = sext i32 %35 to i64
+  %39 = icmp slt i64 %44, %38
+  br i1 %39, label %40, label %86
+
+40:                                               ; preds = %34, %22
+  %41 = phi i32 [ %35, %34 ], [ %19, %22 ]
+  %42 = phi i32 [ %36, %34 ], [ %31, %22 ]
+  %43 = phi i32 [ %37, %34 ], [ %31, %22 ]
+  %44 = phi i64 [ %45, %34 ], [ %30, %22 ]
+  %45 = add nsw i64 %44, 1
+  %46 = trunc i64 %44 to i32
+  %47 = add i32 %46, 63
+  %48 = add i32 %47, %24
+  %49 = srem i32 %48, 128
+  %50 = add nsw i32 %49, -64
+  %51 = mul nsw i32 %50, %50
+  %52 = icmp sgt i32 %43, 0
+  br i1 %52, label %59, label %34
+
+53:                                               ; preds = %72
+  %54 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 1), align 4, !tbaa !3
+  br label %55
+
+55:                                               ; preds = %59, %53
+  %56 = phi i32 [ %54, %53 ], [ %60, %59 ]
+  %57 = sext i32 %56 to i64
+  %58 = icmp slt i64 %62, %57
+  br i1 %58, label %59, label %32
+
+59:                                               ; preds = %55, %40
+  %60 = phi i32 [ %56, %55 ], [ %42, %40 ]
+  %61 = phi i64 [ %62, %55 ], [ 0, %40 ]
+  %62 = add nuw nsw i64 %61, 1
+  %63 = trunc i64 %61 to i32
+  %64 = add i32 %63, 63
+  %65 = add i32 %64, %26
+  %66 = srem i32 %65, 128
+  %67 = add nsw i32 %66, -64
+  %68 = mul nsw i32 %67, %67
+  %69 = add nuw nsw i32 %68, %51
+  %70 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 2), align 8, !tbaa !3
+  %71 = icmp sgt i32 %70, 0
+  br i1 %71, label %72, label %55
+
+72:                                               ; preds = %72, %59
+  %73 = phi i64 [ %74, %72 ], [ 0, %59 ]
+  %74 = add nuw nsw i64 %73, 1
+  %75 = trunc i64 %73 to i32
+  %76 = add i32 %75, 15
+  %77 = add i32 %76, %28
+  %78 = srem i32 %77, 32
+  %79 = add nsw i32 %78, -16
+  %80 = mul nsw i32 %79, %79
+  %81 = add nuw nsw i32 %69, %80
+  %82 = getelementptr inbounds [128 x [128 x i32]], [128 x [128 x i32]]* %29, i64 %73, i64 %61, i64 %44
+  store i32 %81, i32* %82, align 4, !tbaa !3
+  %83 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 2), align 8, !tbaa !3
+  %84 = sext i32 %83 to i64
+  %85 = icmp slt i64 %74, %84
+  br i1 %85, label %72, label %53
+
+86:                                               ; preds = %34, %11
+  call void @__kmpc_for_static_fini(%struct.ident_t* nonnull @1, i32 %16) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %15) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %14) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %13) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %12) #17
+  br label %87
+
+87:                                               ; preds = %86, %3
+  ret void
+}
+
+declare !callback !14 void @__kmpc_fork_call(%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) local_unnamed_addr
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.end.p0i8(i64 immarg, i8* nocapture) #1
+
+; Function Attrs: noredzone nounwind uwtable
+define internal fastcc void @compute_initial_conditions() unnamed_addr #0 {
+  %1 = alloca double, align 8
+  %2 = alloca double, align 8
+  %3 = alloca double, align 8
+  %4 = alloca double, align 8
+  %5 = alloca double, align 8
+  %6 = alloca double, align 8
+  %7 = bitcast double* %5 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %7) #17
+  %8 = bitcast double* %6 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %8) #17
+  store double 0x41B2B9B0A1000000, double* %6, align 8, !tbaa !9
+  %9 = load i1, i1* @zstart.0, align 4
+  %10 = zext i1 %9 to i32
+  %11 = shl nuw nsw i32 %10, 15
+  %12 = load i1, i1* @ystart.0, align 4
+  %13 = zext i1 %12 to i32
+  %14 = shl nuw nsw i32 %13, 8
+  %15 = or i32 %11, -33024
+  %16 = add nsw i32 %15, %14
+  %17 = bitcast double* %3 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %17) #17
+  %18 = bitcast double* %4 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %18) #17
+  %19 = icmp eq i32 %16, 0
+  br i1 %19, label %41, label %20
+
+20:                                               ; preds = %0
+  store double 0x41D2309CE5400000, double* %3, align 8, !tbaa !9
+  store double 1.000000e+00, double* %4, align 8, !tbaa !9
+  %21 = icmp sgt i32 %16, 1
+  br i1 %21, label %22, label %37
+
+22:                                               ; preds = %33, %20
+  %23 = phi double [ %36, %33 ], [ 0x41D2309CE5400000, %20 ]
+  %24 = phi i32 [ %34, %33 ], [ %16, %20 ]
+  %25 = and i32 %24, -2
+  %26 = icmp eq i32 %25, %24
+  br i1 %26, label %27, label %30
+
+27:                                               ; preds = %22
+  %28 = lshr i32 %24, 1
+  %29 = call double @randlc(double* nonnull %3, double %23) #18
+  br label %33
+
+30:                                               ; preds = %22
+  %31 = call double @randlc(double* nonnull %4, double %23) #18
+  %32 = add nsw i32 %24, -1
+  br label %33
+
+33:                                               ; preds = %30, %27
+  %34 = phi i32 [ %28, %27 ], [ %32, %30 ]
+  %35 = icmp sgt i32 %34, 1
+  %36 = load double, double* %3, align 8, !tbaa !9
+  br i1 %35, label %22, label %37
+
+37:                                               ; preds = %33, %20
+  %38 = phi double [ 0x41D2309CE5400000, %20 ], [ %36, %33 ]
+  %39 = call double @randlc(double* nonnull %4, double %38) #18
+  %40 = load double, double* %4, align 8, !tbaa !9
+  br label %41
+
+41:                                               ; preds = %37, %0
+  %42 = phi double [ 1.000000e+00, %0 ], [ %40, %37 ]
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %18) #17
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %17) #17
+  %43 = call double @randlc(double* nonnull %6, double %42) #18
+  %44 = bitcast double* %1 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %44) #17
+  %45 = bitcast double* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %45) #17
+  store double 0x41D2309CE5400000, double* %1, align 8, !tbaa !9
+  store double 1.000000e+00, double* %2, align 8, !tbaa !9
+  br label %46
+
+46:                                               ; preds = %57, %41
+  %47 = phi double [ 0x41D2309CE5400000, %41 ], [ %60, %57 ]
+  %48 = phi i32 [ 32768, %41 ], [ %58, %57 ]
+  %49 = and i32 %48, -2
+  %50 = icmp eq i32 %49, %48
+  br i1 %50, label %51, label %54
+
+51:                                               ; preds = %46
+  %52 = lshr i32 %48, 1
+  %53 = call double @randlc(double* nonnull %1, double %47) #18
+  br label %57
+
+54:                                               ; preds = %46
+  %55 = call double @randlc(double* nonnull %2, double %47) #18
+  %56 = add nsw i32 %48, -1
+  br label %57
+
+57:                                               ; preds = %54, %51
+  %58 = phi i32 [ %52, %51 ], [ %56, %54 ]
+  %59 = icmp sgt i32 %58, 1
+  %60 = load double, double* %1, align 8, !tbaa !9
+  br i1 %59, label %46, label %61
+
+61:                                               ; preds = %57
+  %62 = call double @randlc(double* nonnull %2, double %60) #18
+  %63 = load double, double* %2, align 8, !tbaa !9
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %45) #17
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %44) #17
+  %64 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 2), align 8, !tbaa !3
+  %65 = icmp sgt i32 %64, 0
+  br i1 %65, label %66, label %130
+
+66:                                               ; preds = %61
+  %67 = bitcast double* %6 to i64*
+  %68 = bitcast double* %5 to i64*
+  br label %69
+
+69:                                               ; preds = %125, %66
+  %70 = phi i64 [ 0, %66 ], [ %127, %125 ]
+  %71 = load i64, i64* %67, align 8, !tbaa !9
+  store i64 %71, i64* %68, align 8, !tbaa !9
+  %72 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 1), align 4, !tbaa !3
+  %73 = shl nsw i32 %72, 8
+  call void @vranlc(i32 %73, double* nonnull %5, double 0x41D2309CE5400000, double* getelementptr inbounds ([32769 x double], [32769 x double]* @compute_initial_conditions.tmp, i64 0, i64 0)) #18
+  %74 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 1), align 4, !tbaa !3
+  %75 = icmp sgt i32 %74, 0
+  br i1 %75, label %76, label %118
+
+76:                                               ; preds = %69
+  %77 = sext i32 %74 to i64
+  br label %78
+
+78:                                               ; preds = %115, %76
+  %79 = phi i64 [ 0, %76 ], [ %116, %115 ]
+  %80 = phi i64 [ 1, %76 ], [ %109, %115 ]
+  %81 = shl i64 %80, 32
+  %82 = ashr exact i64 %81, 32
+  br label %83
+
+83:                                               ; preds = %83, %78
+  %84 = phi i64 [ 0, %78 ], [ %113, %83 ]
+  %85 = phi i64 [ %82, %78 ], [ %109, %83 ]
+  %86 = getelementptr inbounds [32769 x double], [32769 x double]* @compute_initial_conditions.tmp, i64 0, i64 %85
+  %87 = getelementptr inbounds [32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 %70, i64 %79, i64 %84
+  %88 = add nsw i64 %85, 2
+  %89 = bitcast double* %86 to <2 x i64>*
+  %90 = load <2 x i64>, <2 x i64>* %89, align 8, !tbaa !9
+  %91 = bitcast %struct.dcomplex* %87 to <2 x i64>*
+  store <2 x i64> %90, <2 x i64>* %91, align 16, !tbaa !9
+  %92 = or i64 %84, 1
+  %93 = getelementptr inbounds [32769 x double], [32769 x double]* @compute_initial_conditions.tmp, i64 0, i64 %88
+  %94 = getelementptr inbounds [32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 %70, i64 %79, i64 %92
+  %95 = add nsw i64 %85, 4
+  %96 = bitcast double* %93 to <2 x i64>*
+  %97 = load <2 x i64>, <2 x i64>* %96, align 8, !tbaa !9
+  %98 = bitcast %struct.dcomplex* %94 to <2 x i64>*
+  store <2 x i64> %97, <2 x i64>* %98, align 16, !tbaa !9
+  %99 = or i64 %84, 2
+  %100 = getelementptr inbounds [32769 x double], [32769 x double]* @compute_initial_conditions.tmp, i64 0, i64 %95
+  %101 = getelementptr inbounds [32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 %70, i64 %79, i64 %99
+  %102 = add nsw i64 %85, 6
+  %103 = bitcast double* %100 to <2 x i64>*
+  %104 = load <2 x i64>, <2 x i64>* %103, align 8, !tbaa !9
+  %105 = bitcast %struct.dcomplex* %101 to <2 x i64>*
+  store <2 x i64> %104, <2 x i64>* %105, align 16, !tbaa !9
+  %106 = or i64 %84, 3
+  %107 = getelementptr inbounds [32769 x double], [32769 x double]* @compute_initial_conditions.tmp, i64 0, i64 %102
+  %108 = getelementptr inbounds [32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 %70, i64 %79, i64 %106
+  %109 = add nsw i64 %85, 8
+  %110 = bitcast double* %107 to <2 x i64>*
+  %111 = load <2 x i64>, <2 x i64>* %110, align 8, !tbaa !9
+  %112 = bitcast %struct.dcomplex* %108 to <2 x i64>*
+  store <2 x i64> %111, <2 x i64>* %112, align 16, !tbaa !9
+  %113 = add nuw nsw i64 %84, 4
+  %114 = icmp eq i64 %113, 128
+  br i1 %114, label %115, label %83
+
+115:                                              ; preds = %83
+  %116 = add nuw nsw i64 %79, 1
+  %117 = icmp slt i64 %116, %77
+  br i1 %117, label %78, label %118
+
+118:                                              ; preds = %115, %69
+  %119 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 2), align 8, !tbaa !3
+  %120 = zext i32 %119 to i64
+  %121 = icmp eq i64 %70, %120
+  br i1 %121, label %125, label %122
+
+122:                                              ; preds = %118
+  %123 = call double @randlc(double* nonnull %6, double %63) #18
+  %124 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 2), align 8, !tbaa !3
+  br label %125
+
+125:                                              ; preds = %122, %118
+  %126 = phi i32 [ %119, %118 ], [ %124, %122 ]
+  %127 = add nuw nsw i64 %70, 1
+  %128 = sext i32 %126 to i64
+  %129 = icmp slt i64 %127, %128
+  br i1 %129, label %69, label %130
+
+130:                                              ; preds = %125, %61
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %8) #17
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %7) #17
+  ret void
+}
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #1
+
+; Function Attrs: nofree noredzone nounwind
+declare double @cos(double) local_unnamed_addr #3
+
+; Function Attrs: nofree noredzone nounwind
+declare double @sin(double) local_unnamed_addr #3
+
+; Function Attrs: noredzone nounwind uwtable
+define internal fastcc void @fft(i32, [128 x [128 x %struct.dcomplex]]*) unnamed_addr #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32*, align 8
+  %5 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %6 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %7 = alloca i32, align 4
+  %8 = alloca i32*, align 8
+  %9 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %10 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %11 = alloca i32, align 4
+  %12 = alloca i32*, align 8
+  %13 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %14 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %15 = alloca i32, align 4
+  %16 = alloca i32*, align 8
+  %17 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %18 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %19 = alloca i32, align 4
+  %20 = alloca i32*, align 8
+  %21 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %22 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %23 = alloca i32, align 4
+  %24 = alloca i32*, align 8
+  %25 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %26 = alloca [128 x [128 x %struct.dcomplex]]*, align 8
+  %27 = alloca [3 x i32], align 4
+  %28 = icmp eq i32 %0, 1
+  br i1 %28, label %29, label %163
+
+29:                                               ; preds = %2
+  %30 = bitcast i32* %23 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %30)
+  %31 = bitcast i32** %24 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %31)
+  %32 = bitcast [128 x [128 x %struct.dcomplex]]** %25 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %32)
+  %33 = bitcast [128 x [128 x %struct.dcomplex]]** %26 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %33)
+  store i32 1, i32* %23, align 4, !tbaa !3
+  store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), i32** %24, align 8, !tbaa !7
+  %34 = bitcast i32** %24 to i8*
+  call void @nk_carat_instrument_escapes(i8* %34)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %25, align 8, !tbaa !7
+  %35 = bitcast [128 x [128 x %struct.dcomplex]]** %25 to i8*
+  call void @nk_carat_instrument_escapes(i8* %35)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %26, align 8, !tbaa !7
+  %36 = bitcast [128 x [128 x %struct.dcomplex]]** %26 to i8*
+  call void @nk_carat_instrument_escapes(i8* %36)
+  %37 = bitcast [3 x i32]* %27 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 12, i8* nonnull %37) #17
+  %38 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), align 16, !tbaa !3
+  %39 = icmp eq i32 %38, 1
+  br i1 %39, label %48, label %40
+
+40:                                               ; preds = %29
+  %41 = icmp sgt i32 %38, 2
+  br i1 %41, label %42, label %48
+
+42:                                               ; preds = %42, %40
+  %43 = phi i32 [ %46, %42 ], [ 1, %40 ]
+  %44 = phi i32 [ %45, %42 ], [ 2, %40 ]
+  %45 = shl i32 %44, 1
+  %46 = add nuw nsw i32 %43, 1
+  %47 = icmp slt i32 %45, %38
+  br i1 %47, label %42, label %48
+
+48:                                               ; preds = %42, %40, %29
+  %49 = phi i32 [ 0, %29 ], [ 1, %40 ], [ %46, %42 ]
+  %50 = getelementptr inbounds [3 x i32], [3 x i32]* %27, i64 0, i64 0
+  store i32 %49, i32* %50, align 4, !tbaa !3
+  %51 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 1), align 4, !tbaa !3
+  %52 = icmp eq i32 %51, 1
+  br i1 %52, label %61, label %53
+
+53:                                               ; preds = %48
+  %54 = icmp sgt i32 %51, 2
+  br i1 %54, label %55, label %61
+
+55:                                               ; preds = %55, %53
+  %56 = phi i32 [ %59, %55 ], [ 1, %53 ]
+  %57 = phi i32 [ %58, %55 ], [ 2, %53 ]
+  %58 = shl i32 %57, 1
+  %59 = add nuw nsw i32 %56, 1
+  %60 = icmp slt i32 %58, %51
+  br i1 %60, label %55, label %61
+
+61:                                               ; preds = %55, %53, %48
+  %62 = phi i32 [ 0, %48 ], [ 1, %53 ], [ %59, %55 ]
+  %63 = getelementptr inbounds [3 x i32], [3 x i32]* %27, i64 0, i64 1
+  store i32 %62, i32* %63, align 4, !tbaa !3
+  %64 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 2), align 8, !tbaa !3
+  %65 = icmp eq i32 %64, 1
+  br i1 %65, label %74, label %66
+
+66:                                               ; preds = %61
+  %67 = icmp sgt i32 %64, 2
+  br i1 %67, label %68, label %74
+
+68:                                               ; preds = %68, %66
+  %69 = phi i32 [ %72, %68 ], [ 1, %66 ]
+  %70 = phi i32 [ %71, %68 ], [ 2, %66 ]
+  %71 = shl i32 %70, 1
+  %72 = add nuw nsw i32 %69, 1
+  %73 = icmp slt i32 %71, %64
+  br i1 %73, label %68, label %74
+
+74:                                               ; preds = %68, %66, %61
+  %75 = phi i32 [ 0, %61 ], [ 1, %66 ], [ %72, %68 ]
+  %76 = getelementptr inbounds [3 x i32], [3 x i32]* %27, i64 0, i64 2
+  store i32 %75, i32* %76, align 4, !tbaa !3
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 5, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32**, [128 x [128 x %struct.dcomplex]]**, i32*, [3 x i32]*, [128 x [128 x %struct.dcomplex]]**)* @.omp_outlined..16 to void (i32*, i32*, ...)*), i32** nonnull %24, [128 x [128 x %struct.dcomplex]]** nonnull %25, i32* nonnull %23, [3 x i32]* nonnull %27, [128 x [128 x %struct.dcomplex]]** nonnull %26) #17
+  call void @llvm.lifetime.end.p0i8(i64 12, i8* nonnull %37) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %30)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %31)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %32)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %33)
+  %77 = bitcast i32* %19 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %77)
+  %78 = bitcast i32** %20 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %78)
+  %79 = bitcast [128 x [128 x %struct.dcomplex]]** %21 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %79)
+  %80 = bitcast [128 x [128 x %struct.dcomplex]]** %22 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %80)
+  store i32 1, i32* %19, align 4, !tbaa !3
+  store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 0), i32** %20, align 8, !tbaa !7
+  %81 = bitcast i32** %20 to i8*
+  call void @nk_carat_instrument_escapes(i8* %81)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %21, align 8, !tbaa !7
+  %82 = bitcast [128 x [128 x %struct.dcomplex]]** %21 to i8*
+  call void @nk_carat_instrument_escapes(i8* %82)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %22, align 8, !tbaa !7
+  %83 = bitcast [128 x [128 x %struct.dcomplex]]** %22 to i8*
+  call void @nk_carat_instrument_escapes(i8* %83)
+  call void @llvm.lifetime.start.p0i8(i64 12, i8* nonnull %37) #17
+  %84 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 0), align 4, !tbaa !3
+  %85 = icmp eq i32 %84, 1
+  br i1 %85, label %94, label %86
+
+86:                                               ; preds = %74
+  %87 = icmp sgt i32 %84, 2
+  br i1 %87, label %88, label %94
+
+88:                                               ; preds = %88, %86
+  %89 = phi i32 [ %92, %88 ], [ 1, %86 ]
+  %90 = phi i32 [ %91, %88 ], [ 2, %86 ]
+  %91 = shl i32 %90, 1
+  %92 = add nuw nsw i32 %89, 1
+  %93 = icmp slt i32 %91, %84
+  br i1 %93, label %88, label %94
+
+94:                                               ; preds = %88, %86, %74
+  %95 = phi i32 [ 0, %74 ], [ 1, %86 ], [ %92, %88 ]
+  store i32 %95, i32* %50, align 4, !tbaa !3
+  %96 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 1), align 4, !tbaa !3
+  %97 = icmp eq i32 %96, 1
+  br i1 %97, label %106, label %98
+
+98:                                               ; preds = %94
+  %99 = icmp sgt i32 %96, 2
+  br i1 %99, label %100, label %106
+
+100:                                              ; preds = %100, %98
+  %101 = phi i32 [ %104, %100 ], [ 1, %98 ]
+  %102 = phi i32 [ %103, %100 ], [ 2, %98 ]
+  %103 = shl i32 %102, 1
+  %104 = add nuw nsw i32 %101, 1
+  %105 = icmp slt i32 %103, %96
+  br i1 %105, label %100, label %106
+
+106:                                              ; preds = %100, %98, %94
+  %107 = phi i32 [ 0, %94 ], [ 1, %98 ], [ %104, %100 ]
+  store i32 %107, i32* %63, align 4, !tbaa !3
+  %108 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 2), align 4, !tbaa !3
+  %109 = icmp eq i32 %108, 1
+  br i1 %109, label %118, label %110
+
+110:                                              ; preds = %106
+  %111 = icmp sgt i32 %108, 2
+  br i1 %111, label %112, label %118
+
+112:                                              ; preds = %112, %110
+  %113 = phi i32 [ %116, %112 ], [ 1, %110 ]
+  %114 = phi i32 [ %115, %112 ], [ 2, %110 ]
+  %115 = shl i32 %114, 1
+  %116 = add nuw nsw i32 %113, 1
+  %117 = icmp slt i32 %115, %108
+  br i1 %117, label %112, label %118
+
+118:                                              ; preds = %112, %110, %106
+  %119 = phi i32 [ 0, %106 ], [ 1, %110 ], [ %116, %112 ]
+  store i32 %119, i32* %76, align 4, !tbaa !3
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 5, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32**, [128 x [128 x %struct.dcomplex]]**, i32*, [3 x i32]*, [128 x [128 x %struct.dcomplex]]**)* @.omp_outlined..18 to void (i32*, i32*, ...)*), i32** nonnull %20, [128 x [128 x %struct.dcomplex]]** nonnull %21, i32* nonnull %19, [3 x i32]* nonnull %27, [128 x [128 x %struct.dcomplex]]** nonnull %22) #17
+  call void @llvm.lifetime.end.p0i8(i64 12, i8* nonnull %37) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %77)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %78)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %79)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %80)
+  %120 = bitcast i32* %15 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %120)
+  %121 = bitcast i32** %16 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %121)
+  %122 = bitcast [128 x [128 x %struct.dcomplex]]** %17 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %122)
+  %123 = bitcast [128 x [128 x %struct.dcomplex]]** %18 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %123)
+  store i32 1, i32* %15, align 4, !tbaa !3
+  store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 0), i32** %16, align 8, !tbaa !7
+  %124 = bitcast i32** %16 to i8*
+  call void @nk_carat_instrument_escapes(i8* %124)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %17, align 8, !tbaa !7
+  %125 = bitcast [128 x [128 x %struct.dcomplex]]** %17 to i8*
+  call void @nk_carat_instrument_escapes(i8* %125)
+  store [128 x [128 x %struct.dcomplex]]* %1, [128 x [128 x %struct.dcomplex]]** %18, align 8, !tbaa !7
+  %126 = bitcast [128 x [128 x %struct.dcomplex]]** %18 to i8*
+  call void @nk_carat_instrument_escapes(i8* %126)
+  call void @llvm.lifetime.start.p0i8(i64 12, i8* nonnull %37) #17
+  %127 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 0), align 8, !tbaa !3
+  %128 = icmp eq i32 %127, 1
+  br i1 %128, label %137, label %129
+
+129:                                              ; preds = %118
+  %130 = icmp sgt i32 %127, 2
+  br i1 %130, label %131, label %137
+
+131:                                              ; preds = %131, %129
+  %132 = phi i32 [ %135, %131 ], [ 1, %129 ]
+  %133 = phi i32 [ %134, %131 ], [ 2, %129 ]
+  %134 = shl i32 %133, 1
+  %135 = add nuw nsw i32 %132, 1
+  %136 = icmp slt i32 %134, %127
+  br i1 %136, label %131, label %137
+
+137:                                              ; preds = %131, %129, %118
+  %138 = phi i32 [ 0, %118 ], [ 1, %129 ], [ %135, %131 ]
+  store i32 %138, i32* %50, align 4, !tbaa !3
+  %139 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 1), align 4, !tbaa !3
+  %140 = icmp eq i32 %139, 1
+  br i1 %140, label %149, label %141
+
+141:                                              ; preds = %137
+  %142 = icmp sgt i32 %139, 2
+  br i1 %142, label %143, label %149
+
+143:                                              ; preds = %143, %141
+  %144 = phi i32 [ %147, %143 ], [ 1, %141 ]
+  %145 = phi i32 [ %146, %143 ], [ 2, %141 ]
+  %146 = shl i32 %145, 1
+  %147 = add nuw nsw i32 %144, 1
+  %148 = icmp slt i32 %146, %139
+  br i1 %148, label %143, label %149
+
+149:                                              ; preds = %143, %141, %137
+  %150 = phi i32 [ 0, %137 ], [ 1, %141 ], [ %147, %143 ]
+  store i32 %150, i32* %63, align 4, !tbaa !3
+  %151 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 2), align 8, !tbaa !3
+  %152 = icmp eq i32 %151, 1
+  br i1 %152, label %161, label %153
+
+153:                                              ; preds = %149
+  %154 = icmp sgt i32 %151, 2
+  br i1 %154, label %155, label %161
+
+155:                                              ; preds = %155, %153
+  %156 = phi i32 [ %159, %155 ], [ 1, %153 ]
+  %157 = phi i32 [ %158, %155 ], [ 2, %153 ]
+  %158 = shl i32 %157, 1
+  %159 = add nuw nsw i32 %156, 1
+  %160 = icmp slt i32 %158, %151
+  br i1 %160, label %155, label %161
+
+161:                                              ; preds = %155, %153, %149
+  %162 = phi i32 [ 0, %149 ], [ 1, %153 ], [ %159, %155 ]
+  store i32 %162, i32* %76, align 4, !tbaa !3
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 5, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32**, [128 x [128 x %struct.dcomplex]]**, i32*, [3 x i32]*, [128 x [128 x %struct.dcomplex]]**)* @.omp_outlined..19 to void (i32*, i32*, ...)*), i32** nonnull %16, [128 x [128 x %struct.dcomplex]]** nonnull %17, i32* nonnull %15, [3 x i32]* nonnull %27, [128 x [128 x %struct.dcomplex]]** nonnull %18) #17
+  br label %297
+
+163:                                              ; preds = %2
+  %164 = bitcast i32* %11 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %164)
+  %165 = bitcast i32** %12 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %165)
+  %166 = bitcast [128 x [128 x %struct.dcomplex]]** %13 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %166)
+  %167 = bitcast [128 x [128 x %struct.dcomplex]]** %14 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %167)
+  store i32 -1, i32* %11, align 4, !tbaa !3
+  store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 0), i32** %12, align 8, !tbaa !7
+  %168 = bitcast i32** %12 to i8*
+  call void @nk_carat_instrument_escapes(i8* %168)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %13, align 8, !tbaa !7
+  %169 = bitcast [128 x [128 x %struct.dcomplex]]** %13 to i8*
+  call void @nk_carat_instrument_escapes(i8* %169)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %14, align 8, !tbaa !7
+  %170 = bitcast [128 x [128 x %struct.dcomplex]]** %14 to i8*
+  call void @nk_carat_instrument_escapes(i8* %170)
+  %171 = bitcast [3 x i32]* %27 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 12, i8* nonnull %171) #17
+  %172 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 0), align 8, !tbaa !3
+  %173 = icmp eq i32 %172, 1
+  br i1 %173, label %182, label %174
+
+174:                                              ; preds = %163
+  %175 = icmp sgt i32 %172, 2
+  br i1 %175, label %176, label %182
+
+176:                                              ; preds = %176, %174
+  %177 = phi i32 [ %180, %176 ], [ 1, %174 ]
+  %178 = phi i32 [ %179, %176 ], [ 2, %174 ]
+  %179 = shl i32 %178, 1
+  %180 = add nuw nsw i32 %177, 1
+  %181 = icmp slt i32 %179, %172
+  br i1 %181, label %176, label %182
+
+182:                                              ; preds = %176, %174, %163
+  %183 = phi i32 [ 0, %163 ], [ 1, %174 ], [ %180, %176 ]
+  %184 = getelementptr inbounds [3 x i32], [3 x i32]* %27, i64 0, i64 0
+  store i32 %183, i32* %184, align 4, !tbaa !3
+  %185 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 1), align 4, !tbaa !3
+  %186 = icmp eq i32 %185, 1
+  br i1 %186, label %195, label %187
+
+187:                                              ; preds = %182
+  %188 = icmp sgt i32 %185, 2
+  br i1 %188, label %189, label %195
+
+189:                                              ; preds = %189, %187
+  %190 = phi i32 [ %193, %189 ], [ 1, %187 ]
+  %191 = phi i32 [ %192, %189 ], [ 2, %187 ]
+  %192 = shl i32 %191, 1
+  %193 = add nuw nsw i32 %190, 1
+  %194 = icmp slt i32 %192, %185
+  br i1 %194, label %189, label %195
+
+195:                                              ; preds = %189, %187, %182
+  %196 = phi i32 [ 0, %182 ], [ 1, %187 ], [ %193, %189 ]
+  %197 = getelementptr inbounds [3 x i32], [3 x i32]* %27, i64 0, i64 1
+  store i32 %196, i32* %197, align 4, !tbaa !3
+  %198 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 2), align 8, !tbaa !3
+  %199 = icmp eq i32 %198, 1
+  br i1 %199, label %208, label %200
+
+200:                                              ; preds = %195
+  %201 = icmp sgt i32 %198, 2
+  br i1 %201, label %202, label %208
+
+202:                                              ; preds = %202, %200
+  %203 = phi i32 [ %206, %202 ], [ 1, %200 ]
+  %204 = phi i32 [ %205, %202 ], [ 2, %200 ]
+  %205 = shl i32 %204, 1
+  %206 = add nuw nsw i32 %203, 1
+  %207 = icmp slt i32 %205, %198
+  br i1 %207, label %202, label %208
+
+208:                                              ; preds = %202, %200, %195
+  %209 = phi i32 [ 0, %195 ], [ 1, %200 ], [ %206, %202 ]
+  %210 = getelementptr inbounds [3 x i32], [3 x i32]* %27, i64 0, i64 2
+  store i32 %209, i32* %210, align 4, !tbaa !3
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 5, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32**, [128 x [128 x %struct.dcomplex]]**, i32*, [3 x i32]*, [128 x [128 x %struct.dcomplex]]**)* @.omp_outlined..19 to void (i32*, i32*, ...)*), i32** nonnull %12, [128 x [128 x %struct.dcomplex]]** nonnull %13, i32* nonnull %11, [3 x i32]* nonnull %27, [128 x [128 x %struct.dcomplex]]** nonnull %14) #17
+  call void @llvm.lifetime.end.p0i8(i64 12, i8* nonnull %171) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %164)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %165)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %166)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %167)
+  %211 = bitcast i32* %7 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %211)
+  %212 = bitcast i32** %8 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %212)
+  %213 = bitcast [128 x [128 x %struct.dcomplex]]** %9 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %213)
+  %214 = bitcast [128 x [128 x %struct.dcomplex]]** %10 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %214)
+  store i32 -1, i32* %7, align 4, !tbaa !3
+  store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 0), i32** %8, align 8, !tbaa !7
+  %215 = bitcast i32** %8 to i8*
+  call void @nk_carat_instrument_escapes(i8* %215)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %9, align 8, !tbaa !7
+  %216 = bitcast [128 x [128 x %struct.dcomplex]]** %9 to i8*
+  call void @nk_carat_instrument_escapes(i8* %216)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %10, align 8, !tbaa !7
+  %217 = bitcast [128 x [128 x %struct.dcomplex]]** %10 to i8*
+  call void @nk_carat_instrument_escapes(i8* %217)
+  call void @llvm.lifetime.start.p0i8(i64 12, i8* nonnull %171) #17
+  %218 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 0), align 4, !tbaa !3
+  %219 = icmp eq i32 %218, 1
+  br i1 %219, label %228, label %220
+
+220:                                              ; preds = %208
+  %221 = icmp sgt i32 %218, 2
+  br i1 %221, label %222, label %228
+
+222:                                              ; preds = %222, %220
+  %223 = phi i32 [ %226, %222 ], [ 1, %220 ]
+  %224 = phi i32 [ %225, %222 ], [ 2, %220 ]
+  %225 = shl i32 %224, 1
+  %226 = add nuw nsw i32 %223, 1
+  %227 = icmp slt i32 %225, %218
+  br i1 %227, label %222, label %228
+
+228:                                              ; preds = %222, %220, %208
+  %229 = phi i32 [ 0, %208 ], [ 1, %220 ], [ %226, %222 ]
+  store i32 %229, i32* %184, align 4, !tbaa !3
+  %230 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 1), align 4, !tbaa !3
+  %231 = icmp eq i32 %230, 1
+  br i1 %231, label %240, label %232
+
+232:                                              ; preds = %228
+  %233 = icmp sgt i32 %230, 2
+  br i1 %233, label %234, label %240
+
+234:                                              ; preds = %234, %232
+  %235 = phi i32 [ %238, %234 ], [ 1, %232 ]
+  %236 = phi i32 [ %237, %234 ], [ 2, %232 ]
+  %237 = shl i32 %236, 1
+  %238 = add nuw nsw i32 %235, 1
+  %239 = icmp slt i32 %237, %230
+  br i1 %239, label %234, label %240
+
+240:                                              ; preds = %234, %232, %228
+  %241 = phi i32 [ 0, %228 ], [ 1, %232 ], [ %238, %234 ]
+  store i32 %241, i32* %197, align 4, !tbaa !3
+  %242 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 2), align 4, !tbaa !3
+  %243 = icmp eq i32 %242, 1
+  br i1 %243, label %252, label %244
+
+244:                                              ; preds = %240
+  %245 = icmp sgt i32 %242, 2
+  br i1 %245, label %246, label %252
+
+246:                                              ; preds = %246, %244
+  %247 = phi i32 [ %250, %246 ], [ 1, %244 ]
+  %248 = phi i32 [ %249, %246 ], [ 2, %244 ]
+  %249 = shl i32 %248, 1
+  %250 = add nuw nsw i32 %247, 1
+  %251 = icmp slt i32 %249, %242
+  br i1 %251, label %246, label %252
+
+252:                                              ; preds = %246, %244, %240
+  %253 = phi i32 [ 0, %240 ], [ 1, %244 ], [ %250, %246 ]
+  store i32 %253, i32* %210, align 4, !tbaa !3
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 5, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32**, [128 x [128 x %struct.dcomplex]]**, i32*, [3 x i32]*, [128 x [128 x %struct.dcomplex]]**)* @.omp_outlined..18 to void (i32*, i32*, ...)*), i32** nonnull %8, [128 x [128 x %struct.dcomplex]]** nonnull %9, i32* nonnull %7, [3 x i32]* nonnull %27, [128 x [128 x %struct.dcomplex]]** nonnull %10) #17
+  call void @llvm.lifetime.end.p0i8(i64 12, i8* nonnull %171) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %211)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %212)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %213)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %214)
+  %254 = bitcast i32* %3 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %254)
+  %255 = bitcast i32** %4 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %255)
+  %256 = bitcast [128 x [128 x %struct.dcomplex]]** %5 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %256)
+  %257 = bitcast [128 x [128 x %struct.dcomplex]]** %6 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %257)
+  store i32 -1, i32* %3, align 4, !tbaa !3
+  store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), i32** %4, align 8, !tbaa !7
+  %258 = bitcast i32** %4 to i8*
+  call void @nk_carat_instrument_escapes(i8* %258)
+  store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %5, align 8, !tbaa !7
+  %259 = bitcast [128 x [128 x %struct.dcomplex]]** %5 to i8*
+  call void @nk_carat_instrument_escapes(i8* %259)
+  store [128 x [128 x %struct.dcomplex]]* %1, [128 x [128 x %struct.dcomplex]]** %6, align 8, !tbaa !7
+  %260 = bitcast [128 x [128 x %struct.dcomplex]]** %6 to i8*
+  call void @nk_carat_instrument_escapes(i8* %260)
+  call void @llvm.lifetime.start.p0i8(i64 12, i8* nonnull %171) #17
+  %261 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), align 16, !tbaa !3
+  %262 = icmp eq i32 %261, 1
+  br i1 %262, label %271, label %263
+
+263:                                              ; preds = %252
+  %264 = icmp sgt i32 %261, 2
+  br i1 %264, label %265, label %271
+
+265:                                              ; preds = %265, %263
+  %266 = phi i32 [ %269, %265 ], [ 1, %263 ]
+  %267 = phi i32 [ %268, %265 ], [ 2, %263 ]
+  %268 = shl i32 %267, 1
+  %269 = add nuw nsw i32 %266, 1
+  %270 = icmp slt i32 %268, %261
+  br i1 %270, label %265, label %271
+
+271:                                              ; preds = %265, %263, %252
+  %272 = phi i32 [ 0, %252 ], [ 1, %263 ], [ %269, %265 ]
+  store i32 %272, i32* %184, align 4, !tbaa !3
+  %273 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 1), align 4, !tbaa !3
+  %274 = icmp eq i32 %273, 1
+  br i1 %274, label %283, label %275
+
+275:                                              ; preds = %271
+  %276 = icmp sgt i32 %273, 2
+  br i1 %276, label %277, label %283
+
+277:                                              ; preds = %277, %275
+  %278 = phi i32 [ %281, %277 ], [ 1, %275 ]
+  %279 = phi i32 [ %280, %277 ], [ 2, %275 ]
+  %280 = shl i32 %279, 1
+  %281 = add nuw nsw i32 %278, 1
+  %282 = icmp slt i32 %280, %273
+  br i1 %282, label %277, label %283
+
+283:                                              ; preds = %277, %275, %271
+  %284 = phi i32 [ 0, %271 ], [ 1, %275 ], [ %281, %277 ]
+  store i32 %284, i32* %197, align 4, !tbaa !3
+  %285 = load i32, i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 2), align 8, !tbaa !3
+  %286 = icmp eq i32 %285, 1
+  br i1 %286, label %295, label %287
+
+287:                                              ; preds = %283
+  %288 = icmp sgt i32 %285, 2
+  br i1 %288, label %289, label %295
+
+289:                                              ; preds = %289, %287
+  %290 = phi i32 [ %293, %289 ], [ 1, %287 ]
+  %291 = phi i32 [ %292, %289 ], [ 2, %287 ]
+  %292 = shl i32 %291, 1
+  %293 = add nuw nsw i32 %290, 1
+  %294 = icmp slt i32 %292, %285
+  br i1 %294, label %289, label %295
+
+295:                                              ; preds = %289, %287, %283
+  %296 = phi i32 [ 0, %283 ], [ 1, %287 ], [ %293, %289 ]
+  store i32 %296, i32* %210, align 4, !tbaa !3
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 5, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32**, [128 x [128 x %struct.dcomplex]]**, i32*, [3 x i32]*, [128 x [128 x %struct.dcomplex]]**)* @.omp_outlined..16 to void (i32*, i32*, ...)*), i32** nonnull %4, [128 x [128 x %struct.dcomplex]]** nonnull %5, i32* nonnull %3, [3 x i32]* nonnull %27, [128 x [128 x %struct.dcomplex]]** nonnull %6) #17
+  br label %297
+
+297:                                              ; preds = %295, %161
+  %298 = phi i8* [ %171, %295 ], [ %37, %161 ]
+  %299 = phi i8* [ %254, %295 ], [ %120, %161 ]
+  %300 = phi i8* [ %255, %295 ], [ %121, %161 ]
+  %301 = phi i8* [ %256, %295 ], [ %122, %161 ]
+  %302 = phi i8* [ %257, %295 ], [ %123, %161 ]
+  call void @llvm.lifetime.end.p0i8(i64 12, i8* nonnull %298) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %299)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %300)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %301)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %302)
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined..11(i32* noalias nocapture readonly, i32* noalias nocapture readnone, i32** nocapture readonly dereferenceable(8), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8), i32* nocapture readonly dereferenceable(4), [128 x [128 x i32]]** nocapture readonly dereferenceable(8)) #4 {
+  %8 = alloca i32, align 4
+  %9 = alloca i32, align 4
+  %10 = alloca i32, align 4
+  %11 = alloca i32, align 4
+  %12 = load i32*, i32** %2, align 8, !tbaa !7
+  %13 = getelementptr inbounds i32, i32* %12, i64 2
+  %14 = load i32, i32* %13, align 4, !tbaa !3
+  %15 = add nsw i32 %14, -1
+  %16 = icmp sgt i32 %14, 0
+  br i1 %16, label %17, label %73
+
+17:                                               ; preds = %7
+  %18 = bitcast i32* %8 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %18) #17
+  store i32 0, i32* %8, align 4, !tbaa !3
+  %19 = bitcast i32* %9 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %19) #17
+  store i32 %15, i32* %9, align 4, !tbaa !3
+  %20 = bitcast i32* %10 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %20) #17
+  store i32 1, i32* %10, align 4, !tbaa !3
+  %21 = bitcast i32* %11 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %21) #17
+  store i32 0, i32* %11, align 4, !tbaa !3
+  %22 = load i32, i32* %0, align 4, !tbaa !3
+  call void @__kmpc_for_static_init_4(%struct.ident_t* nonnull @1, i32 %22, i32 34, i32* nonnull %11, i32* nonnull %8, i32* nonnull %9, i32* nonnull %10, i32 1, i32 1) #17
+  %23 = load i32, i32* %9, align 4, !tbaa !3
+  %24 = icmp sgt i32 %23, %15
+  %25 = select i1 %24, i32 %15, i32 %23
+  store i32 %25, i32* %9, align 4, !tbaa !3
+  %26 = load i32, i32* %8, align 4, !tbaa !3
+  %27 = icmp sgt i32 %26, %25
+  br i1 %27, label %72, label %28
+
+28:                                               ; preds = %17
+  %29 = load i32*, i32** %2, align 8
+  %30 = getelementptr inbounds i32, i32* %29, i64 1
+  %31 = load i32, i32* %30, align 4, !tbaa !3
+  %32 = icmp sgt i32 %31, 0
+  %33 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %4, align 8
+  %34 = load i32, i32* %5, align 4
+  %35 = load [128 x [128 x i32]]*, [128 x [128 x i32]]** %6, align 8
+  %36 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %3, align 8
+  br i1 %32, label %37, label %72
+
+37:                                               ; preds = %28
+  %38 = sext i32 %26 to i64
+  %39 = sext i32 %25 to i64
+  %40 = load i32, i32* %29, align 4, !tbaa !3
+  %41 = sext i32 %31 to i64
+  %42 = icmp sgt i32 %40, 0
+  %43 = sext i32 %40 to i64
+  br label %44
+
+44:                                               ; preds = %69, %37
+  %45 = phi i64 [ %38, %37 ], [ %70, %69 ]
+  br label %67
+
+46:                                               ; preds = %67, %49
+  %47 = add nuw nsw i64 %68, 1
+  %48 = icmp slt i64 %47, %41
+  br i1 %48, label %67, label %69
+
+49:                                               ; preds = %67, %49
+  %50 = phi i64 [ %65, %49 ], [ 0, %67 ]
+  %51 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %33, i64 %45, i64 %68, i64 %50, i32 0
+  %52 = getelementptr inbounds [128 x [128 x i32]], [128 x [128 x i32]]* %35, i64 %45, i64 %68, i64 %50
+  %53 = load i32, i32* %52, align 4, !tbaa !3
+  %54 = mul nsw i32 %53, %34
+  %55 = sext i32 %54 to i64
+  %56 = getelementptr inbounds [50689 x double], [50689 x double]* @ex, i64 0, i64 %55
+  %57 = load double, double* %56, align 8, !tbaa !9
+  %58 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %36, i64 %45, i64 %68, i64 %50, i32 0
+  %59 = bitcast double* %51 to <2 x double>*
+  %60 = load <2 x double>, <2 x double>* %59, align 8, !tbaa !9
+  %61 = insertelement <2 x double> undef, double %57, i32 0
+  %62 = shufflevector <2 x double> %61, <2 x double> undef, <2 x i32> zeroinitializer
+  %63 = fmul <2 x double> %60, %62
+  %64 = bitcast double* %58 to <2 x double>*
+  store <2 x double> %63, <2 x double>* %64, align 8, !tbaa !9
+  %65 = add nuw nsw i64 %50, 1
+  %66 = icmp slt i64 %65, %43
+  br i1 %66, label %49, label %46
+
+67:                                               ; preds = %46, %44
+  %68 = phi i64 [ 0, %44 ], [ %47, %46 ]
+  br i1 %42, label %49, label %46
+
+69:                                               ; preds = %46
+  %70 = add nsw i64 %45, 1
+  %71 = icmp slt i64 %45, %39
+  br i1 %71, label %44, label %72
+
+72:                                               ; preds = %69, %28, %17
+  call void @__kmpc_for_static_fini(%struct.ident_t* nonnull @1, i32 %22) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %21) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %20) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %19) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %18) #17
+  br label %73
+
+73:                                               ; preds = %72, %7
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined..20(i32* noalias nocapture readonly, i32* noalias nocapture readnone, [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8), i32* nocapture readonly dereferenceable(4)) #4 {
+  %5 = alloca i32, align 4
+  %6 = alloca i32, align 4
+  %7 = alloca i32, align 4
+  %8 = alloca i32, align 4
+  %9 = bitcast i32* %5 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %9) #17
+  store i32 0, i32* %5, align 4, !tbaa !3
+  %10 = bitcast i32* %6 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %10) #17
+  store i32 1023, i32* %6, align 4, !tbaa !3
+  %11 = bitcast i32* %7 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %11) #17
+  store i32 1, i32* %7, align 4, !tbaa !3
+  %12 = bitcast i32* %8 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %12) #17
+  store i32 0, i32* %8, align 4, !tbaa !3
+  %13 = load i32, i32* %0, align 4, !tbaa !3
+  call void @__kmpc_for_static_init_4(%struct.ident_t* nonnull @1, i32 %13, i32 34, i32* nonnull %8, i32* nonnull %5, i32* nonnull %6, i32* nonnull %7, i32 1, i32 1) #17
+  %14 = load i32, i32* %6, align 4, !tbaa !3
+  %15 = icmp slt i32 %14, 1023
+  %16 = select i1 %15, i32 %14, i32 1023
+  store i32 %16, i32* %6, align 4, !tbaa !3
+  %17 = load i32, i32* %5, align 4, !tbaa !3
+  %18 = icmp sgt i32 %17, %16
+  br i1 %18, label %70, label %19
+
+19:                                               ; preds = %4
+  %20 = load i1, i1* @xstart.0, align 4
+  %21 = zext i1 %20 to i32
+  %22 = load i1, i1* @xend.0, align 4
+  %23 = select i1 %22, i32 128, i32 0
+  %24 = load i1, i1* @ystart.0, align 4
+  %25 = zext i1 %24 to i32
+  %26 = load i1, i1* @yend.0, align 4
+  %27 = select i1 %26, i32 128, i32 0
+  %28 = load i1, i1* @zstart.0, align 4
+  %29 = zext i1 %28 to i32
+  %30 = load i1, i1* @zend.0, align 4
+  %31 = select i1 %30, i32 32, i32 0
+  %32 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %2, align 8
+  br label %33
+
+33:                                               ; preds = %67, %19
+  %34 = phi i32 [ %17, %19 ], [ %36, %67 ]
+  %35 = phi <2 x double> [ zeroinitializer, %19 ], [ %68, %67 ]
+  %36 = add nsw i32 %34, 1
+  %37 = srem i32 %36, 128
+  %38 = add nsw i32 %37, 1
+  %39 = icmp sge i32 %38, %21
+  %40 = icmp slt i32 %37, %23
+  %41 = and i1 %39, %40
+  br i1 %41, label %42, label %67
+
+42:                                               ; preds = %33
+  %43 = mul nsw i32 %36, 3
+  %44 = srem i32 %43, 128
+  %45 = add nsw i32 %44, 1
+  %46 = icmp sge i32 %45, %25
+  %47 = icmp slt i32 %44, %27
+  %48 = and i1 %46, %47
+  br i1 %48, label %49, label %67
+
+49:                                               ; preds = %42
+  %50 = mul nsw i32 %36, 5
+  %51 = srem i32 %50, 32
+  %52 = add nsw i32 %51, 1
+  %53 = icmp sge i32 %52, %29
+  %54 = icmp slt i32 %51, %31
+  %55 = and i1 %53, %54
+  br i1 %55, label %56, label %67
+
+56:                                               ; preds = %49
+  %57 = sub nsw i32 %52, %29
+  %58 = sext i32 %57 to i64
+  %59 = sub nsw i32 %45, %25
+  %60 = sext i32 %59 to i64
+  %61 = sub nsw i32 %38, %21
+  %62 = sext i32 %61 to i64
+  %63 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %32, i64 %58, i64 %60, i64 %62, i32 0
+  %64 = bitcast double* %63 to <2 x double>*
+  %65 = load <2 x double>, <2 x double>* %64, align 8, !tbaa !9
+  %66 = fadd <2 x double> %35, %65
+  br label %67
+
+67:                                               ; preds = %56, %49, %42, %33
+  %68 = phi <2 x double> [ %66, %56 ], [ %35, %49 ], [ %35, %42 ], [ %35, %33 ]
+  %69 = icmp slt i32 %34, %16
+  br i1 %69, label %33, label %70
+
+70:                                               ; preds = %67, %4
+  %71 = phi <2 x double> [ zeroinitializer, %4 ], [ %68, %67 ]
+  call void @__kmpc_for_static_fini(%struct.ident_t* nonnull @1, i32 %13) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %12) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %11) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %10) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %9) #17
+  call void @__kmpc_critical(%struct.ident_t* nonnull @0, i32 %13, [8 x i32]* nonnull @.gomp_critical_user_.var) #17
+  %72 = load i32, i32* %3, align 4, !tbaa !3
+  %73 = sext i32 %72 to i64
+  %74 = getelementptr inbounds [7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 %73, i32 0
+  %75 = bitcast double* %74 to <2 x double>*
+  %76 = load <2 x double>, <2 x double>* %75, align 16, !tbaa !9
+  %77 = fadd <2 x double> %71, %76
+  %78 = bitcast double* %74 to <2 x double>*
+  store <2 x double> %77, <2 x double>* %78, align 16, !tbaa !9
+  call void @__kmpc_end_critical(%struct.ident_t* nonnull @0, i32 %13, [8 x i32]* nonnull @.gomp_critical_user_.var) #17
+  call void @__kmpc_barrier(%struct.ident_t* nonnull @2, i32 %13) #17
+  %79 = call i32 @__kmpc_single(%struct.ident_t* nonnull @0, i32 %13) #17
+  %80 = icmp eq i32 %79, 0
+  br i1 %80, label %92, label %81
+
+81:                                               ; preds = %70
+  %82 = load i32, i32* %3, align 4, !tbaa !3
+  %83 = sext i32 %82 to i64
+  %84 = getelementptr inbounds [7 x %struct.dcomplex], [7 x %struct.dcomplex]* @sums, i64 0, i64 %83, i32 0
+  %85 = bitcast double* %84 to <2 x double>*
+  %86 = load <2 x double>, <2 x double>* %85, align 16, !tbaa !9
+  %87 = fmul <2 x double> %86, <double 0x3EC0000000000000, double 0x3EC0000000000000>
+  %88 = bitcast double* %84 to <2 x double>*
+  store <2 x double> %87, <2 x double>* %88, align 16, !tbaa !9
+  %89 = extractelement <2 x double> %87, i32 0
+  %90 = extractelement <2 x double> %87, i32 1
+  %91 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([40 x i8], [40 x i8]* @.str.21, i64 0, i64 0), i32 %82, double %89, double %90) #19
+  call void @__kmpc_end_single(%struct.ident_t* nonnull @0, i32 %13) #17
+  br label %92
+
+92:                                               ; preds = %81, %70
+  call void @__kmpc_barrier(%struct.ident_t* nonnull @3, i32 %13) #17
+  ret void
+}
+
+; Function Attrs: nounwind readnone speculatable
+declare double @llvm.fabs.f64(double) #5
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined.(i32* noalias nocapture readonly, i32* noalias nocapture readnone, i32* nocapture dereferenceable(4)) #4 {
+  %4 = load i32, i32* %0, align 4, !tbaa !3
+  %5 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #17
+  %6 = icmp eq i32 %5, 0
+  br i1 %6, label %9, label %7
+
+7:                                                ; preds = %3
+  %8 = tail call i32 @omp_get_num_threads() #18
+  store i32 %8, i32* %2, align 4, !tbaa !3
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #17
+  br label %9
+
+9:                                                ; preds = %7, %3
+  ret void
+}
+
+declare i32 @__kmpc_master(%struct.ident_t*, i32) local_unnamed_addr
+
+; Function Attrs: noredzone
+declare i32 @omp_get_num_threads() local_unnamed_addr #6
+
+declare void @__kmpc_end_master(%struct.ident_t*, i32) local_unnamed_addr
+
+declare void @__kmpc_for_static_init_4(%struct.ident_t*, i32, i32, i32*, i32*, i32*, i32*, i32, i32) local_unnamed_addr
+
+declare void @__kmpc_for_static_fini(%struct.ident_t*, i32) local_unnamed_addr
+
+declare void @__kmpc_critical(%struct.ident_t*, i32, [8 x i32]*) local_unnamed_addr
+
+declare void @__kmpc_end_critical(%struct.ident_t*, i32, [8 x i32]*) local_unnamed_addr
+
+declare void @__kmpc_barrier(%struct.ident_t*, i32) local_unnamed_addr
+
+declare i32 @__kmpc_single(%struct.ident_t*, i32) local_unnamed_addr
+
+declare void @__kmpc_end_single(%struct.ident_t*, i32) local_unnamed_addr
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined..16(i32* noalias nocapture readonly, i32* noalias nocapture readnone, i32** nocapture readonly dereferenceable(8), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8), i32* nocapture readonly dereferenceable(4), [3 x i32]* nocapture readonly dereferenceable(12), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8)) #4 {
+  %8 = alloca [128 x [18 x %struct.dcomplex]], align 16
+  %9 = alloca [128 x [18 x %struct.dcomplex]], align 16
+  %10 = alloca i32, align 4
+  %11 = alloca i32, align 4
+  %12 = alloca i32, align 4
+  %13 = alloca i32, align 4
+  %14 = bitcast [128 x [18 x %struct.dcomplex]]* %8 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 36864, i8* nonnull %14) #17
+  %15 = bitcast [128 x [18 x %struct.dcomplex]]* %9 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 36864, i8* nonnull %15) #17
+  %16 = load i32*, i32** %2, align 8, !tbaa !7
+  %17 = getelementptr inbounds i32, i32* %16, i64 2
+  %18 = load i32, i32* %17, align 4, !tbaa !3
+  %19 = add nsw i32 %18, -1
+  %20 = icmp sgt i32 %18, 0
+  br i1 %20, label %23, label %21
+
+21:                                               ; preds = %7
+  %22 = load i32, i32* %0, align 4, !tbaa !3
+  br label %199
+
+23:                                               ; preds = %7
+  %24 = bitcast i32* %10 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %24) #17
+  store i32 0, i32* %10, align 4, !tbaa !3
+  %25 = bitcast i32* %11 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %25) #17
+  store i32 %19, i32* %11, align 4, !tbaa !3
+  %26 = bitcast i32* %12 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %26) #17
+  store i32 1, i32* %12, align 4, !tbaa !3
+  %27 = bitcast i32* %13 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %27) #17
+  store i32 0, i32* %13, align 4, !tbaa !3
+  %28 = load i32, i32* %0, align 4, !tbaa !3
+  call void @__kmpc_for_static_init_4(%struct.ident_t* nonnull @1, i32 %28, i32 34, i32* nonnull %13, i32* nonnull %10, i32* nonnull %11, i32* nonnull %12, i32 1, i32 1) #17
+  %29 = load i32, i32* %11, align 4, !tbaa !3
+  %30 = icmp sgt i32 %29, %19
+  %31 = select i1 %30, i32 %19, i32 %29
+  store i32 %31, i32* %11, align 4, !tbaa !3
+  %32 = load i32, i32* %10, align 4, !tbaa !3
+  %33 = icmp sgt i32 %32, %31
+  br i1 %33, label %198, label %34
+
+34:                                               ; preds = %23
+  %35 = getelementptr inbounds [3 x i32], [3 x i32]* %5, i64 0, i64 0
+  %36 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 0
+  %37 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %9, i64 0, i64 0
+  %38 = sext i32 %32 to i64
+  %39 = load i32*, i32** %2, align 8, !tbaa !7
+  %40 = load i32, i32* @fftblock, align 4, !tbaa !3
+  br label %41
+
+41:                                               ; preds = %191, %34
+  %42 = phi i32 [ %192, %191 ], [ %31, %34 ]
+  %43 = phi i32 [ %193, %191 ], [ %40, %34 ]
+  %44 = phi i32* [ %194, %191 ], [ %39, %34 ]
+  %45 = phi i64 [ %195, %191 ], [ %38, %34 ]
+  %46 = getelementptr inbounds i32, i32* %44, i64 1
+  %47 = load i32, i32* %46, align 4, !tbaa !3
+  %48 = icmp slt i32 %47, %43
+  br i1 %48, label %191, label %49
+
+49:                                               ; preds = %182, %41
+  %50 = phi i32 [ %118, %182 ], [ %43, %41 ]
+  %51 = phi i32* [ %184, %182 ], [ %44, %41 ]
+  %52 = phi i32 [ %183, %182 ], [ 0, %41 ]
+  %53 = icmp sgt i32 %50, 0
+  %54 = load i32, i32* %51, align 4, !tbaa !3
+  br i1 %53, label %55, label %115
+
+55:                                               ; preds = %49
+  %56 = icmp sgt i32 %54, 0
+  %57 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %3, align 8
+  br i1 %56, label %58, label %115
+
+58:                                               ; preds = %55
+  %59 = sext i32 %52 to i64
+  %60 = zext i32 %50 to i64
+  %61 = sext i32 %54 to i64
+  %62 = add nsw i64 %61, -1
+  %63 = and i64 %61, 3
+  %64 = icmp ult i64 %62, 3
+  %65 = sub nsw i64 %61, %63
+  %66 = icmp eq i64 %63, 0
+  br label %67
+
+67:                                               ; preds = %112, %58
+  %68 = phi i64 [ 0, %58 ], [ %113, %112 ]
+  %69 = add nsw i64 %68, %59
+  br i1 %64, label %99, label %70
+
+70:                                               ; preds = %70, %67
+  %71 = phi i64 [ %96, %70 ], [ 0, %67 ]
+  %72 = phi i64 [ %97, %70 ], [ %65, %67 ]
+  %73 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %57, i64 %45, i64 %69, i64 %71, i32 0
+  %74 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %71, i64 %68
+  %75 = bitcast double* %73 to <2 x i64>*
+  %76 = load <2 x i64>, <2 x i64>* %75, align 8, !tbaa !9
+  %77 = bitcast %struct.dcomplex* %74 to <2 x i64>*
+  store <2 x i64> %76, <2 x i64>* %77, align 16, !tbaa !9
+  %78 = or i64 %71, 1
+  %79 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %57, i64 %45, i64 %69, i64 %78, i32 0
+  %80 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %78, i64 %68
+  %81 = bitcast double* %79 to <2 x i64>*
+  %82 = load <2 x i64>, <2 x i64>* %81, align 8, !tbaa !9
+  %83 = bitcast %struct.dcomplex* %80 to <2 x i64>*
+  store <2 x i64> %82, <2 x i64>* %83, align 16, !tbaa !9
+  %84 = or i64 %71, 2
+  %85 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %57, i64 %45, i64 %69, i64 %84, i32 0
+  %86 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %84, i64 %68
+  %87 = bitcast double* %85 to <2 x i64>*
+  %88 = load <2 x i64>, <2 x i64>* %87, align 8, !tbaa !9
+  %89 = bitcast %struct.dcomplex* %86 to <2 x i64>*
+  store <2 x i64> %88, <2 x i64>* %89, align 16, !tbaa !9
+  %90 = or i64 %71, 3
+  %91 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %57, i64 %45, i64 %69, i64 %90, i32 0
+  %92 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %90, i64 %68
+  %93 = bitcast double* %91 to <2 x i64>*
+  %94 = load <2 x i64>, <2 x i64>* %93, align 8, !tbaa !9
+  %95 = bitcast %struct.dcomplex* %92 to <2 x i64>*
+  store <2 x i64> %94, <2 x i64>* %95, align 16, !tbaa !9
+  %96 = add nuw nsw i64 %71, 4
+  %97 = add i64 %72, -4
+  %98 = icmp eq i64 %97, 0
+  br i1 %98, label %99, label %70
+
+99:                                               ; preds = %70, %67
+  %100 = phi i64 [ 0, %67 ], [ %96, %70 ]
+  br i1 %66, label %112, label %101
+
+101:                                              ; preds = %101, %99
+  %102 = phi i64 [ %109, %101 ], [ %100, %99 ]
+  %103 = phi i64 [ %110, %101 ], [ %63, %99 ]
+  %104 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %57, i64 %45, i64 %69, i64 %102, i32 0
+  %105 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %102, i64 %68
+  %106 = bitcast double* %104 to <2 x i64>*
+  %107 = load <2 x i64>, <2 x i64>* %106, align 8, !tbaa !9
+  %108 = bitcast %struct.dcomplex* %105 to <2 x i64>*
+  store <2 x i64> %107, <2 x i64>* %108, align 16, !tbaa !9
+  %109 = add nuw nsw i64 %102, 1
+  %110 = add i64 %103, -1
+  %111 = icmp eq i64 %110, 0
+  br i1 %111, label %112, label %101, !llvm.loop !16
+
+112:                                              ; preds = %101, %99
+  %113 = add nuw nsw i64 %68, 1
+  %114 = icmp eq i64 %113, %60
+  br i1 %114, label %115, label %67
+
+115:                                              ; preds = %112, %55, %49
+  %116 = load i32, i32* %4, align 4, !tbaa !3
+  %117 = load i32, i32* %35, align 4, !tbaa !3
+  call fastcc void @cfftz(i32 %116, i32 %117, i32 %54, [18 x %struct.dcomplex]* nonnull %36, [18 x %struct.dcomplex]* nonnull %37) #19
+  %118 = load i32, i32* @fftblock, align 4, !tbaa !3
+  %119 = icmp sgt i32 %118, 0
+  br i1 %119, label %120, label %182
+
+120:                                              ; preds = %115
+  %121 = load i32*, i32** %2, align 8
+  %122 = load i32, i32* %121, align 4, !tbaa !3
+  %123 = icmp sgt i32 %122, 0
+  %124 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %6, align 8
+  br i1 %123, label %125, label %182
+
+125:                                              ; preds = %120
+  %126 = sext i32 %52 to i64
+  %127 = sext i32 %118 to i64
+  %128 = sext i32 %122 to i64
+  %129 = add nsw i64 %128, -1
+  %130 = and i64 %128, 3
+  %131 = icmp ult i64 %129, 3
+  %132 = sub nsw i64 %128, %130
+  %133 = icmp eq i64 %130, 0
+  br label %134
+
+134:                                              ; preds = %179, %125
+  %135 = phi i64 [ 0, %125 ], [ %180, %179 ]
+  %136 = add nsw i64 %135, %126
+  br i1 %131, label %166, label %137
+
+137:                                              ; preds = %137, %134
+  %138 = phi i64 [ %163, %137 ], [ 0, %134 ]
+  %139 = phi i64 [ %164, %137 ], [ %132, %134 ]
+  %140 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %138, i64 %135
+  %141 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %124, i64 %45, i64 %136, i64 %138
+  %142 = bitcast %struct.dcomplex* %140 to <2 x i64>*
+  %143 = load <2 x i64>, <2 x i64>* %142, align 16, !tbaa !9
+  %144 = bitcast %struct.dcomplex* %141 to <2 x i64>*
+  store <2 x i64> %143, <2 x i64>* %144, align 8, !tbaa !9
+  %145 = or i64 %138, 1
+  %146 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %145, i64 %135
+  %147 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %124, i64 %45, i64 %136, i64 %145
+  %148 = bitcast %struct.dcomplex* %146 to <2 x i64>*
+  %149 = load <2 x i64>, <2 x i64>* %148, align 16, !tbaa !9
+  %150 = bitcast %struct.dcomplex* %147 to <2 x i64>*
+  store <2 x i64> %149, <2 x i64>* %150, align 8, !tbaa !9
+  %151 = or i64 %138, 2
+  %152 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %151, i64 %135
+  %153 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %124, i64 %45, i64 %136, i64 %151
+  %154 = bitcast %struct.dcomplex* %152 to <2 x i64>*
+  %155 = load <2 x i64>, <2 x i64>* %154, align 16, !tbaa !9
+  %156 = bitcast %struct.dcomplex* %153 to <2 x i64>*
+  store <2 x i64> %155, <2 x i64>* %156, align 8, !tbaa !9
+  %157 = or i64 %138, 3
+  %158 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %157, i64 %135
+  %159 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %124, i64 %45, i64 %136, i64 %157
+  %160 = bitcast %struct.dcomplex* %158 to <2 x i64>*
+  %161 = load <2 x i64>, <2 x i64>* %160, align 16, !tbaa !9
+  %162 = bitcast %struct.dcomplex* %159 to <2 x i64>*
+  store <2 x i64> %161, <2 x i64>* %162, align 8, !tbaa !9
+  %163 = add nuw nsw i64 %138, 4
+  %164 = add i64 %139, -4
+  %165 = icmp eq i64 %164, 0
+  br i1 %165, label %166, label %137
+
+166:                                              ; preds = %137, %134
+  %167 = phi i64 [ 0, %134 ], [ %163, %137 ]
+  br i1 %133, label %179, label %168
+
+168:                                              ; preds = %168, %166
+  %169 = phi i64 [ %176, %168 ], [ %167, %166 ]
+  %170 = phi i64 [ %177, %168 ], [ %130, %166 ]
+  %171 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %169, i64 %135
+  %172 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %124, i64 %45, i64 %136, i64 %169
+  %173 = bitcast %struct.dcomplex* %171 to <2 x i64>*
+  %174 = load <2 x i64>, <2 x i64>* %173, align 16, !tbaa !9
+  %175 = bitcast %struct.dcomplex* %172 to <2 x i64>*
+  store <2 x i64> %174, <2 x i64>* %175, align 8, !tbaa !9
+  %176 = add nuw nsw i64 %169, 1
+  %177 = add i64 %170, -1
+  %178 = icmp eq i64 %177, 0
+  br i1 %178, label %179, label %168, !llvm.loop !18
+
+179:                                              ; preds = %168, %166
+  %180 = add nuw nsw i64 %135, 1
+  %181 = icmp slt i64 %180, %127
+  br i1 %181, label %134, label %182
+
+182:                                              ; preds = %179, %120, %115
+  %183 = add nsw i32 %118, %52
+  %184 = load i32*, i32** %2, align 8, !tbaa !7
+  %185 = getelementptr inbounds i32, i32* %184, i64 1
+  %186 = load i32, i32* %185, align 4, !tbaa !3
+  %187 = sub nsw i32 %186, %118
+  %188 = icmp sgt i32 %183, %187
+  br i1 %188, label %189, label %49
+
+189:                                              ; preds = %182
+  %190 = load i32, i32* %11, align 4, !tbaa !3
+  br label %191
+
+191:                                              ; preds = %189, %41
+  %192 = phi i32 [ %190, %189 ], [ %42, %41 ]
+  %193 = phi i32 [ %118, %189 ], [ %43, %41 ]
+  %194 = phi i32* [ %184, %189 ], [ %44, %41 ]
+  %195 = add nsw i64 %45, 1
+  %196 = sext i32 %192 to i64
+  %197 = icmp slt i64 %45, %196
+  br i1 %197, label %41, label %198
+
+198:                                              ; preds = %191, %23
+  call void @__kmpc_for_static_fini(%struct.ident_t* nonnull @1, i32 %28) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %27) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %26) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %25) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %24) #17
+  br label %199
+
+199:                                              ; preds = %198, %21
+  %200 = phi i32 [ %22, %21 ], [ %28, %198 ]
+  call void @__kmpc_barrier(%struct.ident_t* nonnull @4, i32 %200) #17
+  call void @llvm.lifetime.end.p0i8(i64 36864, i8* nonnull %15) #17
+  call void @llvm.lifetime.end.p0i8(i64 36864, i8* nonnull %14) #17
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined..18(i32* noalias nocapture readonly, i32* noalias nocapture readnone, i32** nocapture readonly dereferenceable(8), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8), i32* nocapture readonly dereferenceable(4), [3 x i32]* nocapture readonly dereferenceable(12), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8)) #4 {
+  %8 = alloca [128 x [18 x %struct.dcomplex]], align 16
+  %9 = alloca [128 x [18 x %struct.dcomplex]], align 16
+  %10 = alloca i32, align 4
+  %11 = alloca i32, align 4
+  %12 = alloca i32, align 4
+  %13 = alloca i32, align 4
+  %14 = bitcast [128 x [18 x %struct.dcomplex]]* %8 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 36864, i8* nonnull %14) #17
+  %15 = bitcast [128 x [18 x %struct.dcomplex]]* %9 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 36864, i8* nonnull %15) #17
+  %16 = load i32*, i32** %2, align 8, !tbaa !7
+  %17 = getelementptr inbounds i32, i32* %16, i64 2
+  %18 = load i32, i32* %17, align 4, !tbaa !3
+  %19 = add nsw i32 %18, -1
+  %20 = icmp sgt i32 %18, 0
+  br i1 %20, label %23, label %21
+
+21:                                               ; preds = %7
+  %22 = load i32, i32* %0, align 4, !tbaa !3
+  br label %210
+
+23:                                               ; preds = %7
+  %24 = bitcast i32* %10 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %24) #17
+  store i32 0, i32* %10, align 4, !tbaa !3
+  %25 = bitcast i32* %11 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %25) #17
+  store i32 %19, i32* %11, align 4, !tbaa !3
+  %26 = bitcast i32* %12 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %26) #17
+  store i32 1, i32* %12, align 4, !tbaa !3
+  %27 = bitcast i32* %13 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %27) #17
+  store i32 0, i32* %13, align 4, !tbaa !3
+  %28 = load i32, i32* %0, align 4, !tbaa !3
+  call void @__kmpc_for_static_init_4(%struct.ident_t* nonnull @1, i32 %28, i32 34, i32* nonnull %13, i32* nonnull %10, i32* nonnull %11, i32* nonnull %12, i32 1, i32 1) #17
+  %29 = load i32, i32* %11, align 4, !tbaa !3
+  %30 = icmp sgt i32 %29, %19
+  %31 = select i1 %30, i32 %19, i32 %29
+  store i32 %31, i32* %11, align 4, !tbaa !3
+  %32 = load i32, i32* %10, align 4, !tbaa !3
+  %33 = icmp sgt i32 %32, %31
+  br i1 %33, label %209, label %34
+
+34:                                               ; preds = %23
+  %35 = getelementptr inbounds [3 x i32], [3 x i32]* %5, i64 0, i64 1
+  %36 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 0
+  %37 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %9, i64 0, i64 0
+  %38 = sext i32 %32 to i64
+  %39 = load i32*, i32** %2, align 8, !tbaa !7
+  %40 = load i32, i32* %39, align 4, !tbaa !3
+  %41 = load i32, i32* @fftblock, align 4, !tbaa !3
+  br label %42
+
+42:                                               ; preds = %201, %34
+  %43 = phi i32 [ %202, %201 ], [ %31, %34 ]
+  %44 = phi i32 [ %203, %201 ], [ %41, %34 ]
+  %45 = phi i32 [ %204, %201 ], [ %40, %34 ]
+  %46 = phi i32* [ %205, %201 ], [ %39, %34 ]
+  %47 = phi i64 [ %206, %201 ], [ %38, %34 ]
+  %48 = icmp slt i32 %45, %44
+  br i1 %48, label %201, label %49
+
+49:                                               ; preds = %42
+  %50 = getelementptr inbounds i32, i32* %46, i64 1
+  %51 = load i32, i32* %50, align 4, !tbaa !3
+  br label %52
+
+52:                                               ; preds = %193, %49
+  %53 = phi i32 [ %51, %49 ], [ %126, %193 ]
+  %54 = phi i32 [ %44, %49 ], [ %194, %193 ]
+  %55 = phi i32 [ 0, %49 ], [ %195, %193 ]
+  %56 = icmp sgt i32 %53, 0
+  br i1 %56, label %57, label %121
+
+57:                                               ; preds = %52
+  %58 = icmp sgt i32 %54, 0
+  %59 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %3, align 8
+  br i1 %58, label %60, label %121
+
+60:                                               ; preds = %57
+  %61 = sext i32 %55 to i64
+  %62 = sext i32 %53 to i64
+  %63 = zext i32 %54 to i64
+  %64 = add nsw i64 %63, -1
+  %65 = and i64 %63, 3
+  %66 = icmp ult i64 %64, 3
+  %67 = sub nsw i64 %63, %65
+  %68 = icmp eq i64 %65, 0
+  br label %69
+
+69:                                               ; preds = %118, %60
+  %70 = phi i64 [ 0, %60 ], [ %119, %118 ]
+  br i1 %66, label %104, label %71
+
+71:                                               ; preds = %71, %69
+  %72 = phi i64 [ %101, %71 ], [ 0, %69 ]
+  %73 = phi i64 [ %102, %71 ], [ %67, %69 ]
+  %74 = add nsw i64 %72, %61
+  %75 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %47, i64 %70, i64 %74, i32 0
+  %76 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %72
+  %77 = bitcast double* %75 to <2 x i64>*
+  %78 = load <2 x i64>, <2 x i64>* %77, align 8, !tbaa !9
+  %79 = bitcast %struct.dcomplex* %76 to <2 x i64>*
+  store <2 x i64> %78, <2 x i64>* %79, align 16, !tbaa !9
+  %80 = or i64 %72, 1
+  %81 = add nsw i64 %80, %61
+  %82 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %47, i64 %70, i64 %81, i32 0
+  %83 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %80
+  %84 = bitcast double* %82 to <2 x i64>*
+  %85 = load <2 x i64>, <2 x i64>* %84, align 8, !tbaa !9
+  %86 = bitcast %struct.dcomplex* %83 to <2 x i64>*
+  store <2 x i64> %85, <2 x i64>* %86, align 16, !tbaa !9
+  %87 = or i64 %72, 2
+  %88 = add nsw i64 %87, %61
+  %89 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %47, i64 %70, i64 %88, i32 0
+  %90 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %87
+  %91 = bitcast double* %89 to <2 x i64>*
+  %92 = load <2 x i64>, <2 x i64>* %91, align 8, !tbaa !9
+  %93 = bitcast %struct.dcomplex* %90 to <2 x i64>*
+  store <2 x i64> %92, <2 x i64>* %93, align 16, !tbaa !9
+  %94 = or i64 %72, 3
+  %95 = add nsw i64 %94, %61
+  %96 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %47, i64 %70, i64 %95, i32 0
+  %97 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %94
+  %98 = bitcast double* %96 to <2 x i64>*
+  %99 = load <2 x i64>, <2 x i64>* %98, align 8, !tbaa !9
+  %100 = bitcast %struct.dcomplex* %97 to <2 x i64>*
+  store <2 x i64> %99, <2 x i64>* %100, align 16, !tbaa !9
+  %101 = add nuw nsw i64 %72, 4
+  %102 = add i64 %73, -4
+  %103 = icmp eq i64 %102, 0
+  br i1 %103, label %104, label %71
+
+104:                                              ; preds = %71, %69
+  %105 = phi i64 [ 0, %69 ], [ %101, %71 ]
+  br i1 %68, label %118, label %106
+
+106:                                              ; preds = %106, %104
+  %107 = phi i64 [ %115, %106 ], [ %105, %104 ]
+  %108 = phi i64 [ %116, %106 ], [ %65, %104 ]
+  %109 = add nsw i64 %107, %61
+  %110 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %47, i64 %70, i64 %109, i32 0
+  %111 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %107
+  %112 = bitcast double* %110 to <2 x i64>*
+  %113 = load <2 x i64>, <2 x i64>* %112, align 8, !tbaa !9
+  %114 = bitcast %struct.dcomplex* %111 to <2 x i64>*
+  store <2 x i64> %113, <2 x i64>* %114, align 16, !tbaa !9
+  %115 = add nuw nsw i64 %107, 1
+  %116 = add i64 %108, -1
+  %117 = icmp eq i64 %116, 0
+  br i1 %117, label %118, label %106, !llvm.loop !19
+
+118:                                              ; preds = %106, %104
+  %119 = add nuw nsw i64 %70, 1
+  %120 = icmp slt i64 %119, %62
+  br i1 %120, label %69, label %121
+
+121:                                              ; preds = %118, %57, %52
+  %122 = load i32, i32* %4, align 4, !tbaa !3
+  %123 = load i32, i32* %35, align 4, !tbaa !3
+  call fastcc void @cfftz(i32 %122, i32 %123, i32 %53, [18 x %struct.dcomplex]* nonnull %36, [18 x %struct.dcomplex]* nonnull %37) #19
+  %124 = load i32*, i32** %2, align 8, !tbaa !7
+  %125 = getelementptr inbounds i32, i32* %124, i64 1
+  %126 = load i32, i32* %125, align 4, !tbaa !3
+  %127 = icmp sgt i32 %126, 0
+  br i1 %127, label %128, label %193
+
+128:                                              ; preds = %121
+  %129 = load i32, i32* @fftblock, align 4
+  %130 = icmp sgt i32 %129, 0
+  %131 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %6, align 8
+  br i1 %130, label %132, label %193
+
+132:                                              ; preds = %128
+  %133 = sext i32 %55 to i64
+  %134 = sext i32 %126 to i64
+  %135 = zext i32 %129 to i64
+  %136 = add nsw i64 %135, -1
+  %137 = and i64 %135, 3
+  %138 = icmp ult i64 %136, 3
+  %139 = sub nsw i64 %135, %137
+  %140 = icmp eq i64 %137, 0
+  br label %141
+
+141:                                              ; preds = %190, %132
+  %142 = phi i64 [ 0, %132 ], [ %191, %190 ]
+  br i1 %138, label %176, label %143
+
+143:                                              ; preds = %143, %141
+  %144 = phi i64 [ %173, %143 ], [ 0, %141 ]
+  %145 = phi i64 [ %174, %143 ], [ %139, %141 ]
+  %146 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %144
+  %147 = add nsw i64 %144, %133
+  %148 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %47, i64 %142, i64 %147
+  %149 = bitcast %struct.dcomplex* %146 to <2 x i64>*
+  %150 = load <2 x i64>, <2 x i64>* %149, align 16, !tbaa !9
+  %151 = bitcast %struct.dcomplex* %148 to <2 x i64>*
+  store <2 x i64> %150, <2 x i64>* %151, align 8, !tbaa !9
+  %152 = or i64 %144, 1
+  %153 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %152
+  %154 = add nsw i64 %152, %133
+  %155 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %47, i64 %142, i64 %154
+  %156 = bitcast %struct.dcomplex* %153 to <2 x i64>*
+  %157 = load <2 x i64>, <2 x i64>* %156, align 16, !tbaa !9
+  %158 = bitcast %struct.dcomplex* %155 to <2 x i64>*
+  store <2 x i64> %157, <2 x i64>* %158, align 8, !tbaa !9
+  %159 = or i64 %144, 2
+  %160 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %159
+  %161 = add nsw i64 %159, %133
+  %162 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %47, i64 %142, i64 %161
+  %163 = bitcast %struct.dcomplex* %160 to <2 x i64>*
+  %164 = load <2 x i64>, <2 x i64>* %163, align 16, !tbaa !9
+  %165 = bitcast %struct.dcomplex* %162 to <2 x i64>*
+  store <2 x i64> %164, <2 x i64>* %165, align 8, !tbaa !9
+  %166 = or i64 %144, 3
+  %167 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %166
+  %168 = add nsw i64 %166, %133
+  %169 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %47, i64 %142, i64 %168
+  %170 = bitcast %struct.dcomplex* %167 to <2 x i64>*
+  %171 = load <2 x i64>, <2 x i64>* %170, align 16, !tbaa !9
+  %172 = bitcast %struct.dcomplex* %169 to <2 x i64>*
+  store <2 x i64> %171, <2 x i64>* %172, align 8, !tbaa !9
+  %173 = add nuw nsw i64 %144, 4
+  %174 = add i64 %145, -4
+  %175 = icmp eq i64 %174, 0
+  br i1 %175, label %176, label %143
+
+176:                                              ; preds = %143, %141
+  %177 = phi i64 [ 0, %141 ], [ %173, %143 ]
+  br i1 %140, label %190, label %178
+
+178:                                              ; preds = %178, %176
+  %179 = phi i64 [ %187, %178 ], [ %177, %176 ]
+  %180 = phi i64 [ %188, %178 ], [ %137, %176 ]
+  %181 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %179
+  %182 = add nsw i64 %179, %133
+  %183 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %47, i64 %142, i64 %182
+  %184 = bitcast %struct.dcomplex* %181 to <2 x i64>*
+  %185 = load <2 x i64>, <2 x i64>* %184, align 16, !tbaa !9
+  %186 = bitcast %struct.dcomplex* %183 to <2 x i64>*
+  store <2 x i64> %185, <2 x i64>* %186, align 8, !tbaa !9
+  %187 = add nuw nsw i64 %179, 1
+  %188 = add i64 %180, -1
+  %189 = icmp eq i64 %188, 0
+  br i1 %189, label %190, label %178, !llvm.loop !20
+
+190:                                              ; preds = %178, %176
+  %191 = add nuw nsw i64 %142, 1
+  %192 = icmp slt i64 %191, %134
+  br i1 %192, label %141, label %193
+
+193:                                              ; preds = %190, %128, %121
+  %194 = load i32, i32* @fftblock, align 4, !tbaa !3
+  %195 = add nsw i32 %194, %55
+  %196 = load i32, i32* %124, align 4, !tbaa !3
+  %197 = sub nsw i32 %196, %194
+  %198 = icmp sgt i32 %195, %197
+  br i1 %198, label %199, label %52
+
+199:                                              ; preds = %193
+  %200 = load i32, i32* %11, align 4, !tbaa !3
+  br label %201
+
+201:                                              ; preds = %199, %42
+  %202 = phi i32 [ %200, %199 ], [ %43, %42 ]
+  %203 = phi i32 [ %194, %199 ], [ %44, %42 ]
+  %204 = phi i32 [ %196, %199 ], [ %45, %42 ]
+  %205 = phi i32* [ %124, %199 ], [ %46, %42 ]
+  %206 = add nsw i64 %47, 1
+  %207 = sext i32 %202 to i64
+  %208 = icmp slt i64 %47, %207
+  br i1 %208, label %42, label %209
+
+209:                                              ; preds = %201, %23
+  call void @__kmpc_for_static_fini(%struct.ident_t* nonnull @1, i32 %28) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %27) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %26) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %25) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %24) #17
+  br label %210
+
+210:                                              ; preds = %209, %21
+  %211 = phi i32 [ %22, %21 ], [ %28, %209 ]
+  call void @__kmpc_barrier(%struct.ident_t* nonnull @4, i32 %211) #17
+  call void @llvm.lifetime.end.p0i8(i64 36864, i8* nonnull %15) #17
+  call void @llvm.lifetime.end.p0i8(i64 36864, i8* nonnull %14) #17
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined..19(i32* noalias nocapture readonly, i32* noalias nocapture readnone, i32** nocapture readonly dereferenceable(8), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8), i32* nocapture readonly dereferenceable(4), [3 x i32]* nocapture readonly dereferenceable(12), [128 x [128 x %struct.dcomplex]]** nocapture readonly dereferenceable(8)) #4 {
+  %8 = alloca [128 x [18 x %struct.dcomplex]], align 16
+  %9 = alloca [128 x [18 x %struct.dcomplex]], align 16
+  %10 = alloca i32, align 4
+  %11 = alloca i32, align 4
+  %12 = alloca i32, align 4
+  %13 = alloca i32, align 4
+  %14 = bitcast [128 x [18 x %struct.dcomplex]]* %8 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 36864, i8* nonnull %14) #17
+  %15 = bitcast [128 x [18 x %struct.dcomplex]]* %9 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 36864, i8* nonnull %15) #17
+  %16 = load i32*, i32** %2, align 8, !tbaa !7
+  %17 = getelementptr inbounds i32, i32* %16, i64 1
+  %18 = load i32, i32* %17, align 4, !tbaa !3
+  %19 = add nsw i32 %18, -1
+  %20 = icmp sgt i32 %18, 0
+  br i1 %20, label %23, label %21
+
+21:                                               ; preds = %7
+  %22 = load i32, i32* %0, align 4, !tbaa !3
+  br label %210
+
+23:                                               ; preds = %7
+  %24 = bitcast i32* %10 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %24) #17
+  store i32 0, i32* %10, align 4, !tbaa !3
+  %25 = bitcast i32* %11 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %25) #17
+  store i32 %19, i32* %11, align 4, !tbaa !3
+  %26 = bitcast i32* %12 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %26) #17
+  store i32 1, i32* %12, align 4, !tbaa !3
+  %27 = bitcast i32* %13 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %27) #17
+  store i32 0, i32* %13, align 4, !tbaa !3
+  %28 = load i32, i32* %0, align 4, !tbaa !3
+  call void @__kmpc_for_static_init_4(%struct.ident_t* nonnull @1, i32 %28, i32 34, i32* nonnull %13, i32* nonnull %10, i32* nonnull %11, i32* nonnull %12, i32 1, i32 1) #17
+  %29 = load i32, i32* %11, align 4, !tbaa !3
+  %30 = icmp sgt i32 %29, %19
+  %31 = select i1 %30, i32 %19, i32 %29
+  store i32 %31, i32* %11, align 4, !tbaa !3
+  %32 = load i32, i32* %10, align 4, !tbaa !3
+  %33 = icmp sgt i32 %32, %31
+  br i1 %33, label %209, label %34
+
+34:                                               ; preds = %23
+  %35 = getelementptr inbounds [3 x i32], [3 x i32]* %5, i64 0, i64 2
+  %36 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 0
+  %37 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %9, i64 0, i64 0
+  %38 = sext i32 %32 to i64
+  %39 = load i32*, i32** %2, align 8, !tbaa !7
+  %40 = load i32, i32* %39, align 4, !tbaa !3
+  %41 = load i32, i32* @fftblock, align 4, !tbaa !3
+  br label %42
+
+42:                                               ; preds = %201, %34
+  %43 = phi i32 [ %202, %201 ], [ %31, %34 ]
+  %44 = phi i32 [ %203, %201 ], [ %41, %34 ]
+  %45 = phi i32 [ %204, %201 ], [ %40, %34 ]
+  %46 = phi i32* [ %205, %201 ], [ %39, %34 ]
+  %47 = phi i64 [ %206, %201 ], [ %38, %34 ]
+  %48 = icmp slt i32 %45, %44
+  br i1 %48, label %201, label %49
+
+49:                                               ; preds = %42
+  %50 = getelementptr inbounds i32, i32* %46, i64 2
+  %51 = load i32, i32* %50, align 4, !tbaa !3
+  br label %52
+
+52:                                               ; preds = %193, %49
+  %53 = phi i32 [ %51, %49 ], [ %126, %193 ]
+  %54 = phi i32 [ %44, %49 ], [ %194, %193 ]
+  %55 = phi i32 [ 0, %49 ], [ %195, %193 ]
+  %56 = icmp sgt i32 %53, 0
+  br i1 %56, label %57, label %121
+
+57:                                               ; preds = %52
+  %58 = icmp sgt i32 %54, 0
+  %59 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %3, align 8
+  br i1 %58, label %60, label %121
+
+60:                                               ; preds = %57
+  %61 = sext i32 %55 to i64
+  %62 = sext i32 %53 to i64
+  %63 = zext i32 %54 to i64
+  %64 = add nsw i64 %63, -1
+  %65 = and i64 %63, 3
+  %66 = icmp ult i64 %64, 3
+  %67 = sub nsw i64 %63, %65
+  %68 = icmp eq i64 %65, 0
+  br label %69
+
+69:                                               ; preds = %118, %60
+  %70 = phi i64 [ 0, %60 ], [ %119, %118 ]
+  br i1 %66, label %104, label %71
+
+71:                                               ; preds = %71, %69
+  %72 = phi i64 [ %101, %71 ], [ 0, %69 ]
+  %73 = phi i64 [ %102, %71 ], [ %67, %69 ]
+  %74 = add nsw i64 %72, %61
+  %75 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %70, i64 %47, i64 %74, i32 0
+  %76 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %72
+  %77 = bitcast double* %75 to <2 x i64>*
+  %78 = load <2 x i64>, <2 x i64>* %77, align 8, !tbaa !9
+  %79 = bitcast %struct.dcomplex* %76 to <2 x i64>*
+  store <2 x i64> %78, <2 x i64>* %79, align 16, !tbaa !9
+  %80 = or i64 %72, 1
+  %81 = add nsw i64 %80, %61
+  %82 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %70, i64 %47, i64 %81, i32 0
+  %83 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %80
+  %84 = bitcast double* %82 to <2 x i64>*
+  %85 = load <2 x i64>, <2 x i64>* %84, align 8, !tbaa !9
+  %86 = bitcast %struct.dcomplex* %83 to <2 x i64>*
+  store <2 x i64> %85, <2 x i64>* %86, align 16, !tbaa !9
+  %87 = or i64 %72, 2
+  %88 = add nsw i64 %87, %61
+  %89 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %70, i64 %47, i64 %88, i32 0
+  %90 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %87
+  %91 = bitcast double* %89 to <2 x i64>*
+  %92 = load <2 x i64>, <2 x i64>* %91, align 8, !tbaa !9
+  %93 = bitcast %struct.dcomplex* %90 to <2 x i64>*
+  store <2 x i64> %92, <2 x i64>* %93, align 16, !tbaa !9
+  %94 = or i64 %72, 3
+  %95 = add nsw i64 %94, %61
+  %96 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %70, i64 %47, i64 %95, i32 0
+  %97 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %94
+  %98 = bitcast double* %96 to <2 x i64>*
+  %99 = load <2 x i64>, <2 x i64>* %98, align 8, !tbaa !9
+  %100 = bitcast %struct.dcomplex* %97 to <2 x i64>*
+  store <2 x i64> %99, <2 x i64>* %100, align 16, !tbaa !9
+  %101 = add nuw nsw i64 %72, 4
+  %102 = add i64 %73, -4
+  %103 = icmp eq i64 %102, 0
+  br i1 %103, label %104, label %71
+
+104:                                              ; preds = %71, %69
+  %105 = phi i64 [ 0, %69 ], [ %101, %71 ]
+  br i1 %68, label %118, label %106
+
+106:                                              ; preds = %106, %104
+  %107 = phi i64 [ %115, %106 ], [ %105, %104 ]
+  %108 = phi i64 [ %116, %106 ], [ %65, %104 ]
+  %109 = add nsw i64 %107, %61
+  %110 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %59, i64 %70, i64 %47, i64 %109, i32 0
+  %111 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %70, i64 %107
+  %112 = bitcast double* %110 to <2 x i64>*
+  %113 = load <2 x i64>, <2 x i64>* %112, align 8, !tbaa !9
+  %114 = bitcast %struct.dcomplex* %111 to <2 x i64>*
+  store <2 x i64> %113, <2 x i64>* %114, align 16, !tbaa !9
+  %115 = add nuw nsw i64 %107, 1
+  %116 = add i64 %108, -1
+  %117 = icmp eq i64 %116, 0
+  br i1 %117, label %118, label %106, !llvm.loop !21
+
+118:                                              ; preds = %106, %104
+  %119 = add nuw nsw i64 %70, 1
+  %120 = icmp slt i64 %119, %62
+  br i1 %120, label %69, label %121
+
+121:                                              ; preds = %118, %57, %52
+  %122 = load i32, i32* %4, align 4, !tbaa !3
+  %123 = load i32, i32* %35, align 4, !tbaa !3
+  call fastcc void @cfftz(i32 %122, i32 %123, i32 %53, [18 x %struct.dcomplex]* nonnull %36, [18 x %struct.dcomplex]* nonnull %37) #19
+  %124 = load i32*, i32** %2, align 8, !tbaa !7
+  %125 = getelementptr inbounds i32, i32* %124, i64 2
+  %126 = load i32, i32* %125, align 4, !tbaa !3
+  %127 = icmp sgt i32 %126, 0
+  br i1 %127, label %128, label %193
+
+128:                                              ; preds = %121
+  %129 = load i32, i32* @fftblock, align 4
+  %130 = icmp sgt i32 %129, 0
+  %131 = load [128 x [128 x %struct.dcomplex]]*, [128 x [128 x %struct.dcomplex]]** %6, align 8
+  br i1 %130, label %132, label %193
+
+132:                                              ; preds = %128
+  %133 = sext i32 %55 to i64
+  %134 = sext i32 %126 to i64
+  %135 = zext i32 %129 to i64
+  %136 = add nsw i64 %135, -1
+  %137 = and i64 %135, 3
+  %138 = icmp ult i64 %136, 3
+  %139 = sub nsw i64 %135, %137
+  %140 = icmp eq i64 %137, 0
+  br label %141
+
+141:                                              ; preds = %190, %132
+  %142 = phi i64 [ 0, %132 ], [ %191, %190 ]
+  br i1 %138, label %176, label %143
+
+143:                                              ; preds = %143, %141
+  %144 = phi i64 [ %173, %143 ], [ 0, %141 ]
+  %145 = phi i64 [ %174, %143 ], [ %139, %141 ]
+  %146 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %144
+  %147 = add nsw i64 %144, %133
+  %148 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %142, i64 %47, i64 %147
+  %149 = bitcast %struct.dcomplex* %146 to <2 x i64>*
+  %150 = load <2 x i64>, <2 x i64>* %149, align 16, !tbaa !9
+  %151 = bitcast %struct.dcomplex* %148 to <2 x i64>*
+  store <2 x i64> %150, <2 x i64>* %151, align 8, !tbaa !9
+  %152 = or i64 %144, 1
+  %153 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %152
+  %154 = add nsw i64 %152, %133
+  %155 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %142, i64 %47, i64 %154
+  %156 = bitcast %struct.dcomplex* %153 to <2 x i64>*
+  %157 = load <2 x i64>, <2 x i64>* %156, align 16, !tbaa !9
+  %158 = bitcast %struct.dcomplex* %155 to <2 x i64>*
+  store <2 x i64> %157, <2 x i64>* %158, align 8, !tbaa !9
+  %159 = or i64 %144, 2
+  %160 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %159
+  %161 = add nsw i64 %159, %133
+  %162 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %142, i64 %47, i64 %161
+  %163 = bitcast %struct.dcomplex* %160 to <2 x i64>*
+  %164 = load <2 x i64>, <2 x i64>* %163, align 16, !tbaa !9
+  %165 = bitcast %struct.dcomplex* %162 to <2 x i64>*
+  store <2 x i64> %164, <2 x i64>* %165, align 8, !tbaa !9
+  %166 = or i64 %144, 3
+  %167 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %166
+  %168 = add nsw i64 %166, %133
+  %169 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %142, i64 %47, i64 %168
+  %170 = bitcast %struct.dcomplex* %167 to <2 x i64>*
+  %171 = load <2 x i64>, <2 x i64>* %170, align 16, !tbaa !9
+  %172 = bitcast %struct.dcomplex* %169 to <2 x i64>*
+  store <2 x i64> %171, <2 x i64>* %172, align 8, !tbaa !9
+  %173 = add nuw nsw i64 %144, 4
+  %174 = add i64 %145, -4
+  %175 = icmp eq i64 %174, 0
+  br i1 %175, label %176, label %143
+
+176:                                              ; preds = %143, %141
+  %177 = phi i64 [ 0, %141 ], [ %173, %143 ]
+  br i1 %140, label %190, label %178
+
+178:                                              ; preds = %178, %176
+  %179 = phi i64 [ %187, %178 ], [ %177, %176 ]
+  %180 = phi i64 [ %188, %178 ], [ %137, %176 ]
+  %181 = getelementptr inbounds [128 x [18 x %struct.dcomplex]], [128 x [18 x %struct.dcomplex]]* %8, i64 0, i64 %142, i64 %179
+  %182 = add nsw i64 %179, %133
+  %183 = getelementptr inbounds [128 x [128 x %struct.dcomplex]], [128 x [128 x %struct.dcomplex]]* %131, i64 %142, i64 %47, i64 %182
+  %184 = bitcast %struct.dcomplex* %181 to <2 x i64>*
+  %185 = load <2 x i64>, <2 x i64>* %184, align 16, !tbaa !9
+  %186 = bitcast %struct.dcomplex* %183 to <2 x i64>*
+  store <2 x i64> %185, <2 x i64>* %186, align 8, !tbaa !9
+  %187 = add nuw nsw i64 %179, 1
+  %188 = add i64 %180, -1
+  %189 = icmp eq i64 %188, 0
+  br i1 %189, label %190, label %178, !llvm.loop !22
+
+190:                                              ; preds = %178, %176
+  %191 = add nuw nsw i64 %142, 1
+  %192 = icmp slt i64 %191, %134
+  br i1 %192, label %141, label %193
+
+193:                                              ; preds = %190, %128, %121
+  %194 = load i32, i32* @fftblock, align 4, !tbaa !3
+  %195 = add nsw i32 %194, %55
+  %196 = load i32, i32* %124, align 4, !tbaa !3
+  %197 = sub nsw i32 %196, %194
+  %198 = icmp sgt i32 %195, %197
+  br i1 %198, label %199, label %52
+
+199:                                              ; preds = %193
+  %200 = load i32, i32* %11, align 4, !tbaa !3
+  br label %201
+
+201:                                              ; preds = %199, %42
+  %202 = phi i32 [ %200, %199 ], [ %43, %42 ]
+  %203 = phi i32 [ %194, %199 ], [ %44, %42 ]
+  %204 = phi i32 [ %196, %199 ], [ %45, %42 ]
+  %205 = phi i32* [ %124, %199 ], [ %46, %42 ]
+  %206 = add nsw i64 %47, 1
+  %207 = sext i32 %202 to i64
+  %208 = icmp slt i64 %47, %207
+  br i1 %208, label %42, label %209
+
+209:                                              ; preds = %201, %23
+  call void @__kmpc_for_static_fini(%struct.ident_t* nonnull @1, i32 %28) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %27) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %26) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %25) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %24) #17
+  br label %210
+
+210:                                              ; preds = %209, %21
+  %211 = phi i32 [ %22, %21 ], [ %28, %209 ]
+  call void @__kmpc_barrier(%struct.ident_t* nonnull @4, i32 %211) #17
+  call void @llvm.lifetime.end.p0i8(i64 36864, i8* nonnull %15) #17
+  call void @llvm.lifetime.end.p0i8(i64 36864, i8* nonnull %14) #17
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal fastcc void @cfftz(i32, i32, i32, [18 x %struct.dcomplex]* nocapture, [18 x %struct.dcomplex]* nocapture) unnamed_addr #4 {
+  %6 = load double, double* getelementptr inbounds ([128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 0, i32 0), align 16, !tbaa !11
+  %7 = fptosi double %6 to i32
+  %8 = icmp ne i32 %0, 1
+  %9 = icmp ne i32 %0, -1
+  %10 = and i1 %8, %9
+  %11 = icmp slt i32 %1, 1
+  %12 = or i1 %10, %11
+  %13 = icmp slt i32 %7, %1
+  %14 = or i1 %12, %13
+  br i1 %14, label %15, label %17
+
+15:                                               ; preds = %5
+  %16 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([99 x i8], [99 x i8]* @.str.17, i64 0, i64 0), i32 %0, i32 %1, i32 %7) #19
+  tail call void @exit(i32 1) #20
+  unreachable
+
+17:                                               ; preds = %21, %5
+  %18 = phi i32 [ %24, %21 ], [ 1, %5 ]
+  %19 = load i32, i32* @fftblock, align 4, !tbaa !3
+  tail call fastcc void @fftz2(i32 %0, i32 %18, i32 %1, i32 %2, i32 %19, [18 x %struct.dcomplex]* %3, [18 x %struct.dcomplex]* %4) #19
+  %20 = icmp eq i32 %18, %1
+  br i1 %20, label %26, label %21
+
+21:                                               ; preds = %17
+  %22 = add nuw nsw i32 %18, 1
+  %23 = load i32, i32* @fftblock, align 4, !tbaa !3
+  tail call fastcc void @fftz2(i32 %0, i32 %22, i32 %1, i32 %2, i32 %23, [18 x %struct.dcomplex]* %4, [18 x %struct.dcomplex]* %3) #19
+  %24 = add nuw nsw i32 %18, 2
+  %25 = icmp sgt i32 %24, %1
+  br i1 %25, label %26, label %17
+
+26:                                               ; preds = %21, %17
+  %27 = srem i32 %1, 2
+  %28 = icmp eq i32 %27, 1
+  %29 = icmp sgt i32 %2, 0
+  %30 = and i1 %28, %29
+  br i1 %30, label %31, label %89
+
+31:                                               ; preds = %26
+  %32 = load i32, i32* @fftblock, align 4
+  %33 = icmp sgt i32 %32, 0
+  br i1 %33, label %34, label %89
+
+34:                                               ; preds = %31
+  %35 = zext i32 %2 to i64
+  %36 = zext i32 %32 to i64
+  %37 = add nsw i64 %36, -1
+  %38 = and i64 %36, 3
+  %39 = icmp ult i64 %37, 3
+  %40 = sub nsw i64 %36, %38
+  %41 = icmp eq i64 %38, 0
+  br label %42
+
+42:                                               ; preds = %86, %34
+  %43 = phi i64 [ 0, %34 ], [ %87, %86 ]
+  br i1 %39, label %73, label %44
+
+44:                                               ; preds = %44, %42
+  %45 = phi i64 [ %70, %44 ], [ 0, %42 ]
+  %46 = phi i64 [ %71, %44 ], [ %40, %42 ]
+  %47 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %4, i64 %43, i64 %45
+  %48 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %3, i64 %43, i64 %45
+  %49 = bitcast %struct.dcomplex* %47 to <2 x i64>*
+  %50 = load <2 x i64>, <2 x i64>* %49, align 8, !tbaa !9
+  %51 = bitcast %struct.dcomplex* %48 to <2 x i64>*
+  store <2 x i64> %50, <2 x i64>* %51, align 8, !tbaa !9
+  %52 = or i64 %45, 1
+  %53 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %4, i64 %43, i64 %52
+  %54 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %3, i64 %43, i64 %52
+  %55 = bitcast %struct.dcomplex* %53 to <2 x i64>*
+  %56 = load <2 x i64>, <2 x i64>* %55, align 8, !tbaa !9
+  %57 = bitcast %struct.dcomplex* %54 to <2 x i64>*
+  store <2 x i64> %56, <2 x i64>* %57, align 8, !tbaa !9
+  %58 = or i64 %45, 2
+  %59 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %4, i64 %43, i64 %58
+  %60 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %3, i64 %43, i64 %58
+  %61 = bitcast %struct.dcomplex* %59 to <2 x i64>*
+  %62 = load <2 x i64>, <2 x i64>* %61, align 8, !tbaa !9
+  %63 = bitcast %struct.dcomplex* %60 to <2 x i64>*
+  store <2 x i64> %62, <2 x i64>* %63, align 8, !tbaa !9
+  %64 = or i64 %45, 3
+  %65 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %4, i64 %43, i64 %64
+  %66 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %3, i64 %43, i64 %64
+  %67 = bitcast %struct.dcomplex* %65 to <2 x i64>*
+  %68 = load <2 x i64>, <2 x i64>* %67, align 8, !tbaa !9
+  %69 = bitcast %struct.dcomplex* %66 to <2 x i64>*
+  store <2 x i64> %68, <2 x i64>* %69, align 8, !tbaa !9
+  %70 = add nuw nsw i64 %45, 4
+  %71 = add i64 %46, -4
+  %72 = icmp eq i64 %71, 0
+  br i1 %72, label %73, label %44
+
+73:                                               ; preds = %44, %42
+  %74 = phi i64 [ 0, %42 ], [ %70, %44 ]
+  br i1 %41, label %86, label %75
+
+75:                                               ; preds = %75, %73
+  %76 = phi i64 [ %83, %75 ], [ %74, %73 ]
+  %77 = phi i64 [ %84, %75 ], [ %38, %73 ]
+  %78 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %4, i64 %43, i64 %76
+  %79 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %3, i64 %43, i64 %76
+  %80 = bitcast %struct.dcomplex* %78 to <2 x i64>*
+  %81 = load <2 x i64>, <2 x i64>* %80, align 8, !tbaa !9
+  %82 = bitcast %struct.dcomplex* %79 to <2 x i64>*
+  store <2 x i64> %81, <2 x i64>* %82, align 8, !tbaa !9
+  %83 = add nuw nsw i64 %76, 1
+  %84 = add i64 %77, -1
+  %85 = icmp eq i64 %84, 0
+  br i1 %85, label %86, label %75, !llvm.loop !23
+
+86:                                               ; preds = %75, %73
+  %87 = add nuw nsw i64 %43, 1
+  %88 = icmp eq i64 %87, %35
+  br i1 %88, label %89, label %42
+
+89:                                               ; preds = %86, %31, %26
+  ret void
+}
+
+; Function Attrs: noredzone noreturn nounwind
+declare void @exit(i32) local_unnamed_addr #7
+
+; Function Attrs: nofree norecurse noredzone nounwind uwtable
+define internal fastcc void @fftz2(i32, i32, i32, i32, i32, [18 x %struct.dcomplex]* nocapture readonly, [18 x %struct.dcomplex]* nocapture) unnamed_addr #8 {
+  %8 = sdiv i32 %3, 2
+  %9 = icmp eq i32 %1, 1
+  %10 = add nsw i32 %1, -2
+  %11 = shl i32 2, %10
+  %12 = select i1 %9, i32 1, i32 %11
+  %13 = sub nsw i32 %2, %1
+  %14 = icmp eq i32 %13, 0
+  %15 = add nsw i32 %13, -1
+  %16 = shl i32 2, %15
+  %17 = select i1 %14, i32 1, i32 %16
+  %18 = icmp sgt i32 %17, 0
+  br i1 %18, label %19, label %85
+
+19:                                               ; preds = %7
+  %20 = shl nsw i32 %12, 1
+  %21 = icmp sgt i32 %0, 0
+  %22 = icmp slt i32 %12, 1
+  %23 = icmp slt i32 %4, 1
+  %24 = sext i32 %17 to i64
+  %25 = sext i32 %20 to i64
+  %26 = sext i32 %12 to i64
+  %27 = zext i32 %17 to i64
+  %28 = zext i32 %12 to i64
+  %29 = zext i32 %4 to i64
+  %30 = or i1 %22, %23
+  br label %31
+
+31:                                               ; preds = %82, %19
+  %32 = phi i64 [ 0, %19 ], [ %83, %82 ]
+  %33 = mul nsw i64 %32, %26
+  %34 = mul nsw i64 %32, %25
+  %35 = add nsw i64 %32, %24
+  %36 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %35, i32 0
+  %37 = load double, double* %36, align 16, !tbaa !11
+  %38 = getelementptr inbounds [128 x %struct.dcomplex], [128 x %struct.dcomplex]* @u, i64 0, i64 %35, i32 1
+  %39 = load double, double* %38, align 8, !tbaa !13
+  %40 = fsub double -0.000000e+00, %39
+  %41 = select i1 %21, double %39, double %40
+  br i1 %30, label %82, label %42
+
+42:                                               ; preds = %79, %31
+  %43 = phi i64 [ %80, %79 ], [ 0, %31 ]
+  %44 = add nsw i64 %43, %33
+  %45 = trunc i64 %44 to i32
+  %46 = add i32 %8, %45
+  %47 = sext i32 %46 to i64
+  %48 = add nsw i64 %43, %34
+  %49 = trunc i64 %48 to i32
+  %50 = add i32 %12, %49
+  %51 = sext i32 %50 to i64
+  br label %52
+
+52:                                               ; preds = %52, %42
+  %53 = phi i64 [ 0, %42 ], [ %77, %52 ]
+  %54 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %5, i64 %44, i64 %53, i32 0
+  %55 = bitcast double* %54 to <2 x double>*
+  %56 = load <2 x double>, <2 x double>* %55, align 8, !tbaa !9
+  %57 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %5, i64 %47, i64 %53, i32 0
+  %58 = bitcast double* %57 to <2 x double>*
+  %59 = load <2 x double>, <2 x double>* %58, align 8, !tbaa !9
+  %60 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %6, i64 %48, i64 %53, i32 0
+  %61 = fadd <2 x double> %56, %59
+  %62 = bitcast double* %60 to <2 x double>*
+  store <2 x double> %61, <2 x double>* %62, align 8, !tbaa !9
+  %63 = extractelement <2 x double> %56, i32 0
+  %64 = extractelement <2 x double> %59, i32 0
+  %65 = fsub double %63, %64
+  %66 = fmul double %37, %65
+  %67 = extractelement <2 x double> %56, i32 1
+  %68 = extractelement <2 x double> %59, i32 1
+  %69 = fsub double %67, %68
+  %70 = fmul double %41, %69
+  %71 = fsub double %66, %70
+  %72 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %6, i64 %51, i64 %53, i32 0
+  store double %71, double* %72, align 8, !tbaa !11
+  %73 = fmul double %37, %69
+  %74 = fmul double %41, %65
+  %75 = fadd double %74, %73
+  %76 = getelementptr inbounds [18 x %struct.dcomplex], [18 x %struct.dcomplex]* %6, i64 %51, i64 %53, i32 1
+  store double %75, double* %76, align 8, !tbaa !13
+  %77 = add nuw nsw i64 %53, 1
+  %78 = icmp eq i64 %77, %29
+  br i1 %78, label %79, label %52
+
+79:                                               ; preds = %52
+  %80 = add nuw nsw i64 %43, 1
+  %81 = icmp eq i64 %80, %28
+  br i1 %81, label %82, label %42
+
+82:                                               ; preds = %79, %31
+  %83 = add nuw nsw i64 %32, 1
+  %84 = icmp eq i64 %83, %27
+  br i1 %84, label %85, label %31
+
+85:                                               ; preds = %82, %7
+  ret void
+}
+
+; Function Attrs: nofree norecurse noredzone nounwind uwtable
+define double @randlc(double* nocapture, double) local_unnamed_addr #8 {
+  %3 = fmul double %1, 0x3E80000000000000
+  %4 = fptosi double %3 to i32
+  %5 = sitofp i32 %4 to double
+  %6 = fmul double %5, 0x4160000000000000
+  %7 = fsub double %1, %6
+  %8 = load double, double* %0, align 8, !tbaa !9
+  %9 = fmul double %8, 0x3E80000000000000
+  %10 = fptosi double %9 to i32
+  %11 = sitofp i32 %10 to double
+  %12 = fmul double %11, 0x4160000000000000
+  %13 = fsub double %8, %12
+  %14 = fmul double %13, %5
+  %15 = fmul double %7, %11
+  %16 = fadd double %15, %14
+  %17 = fmul double %16, 0x3E80000000000000
+  %18 = fptosi double %17 to i32
+  %19 = sitofp i32 %18 to double
+  %20 = fmul double %19, 0x4160000000000000
+  %21 = fsub double %16, %20
+  %22 = fmul double %21, 0x4160000000000000
+  %23 = fmul double %7, %13
+  %24 = fadd double %23, %22
+  %25 = fmul double %24, 0x3D10000000000000
+  %26 = fptosi double %25 to i32
+  %27 = sitofp i32 %26 to double
+  %28 = fmul double %27, 0x42D0000000000000
+  %29 = fsub double %24, %28
+  store double %29, double* %0, align 8, !tbaa !9
+  %30 = fmul double %29, 0x3D10000000000000
+  ret double %30
+}
+
+; Function Attrs: nofree norecurse noredzone nounwind uwtable
+define void @vranlc(i32, double* nocapture, double, double* nocapture) local_unnamed_addr #8 {
+  %5 = fmul double %2, 0x3E80000000000000
+  %6 = fptosi double %5 to i32
+  %7 = sitofp i32 %6 to double
+  %8 = fmul double %7, 0x4160000000000000
+  %9 = fsub double %2, %8
+  %10 = load double, double* %1, align 8, !tbaa !9
+  %11 = icmp slt i32 %0, 1
+  br i1 %11, label %43, label %12
+
+12:                                               ; preds = %4
+  %13 = add nuw i32 %0, 1
+  %14 = zext i32 %13 to i64
+  br label %15
+
+15:                                               ; preds = %15, %12
+  %16 = phi i64 [ 1, %12 ], [ %41, %15 ]
+  %17 = phi double [ %10, %12 ], [ %38, %15 ]
+  %18 = fmul double %17, 0x3E80000000000000
+  %19 = fptosi double %18 to i32
+  %20 = sitofp i32 %19 to double
+  %21 = fmul double %20, 0x4160000000000000
+  %22 = fsub double %17, %21
+  %23 = fmul double %22, %7
+  %24 = fmul double %9, %20
+  %25 = fadd double %24, %23
+  %26 = fmul double %25, 0x3E80000000000000
+  %27 = fptosi double %26 to i32
+  %28 = sitofp i32 %27 to double
+  %29 = fmul double %28, 0x4160000000000000
+  %30 = fsub double %25, %29
+  %31 = fmul double %30, 0x4160000000000000
+  %32 = fmul double %9, %22
+  %33 = fadd double %32, %31
+  %34 = fmul double %33, 0x3D10000000000000
+  %35 = fptosi double %34 to i32
+  %36 = sitofp i32 %35 to double
+  %37 = fmul double %36, 0x42D0000000000000
+  %38 = fsub double %33, %37
+  %39 = fmul double %38, 0x3D10000000000000
+  %40 = getelementptr inbounds double, double* %3, i64 %16
+  store double %39, double* %40, align 8, !tbaa !9
+  %41 = add nuw nsw i64 %16, 1
+  %42 = icmp eq i64 %41, %14
+  br i1 %42, label %43, label %15
+
+43:                                               ; preds = %15, %4
+  %44 = phi double [ %10, %4 ], [ %38, %15 ]
+  store double %44, double* %1, align 8, !tbaa !9
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define void @c_print_results(i8*, i8 signext, i32, i32, i32, i32, i32, double, double, i8*, i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*) local_unnamed_addr #9 {
+  %21 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str.1.7, i64 0, i64 0), i8* %0) #19
+  %22 = sext i8 %1 to i32
+  %23 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([46 x i8], [46 x i8]* @.str.2.8, i64 0, i64 0), i32 %22) #19
+  %24 = or i32 %4, %3
+  %25 = icmp eq i32 %24, 0
+  br i1 %25, label %26, label %28
+
+26:                                               ; preds = %20
+  %27 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.3.9, i64 0, i64 0), i32 %2) #19
+  br label %30
+
+28:                                               ; preds = %20
+  %29 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([45 x i8], [45 x i8]* @.str.4.10, i64 0, i64 0), i32 %2, i32 %3, i32 %4) #19
+  br label %30
+
+30:                                               ; preds = %28, %26
+  %31 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.5.11, i64 0, i64 0), i32 %5) #19
+  %32 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.6.12, i64 0, i64 0), i32 %6) #19
+  %33 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([39 x i8], [39 x i8]* @.str.7.13, i64 0, i64 0), double %7) #19
+  %34 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([39 x i8], [39 x i8]* @.str.8.14, i64 0, i64 0), double %8) #19
+  %35 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.9.15, i64 0, i64 0), i8* %9) #19
+  %36 = icmp eq i32 %10, 0
+  %37 = select i1 %36, i8* getelementptr inbounds ([44 x i8], [44 x i8]* @str.16, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8], [44 x i8]* @str.23, i64 0, i64 0)
+  %38 = tail call i32 @puts(i8* %37)
+  %39 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([35 x i8], [35 x i8]* @.str.12, i64 0, i64 0), i8* %11) #19
+  %40 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.13.17, i64 0, i64 0), i8* %12) #19
+  %41 = tail call i32 @puts(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @str.22, i64 0, i64 0))
+  %42 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.15, i64 0, i64 0), i8* %13) #19
+  %43 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.16, i64 0, i64 0), i8* %14) #19
+  %44 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.17.18, i64 0, i64 0), i8* %15) #19
+  %45 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.18, i64 0, i64 0), i8* %16) #19
+  %46 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.19, i64 0, i64 0), i8* %17) #19
+  %47 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.20, i64 0, i64 0), i8* %18) #19
+  %48 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.21.19, i64 0, i64 0), i8* %19) #19
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define double @elapsed_time() local_unnamed_addr #0 {
+  %1 = alloca double, align 8
+  %2 = bitcast double* %1 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %2) #17
+  call void @wtime_(double* nonnull %1) #18
+  %3 = load double, double* %1, align 8, !tbaa !9
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %2) #17
+  ret double %3
+}
+
+; Function Attrs: nofree norecurse noredzone nounwind uwtable writeonly
+define void @timer_clear(i32) local_unnamed_addr #10 {
+  %2 = sext i32 %0 to i64
+  %3 = getelementptr inbounds [64 x double], [64 x double]* @elapsed, i64 0, i64 %2
+  store double 0.000000e+00, double* %3, align 8, !tbaa !9
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @timer_start(i32) local_unnamed_addr #0 {
+  %2 = alloca double, align 8
+  %3 = bitcast double* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %3) #17
+  call void @wtime_(double* nonnull %2) #18
+  %4 = bitcast double* %2 to i64*
+  %5 = load i64, i64* %4, align 8, !tbaa !9
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %3) #17
+  %6 = sext i32 %0 to i64
+  %7 = getelementptr inbounds [64 x double], [64 x double]* @start, i64 0, i64 %6
+  %8 = bitcast double* %7 to i64*
+  store i64 %5, i64* %8, align 8, !tbaa !9
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @timer_stop(i32) local_unnamed_addr #0 {
+  %2 = alloca double, align 8
+  %3 = bitcast double* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %3) #17
+  call void @wtime_(double* nonnull %2) #18
+  %4 = load double, double* %2, align 8, !tbaa !9
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %3) #17
+  %5 = sext i32 %0 to i64
+  %6 = getelementptr inbounds [64 x double], [64 x double]* @start, i64 0, i64 %5
+  %7 = load double, double* %6, align 8, !tbaa !9
+  %8 = fsub double %4, %7
+  %9 = getelementptr inbounds [64 x double], [64 x double]* @elapsed, i64 0, i64 %5
+  %10 = load double, double* %9, align 8, !tbaa !9
+  %11 = fadd double %10, %8
+  store double %11, double* %9, align 8, !tbaa !9
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind readonly uwtable
+define double @timer_read(i32) local_unnamed_addr #11 {
+  %2 = sext i32 %0 to i64
+  %3 = getelementptr inbounds [64 x double], [64 x double]* @elapsed, i64 0, i64 %2
+  %4 = load double, double* %3, align 8, !tbaa !9
+  ret double %4
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @wtime_(double* nocapture) local_unnamed_addr #0 {
+  %2 = alloca %struct.timeval, align 8
+  %3 = bitcast %struct.timeval* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 16, i8* nonnull %3) #17
+  %4 = call i32 @gettimeofday(%struct.timeval* nonnull %2, %struct.timezone* null) #18
+  %5 = load i32, i32* @wtime_.sec, align 4, !tbaa !3
+  %6 = icmp slt i32 %5, 0
+  %7 = getelementptr inbounds %struct.timeval, %struct.timeval* %2, i64 0, i32 0
+  %8 = load i64, i64* %7, align 8, !tbaa !24
+  br i1 %6, label %9, label %11
+
+9:                                                ; preds = %1
+  %10 = trunc i64 %8 to i32
+  store i32 %10, i32* @wtime_.sec, align 4, !tbaa !3
+  br label %11
+
+11:                                               ; preds = %9, %1
+  %12 = phi i32 [ %10, %9 ], [ %5, %1 ]
+  %13 = sext i32 %12 to i64
+  %14 = sub nsw i64 %8, %13
+  %15 = sitofp i64 %14 to double
+  %16 = getelementptr inbounds %struct.timeval, %struct.timeval* %2, i64 0, i32 1
+  %17 = load i64, i64* %16, align 8, !tbaa !27
+  %18 = sitofp i64 %17 to double
+  %19 = fmul double %18, 0x3EB0C6F7A0B5ED8D
+  %20 = fadd double %19, %15
+  store double %20, double* %0, align 8, !tbaa !9
+  call void @llvm.lifetime.end.p0i8(i64 16, i8* nonnull %3) #17
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind
+declare i32 @gettimeofday(%struct.timeval* nocapture, %struct.timezone* nocapture) local_unnamed_addr #3
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define void @_Unwind_Resume() local_unnamed_addr #9 {
+  %1 = tail call i32 @puts(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @str.30, i64 0, i64 0))
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind readnone uwtable
+define void @_Unwind_GetCFA() local_unnamed_addr #12 {
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind readnone uwtable
+define void @_Unwind_ForcedUnwind() local_unnamed_addr #12 {
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define double @__unordtf2() local_unnamed_addr #9 {
+  %1 = tail call i32 @puts(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @str.3, i64 0, i64 0))
+  ret double 0.000000e+00
+}
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define void @__letf2() local_unnamed_addr #9 {
+  %1 = tail call i32 @puts(i8* getelementptr inbounds ([21 x i8], [21 x i8]* @str.4, i64 0, i64 0))
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind uwtable
+define void @kmem_sys_free(i8* nocapture) #13 {
+  tail call void @free(i8* %0) #18
+  ret void
+}
+
+; Function Attrs: nofree noinline noredzone nounwind uwtable
+define noalias i8* @_kmem_sys_malloc(i64) #14 {
+  %2 = tail call noalias i8* @malloc(i64 %0) #18
+  ret i8* %2
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @make_carat_pass_work() #15 {
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind
+declare noalias i8* @malloc(i64) local_unnamed_addr #3
+
+; Function Attrs: noredzone nounwind
+declare void @free(i8* nocapture) local_unnamed_addr #16
+
+; Function Attrs: noredzone nounwind uwtable
+define void @__nk_exec_entry(i8* nocapture readonly, i8** nocapture readnone, i8* (...)**) local_unnamed_addr #0 {
+  store i8* (...)** %2, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  call void @nk_carat_instrument_escapes(i8* bitcast (i8* (...)*** @__nk_func_table to i8*))
+  %4 = getelementptr inbounds i8, i8* %0, i64 16
+  %5 = bitcast i8* %4 to i32*
+  %6 = load i32, i32* %5, align 8, !tbaa !28
+  %7 = sext i32 %6 to i64
+  %8 = bitcast i8* %0 to i8***
+  %9 = load i8**, i8*** %8, align 8, !tbaa !30
+  %10 = getelementptr inbounds i8, i8* %0, i64 8
+  %11 = bitcast i8* %10 to i8***
+  %12 = load i8**, i8*** %11, align 8, !tbaa !31
+  tail call void asm sideeffect "pushq $$0\0Amov $$0, %rax\0Ank_loader_crt_env_loop:\0Amov ($2, %rax, 8), %rcx\0Acmpq $$0, %rcx\0Aje nk_loader_crt_env_loop_done\0Apushq %rcx\0Ainc %rax\0Aje nk_loader_crt_env_loop_done\0Ank_loader_crt_env_loop_done:\0Apushq $$0\0Atest $0, $0\0Aje nk_loader_crt_arg_loop_done\0Amov $0, %rax\0Adec %rax\0A\0Ank_loader_crt_arg_loop:\0Apushq ($1, %rax, 8)\0Adec %rax\0Acmpq $$0, %rax\0Ajge nk_loader_crt_arg_loop\0Ank_loader_crt_arg_loop_done:\0Apushq $0\0Amovq $$0, %rdx\0Ajmp _start\0A", "r,r,r,~{rax},~{rcx},~{dirflag},~{fpsr},~{flags}"(i64 %7, i8** %9, i8** %12) #17, !srcloc !32
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define i8* @nk_func_table_access(i32, i8*, i8*) local_unnamed_addr #0 {
+  %4 = alloca i32, align 4
+  store volatile i32 %0, i32* %4, align 4, !tbaa !3
+  %5 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %6 = load volatile i32, i32* %4, align 4, !tbaa !3
+  %7 = sext i32 %6 to i64
+  %8 = getelementptr inbounds i8* (...)*, i8* (...)** %5, i64 %7
+  %9 = bitcast i8* (...)** %8 to i8* (i8*, i8*, ...)**
+  %10 = load i8* (i8*, i8*, ...)*, i8* (i8*, i8*, ...)** %9, align 8, !tbaa !7
+  %11 = tail call i8* (i8*, i8*, ...) %10(i8* %1, i8* %2) #18
+  ret i8* %11
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_global(i8*, i64, i64) local_unnamed_addr #0 {
+  %4 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %5 = getelementptr inbounds i8* (...)*, i8* (...)** %4, i64 5
+  %6 = bitcast i8* (...)** %5 to i8* (i8*, i64, i64, ...)**
+  %7 = load i8* (i8*, i64, i64, ...)*, i8* (i8*, i64, i64, ...)** %6, align 8, !tbaa !7
+  %8 = tail call i8* (i8*, i64, i64, ...) %7(i8* %0, i64 %1, i64 %2) #18
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_malloc(i8*, i64) local_unnamed_addr #0 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 1
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i64, ...)**
+  %6 = load i8* (i8*, i64, ...)*, i8* (i8*, i64, ...)** %5, align 8, !tbaa !7
+  %7 = tail call i8* (i8*, i64, ...) %6(i8* %0, i64 %1) #18
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_calloc(i8*, i64) local_unnamed_addr #0 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 6
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i64, ...)**
+  %6 = load i8* (i8*, i64, ...)*, i8* (i8*, i64, ...)** %5, align 8, !tbaa !7
+  %7 = tail call i8* (i8*, i64, ...) %6(i8* %0, i64 %1) #18
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_realloc(i8*, i64) local_unnamed_addr #0 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 7
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i64, ...)**
+  %6 = load i8* (i8*, i64, ...)*, i8* (i8*, i64, ...)** %5, align 8, !tbaa !7
+  %7 = tail call i8* (i8*, i64, ...) %6(i8* %0, i64 %1) #18
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_free(i8*) local_unnamed_addr #0 {
+  %2 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %3 = getelementptr inbounds i8* (...)*, i8* (...)** %2, i64 2
+  %4 = bitcast i8* (...)** %3 to i8* (i8*, ...)**
+  %5 = load i8* (i8*, ...)*, i8* (i8*, ...)** %4, align 8, !tbaa !7
+  %6 = tail call i8* (i8*, ...) %5(i8* %0) #18
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_escapes(i8*) local_unnamed_addr #0 {
+  %2 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %3 = getelementptr inbounds i8* (...)*, i8* (...)** %2, i64 3
+  %4 = bitcast i8* (...)** %3 to i8* (i8*, ...)**
+  %5 = load i8* (i8*, ...)*, i8* (i8*, ...)** %4, align 8, !tbaa !7
+  %6 = tail call i8* (i8*, ...) %5(i8* %0) #18
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @_nk_carat_globals_compiler_target() local_unnamed_addr #0 {
+  %1 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %2 = getelementptr inbounds i8* (...)*, i8* (...)** %1, i64 8
+  %3 = load i8* (...)*, i8* (...)** %2, align 8, !tbaa !7
+  %4 = tail call i8* (...) %3() #18
+  call void @nk_carat_instrument_global(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @__NAUT_SIGNATURE, i32 0, i32 0), i64 16, i64 20)
+  call void @nk_carat_instrument_global(i8* bitcast (i32* @wtime_.sec to i8*), i64 4, i64 19)
+  call void @nk_carat_instrument_global(i8* bitcast ([7 x %struct.dcomplex]* @sums to i8*), i64 112, i64 17)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @ystart.0 to i8*), i64 1, i64 4)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @xstart.2 to i8*), i64 1, i64 8)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @niter to i8*), i64 1, i64 0)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @ystart.2 to i8*), i64 1, i64 9)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @xend.0 to i8*), i64 1, i64 3)
+  call void @nk_carat_instrument_global(i8* bitcast ([128 x %struct.dcomplex]* @u to i8*), i64 2048, i64 13)
+  call void @nk_carat_instrument_global(i8* bitcast ([3 x [3 x i32]]* @dims to i8*), i64 36, i64 1)
+  call void @nk_carat_instrument_global(i8* bitcast ([32 x [128 x [128 x %struct.dcomplex]]]* @main.u2 to i8*), i64 8388608, i64 16)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @zend.0 to i8*), i64 1, i64 7)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @zstart.0 to i8*), i64 1, i64 6)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @xstart.0 to i8*), i64 1, i64 2)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @zstart.2 to i8*), i64 1, i64 10)
+  call void @nk_carat_instrument_global(i8* bitcast ([32769 x double]* @compute_initial_conditions.tmp to i8*), i64 262152, i64 18)
+  call void @nk_carat_instrument_global(i8* bitcast ([32 x [128 x [128 x i32]]]* @main.indexmap to i8*), i64 2097152, i64 11)
+  call void @nk_carat_instrument_global(i8* bitcast ([50689 x double]* @ex to i8*), i64 405512, i64 12)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @yend.0 to i8*), i64 1, i64 5)
+  call void @nk_carat_instrument_global(i8* bitcast ([32 x [128 x [128 x %struct.dcomplex]]]* @main.u1 to i8*), i64 8388608, i64 15)
+  call void @nk_carat_instrument_global(i8* bitcast ([32 x [128 x [128 x %struct.dcomplex]]]* @main.u0 to i8*), i64 8388608, i64 14)
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_init() local_unnamed_addr #0 {
+  %1 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %2 = getelementptr inbounds i8* (...)*, i8* (...)** %1, i64 9
+  %3 = load i8* (...)*, i8* (...)** %2, align 8, !tbaa !7
+  %4 = tail call i8* (...) %3() #18
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define i32 @nk_carat_check_protection(i8*, i32) local_unnamed_addr #0 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !7
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 4
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i32, ...)**
+  %6 = load i8* (i8*, i32, ...)*, i8* (i8*, i32, ...)** %5, align 8, !tbaa !7
+  %7 = tail call i8* (i8*, i32, ...) %6(i8* %0, i32 %1) #18
+  %8 = ptrtoint i8* %7 to i64
+  %9 = trunc i64 %8 to i32
+  ret i32 %9
+}
+
+attributes #0 = { noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { argmemonly nounwind }
+attributes #2 = { nofree nounwind }
+attributes #3 = { nofree noredzone nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { norecurse noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind readnone speculatable }
+attributes #6 = { noredzone "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #7 = { noredzone noreturn nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #8 = { nofree norecurse noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #9 = { nofree noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #10 = { nofree norecurse noredzone nounwind uwtable writeonly "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #11 = { norecurse noredzone nounwind readonly uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #12 = { norecurse noredzone nounwind readnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #13 = { noinline noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #14 = { nofree noinline noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #15 = { noinline noredzone nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #16 = { noredzone nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #17 = { nounwind }
+attributes #18 = { noredzone nounwind }
+attributes #19 = { noredzone }
+attributes #20 = { noredzone noreturn nounwind }
+
+!llvm.ident = !{!0, !0, !0, !0, !0, !0, !0}
+!llvm.module.flags = !{!1, !2}
+
+!0 = !{!"clang version 9.0.0 (git@github.com:scampanoni/LLVM_installer.git 713d2f6594d9a0b77e7f9a120aaa7c917715a640)"}
+!1 = !{i32 1, !"wchar_size", i32 4}
+!2 = !{i32 7, !"PIC Level", i32 2}
+!3 = !{!4, !4, i64 0}
+!4 = !{!"int", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!8, !8, i64 0}
+!8 = !{!"any pointer", !5, i64 0}
+!9 = !{!10, !10, i64 0}
+!10 = !{!"double", !5, i64 0}
+!11 = !{!12, !10, i64 0}
+!12 = !{!"", !10, i64 0, !10, i64 8}
+!13 = !{!12, !10, i64 8}
+!14 = !{!15}
+!15 = !{i64 2, i64 -1, i64 -1, i1 true}
+!16 = distinct !{!16, !17}
+!17 = !{!"llvm.loop.unroll.disable"}
+!18 = distinct !{!18, !17}
+!19 = distinct !{!19, !17}
+!20 = distinct !{!20, !17}
+!21 = distinct !{!21, !17}
+!22 = distinct !{!22, !17}
+!23 = distinct !{!23, !17}
+!24 = !{!25, !26, i64 0}
+!25 = !{!"timeval", !26, i64 0, !26, i64 8}
+!26 = !{!"long", !5, i64 0}
+!27 = !{!25, !26, i64 8}
+!28 = !{!29, !4, i64 16}
+!29 = !{!"nk_crt_proc_args", !8, i64 0, !8, i64 8, !4, i64 16}
+!30 = !{!29, !8, i64 0}
+!31 = !{!29, !8, i64 8}
+!32 = !{i32 480, i32 524, i32 576, i32 612, i32 697, i32 775, i32 818, i32 874, i32 896, i32 939, i32 980, i32 1023, i32 1047, i32 1090, i32 1116, i32 1138, i32 1151, i32 1187, i32 1247, i32 1269, i32 1296, i32 1335, i32 1376, i32 1408, i32 1607}

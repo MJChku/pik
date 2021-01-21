@@ -1,0 +1,288 @@
+; ModuleID = 'blob.bc'
+source_filename = "llvm-link"
+target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%struct.timeval = type { i64, i64 }
+%struct.timezone = type { i32, i32 }
+%struct.nk_crt_proc_args = type { i8**, i8**, i32 }
+
+@wtime_.sec = internal unnamed_addr global i32 -1, align 4
+@__nk_func_table = common global i8* (...)** null, align 8
+@llvm.global.annotations = appending global [3 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (i8*)* @kmem_sys_free to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([50 x i8], [50 x i8]* @.str.1, i32 0, i32 0), i32 88 }, { i8*, i8*, i8*, i32 } { i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([50 x i8], [50 x i8]* @.str.1, i32 0, i32 0), i32 93 }, { i8*, i8*, i8*, i32 } { i8* bitcast (void ()* @make_carat_pass_work to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([50 x i8], [50 x i8]* @.str.1, i32 0, i32 0), i32 104 }], section "llvm.metadata"
+@.str = private unnamed_addr constant [8 x i8] c"nocarat\00", section "llvm.metadata"
+@.str.1 = private unnamed_addr constant [50 x i8] c"/home/arn9233/nautilus/user/framework/framework.c\00", section "llvm.metadata"
+@llvm.used = appending global [3 x i8*] [i8* bitcast (void (i8*)* @kmem_sys_free to i8*), i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*), i8* bitcast (void ()* @make_carat_pass_work to i8*)], section "llvm.metadata"
+
+; Function Attrs: noredzone nounwind uwtable
+define void @wtime_(double* nocapture) local_unnamed_addr #0 {
+  %2 = alloca %struct.timeval, align 8
+  %3 = bitcast %struct.timeval* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 16, i8* nonnull %3) #5
+  %4 = call i32 @gettimeofday(%struct.timeval* nonnull %2, %struct.timezone* null) #6
+  %5 = load i32, i32* @wtime_.sec, align 4, !tbaa !3
+  %6 = icmp slt i32 %5, 0
+  %7 = getelementptr inbounds %struct.timeval, %struct.timeval* %2, i64 0, i32 0
+  %8 = load i64, i64* %7, align 8, !tbaa !7
+  br i1 %6, label %9, label %11
+
+9:                                                ; preds = %1
+  %10 = trunc i64 %8 to i32
+  store i32 %10, i32* @wtime_.sec, align 4, !tbaa !3
+  br label %11
+
+11:                                               ; preds = %1, %9
+  %12 = phi i32 [ %10, %9 ], [ %5, %1 ]
+  %13 = sext i32 %12 to i64
+  %14 = sub nsw i64 %8, %13
+  %15 = sitofp i64 %14 to double
+  %16 = getelementptr inbounds %struct.timeval, %struct.timeval* %2, i64 0, i32 1
+  %17 = load i64, i64* %16, align 8, !tbaa !10
+  %18 = sitofp i64 %17 to double
+  %19 = fmul double %18, 0x3EB0C6F7A0B5ED8D
+  %20 = fadd double %19, %15
+  store double %20, double* %0, align 8, !tbaa !11
+  call void @llvm.lifetime.end.p0i8(i64 16, i8* nonnull %3) #5
+  ret void
+}
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.start.p0i8(i64 immarg, i8* nocapture) #1
+
+; Function Attrs: nofree noredzone nounwind
+declare i32 @gettimeofday(%struct.timeval* nocapture, %struct.timezone* nocapture) local_unnamed_addr #2
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.end.p0i8(i64 immarg, i8* nocapture) #1
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @kmem_sys_free(i8*) #3 {
+  %2 = alloca i8*, align 8
+  store i8* %0, i8** %2, align 8
+  %3 = load i8*, i8** %2, align 8
+  call void @free(i8* %3) #6
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define i8* @_kmem_sys_malloc(i64) #3 {
+  %2 = alloca i64, align 8
+  store i64 %0, i64* %2, align 8
+  %3 = load i64, i64* %2, align 8
+  %4 = call noalias i8* @malloc(i64 %3) #6
+  ret i8* %4
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @make_carat_pass_work() #3 {
+  ret void
+}
+
+; Function Attrs: noredzone nounwind
+declare noalias i8* @malloc(i64) #4
+
+; Function Attrs: noredzone nounwind
+declare void @free(i8*) #4
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @__nk_exec_entry(i8*, i8**, i8* (...)**) #3 {
+  %4 = alloca i8*, align 8
+  %5 = alloca i8**, align 8
+  %6 = alloca i8* (...)**, align 8
+  %7 = alloca %struct.nk_crt_proc_args*, align 8
+  store i8* %0, i8** %4, align 8
+  store i8** %1, i8*** %5, align 8
+  store i8* (...)** %2, i8* (...)*** %6, align 8
+  %8 = load i8* (...)**, i8* (...)*** %6, align 8
+  store i8* (...)** %8, i8* (...)*** @__nk_func_table, align 8
+  %9 = load i8*, i8** %4, align 8
+  %10 = bitcast i8* %9 to %struct.nk_crt_proc_args*
+  store %struct.nk_crt_proc_args* %10, %struct.nk_crt_proc_args** %7, align 8
+  %11 = load %struct.nk_crt_proc_args*, %struct.nk_crt_proc_args** %7, align 8
+  %12 = getelementptr inbounds %struct.nk_crt_proc_args, %struct.nk_crt_proc_args* %11, i32 0, i32 2
+  %13 = load i32, i32* %12, align 8
+  %14 = sext i32 %13 to i64
+  %15 = load %struct.nk_crt_proc_args*, %struct.nk_crt_proc_args** %7, align 8
+  %16 = getelementptr inbounds %struct.nk_crt_proc_args, %struct.nk_crt_proc_args* %15, i32 0, i32 0
+  %17 = load i8**, i8*** %16, align 8
+  %18 = load %struct.nk_crt_proc_args*, %struct.nk_crt_proc_args** %7, align 8
+  %19 = getelementptr inbounds %struct.nk_crt_proc_args, %struct.nk_crt_proc_args* %18, i32 0, i32 1
+  %20 = load i8**, i8*** %19, align 8
+  call void asm sideeffect "pushq $$0\0Amov $$0, %rax\0Ank_loader_crt_env_loop:\0Amov ($2, %rax, 8), %rcx\0Acmpq $$0, %rcx\0Aje nk_loader_crt_env_loop_done\0Apushq %rcx\0Ainc %rax\0Aje nk_loader_crt_env_loop_done\0Ank_loader_crt_env_loop_done:\0Apushq $$0\0Atest $0, $0\0Aje nk_loader_crt_arg_loop_done\0Amov $0, %rax\0Adec %rax\0A\0Ank_loader_crt_arg_loop:\0Apushq ($1, %rax, 8)\0Adec %rax\0Acmpq $$0, %rax\0Ajge nk_loader_crt_arg_loop\0Ank_loader_crt_arg_loop_done:\0Apushq $0\0Amovq $$0, %rdx\0Ajmp _start\0A", "r,r,r,~{rax},~{rcx},~{dirflag},~{fpsr},~{flags}"(i64 %14, i8** %17, i8** %20) #5, !srcloc !13
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define i8* @nk_func_table_access(i32, i8*, i8*) #3 {
+  %4 = alloca i32, align 4
+  %5 = alloca i8*, align 8
+  %6 = alloca i8*, align 8
+  store volatile i32 %0, i32* %4, align 4
+  store i8* %1, i8** %5, align 8
+  store i8* %2, i8** %6, align 8
+  %7 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %8 = load volatile i32, i32* %4, align 4
+  %9 = sext i32 %8 to i64
+  %10 = getelementptr inbounds i8* (...)*, i8* (...)** %7, i64 %9
+  %11 = load i8* (...)*, i8* (...)** %10, align 8
+  %12 = load i8*, i8** %5, align 8
+  %13 = load i8*, i8** %6, align 8
+  %14 = bitcast i8* (...)* %11 to i8* (i8*, i8*, ...)*
+  %15 = call i8* (i8*, i8*, ...) %14(i8* %12, i8* %13) #7
+  ret i8* %15
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @nk_carat_instrument_global(i8*, i64, i64) #3 {
+  %4 = alloca i8*, align 8
+  %5 = alloca i64, align 8
+  %6 = alloca i64, align 8
+  store i8* %0, i8** %4, align 8
+  store i64 %1, i64* %5, align 8
+  store i64 %2, i64* %6, align 8
+  %7 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %8 = getelementptr inbounds i8* (...)*, i8* (...)** %7, i64 5
+  %9 = load i8* (...)*, i8* (...)** %8, align 8
+  %10 = load i8*, i8** %4, align 8
+  %11 = load i64, i64* %5, align 8
+  %12 = load i64, i64* %6, align 8
+  %13 = bitcast i8* (...)* %9 to i8* (i8*, i64, i64, ...)*
+  %14 = call i8* (i8*, i64, i64, ...) %13(i8* %10, i64 %11, i64 %12) #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @nk_carat_instrument_malloc(i8*, i64) #3 {
+  %3 = alloca i8*, align 8
+  %4 = alloca i64, align 8
+  store i8* %0, i8** %3, align 8
+  store i64 %1, i64* %4, align 8
+  %5 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %6 = getelementptr inbounds i8* (...)*, i8* (...)** %5, i64 1
+  %7 = load i8* (...)*, i8* (...)** %6, align 8
+  %8 = load i8*, i8** %3, align 8
+  %9 = load i64, i64* %4, align 8
+  %10 = bitcast i8* (...)* %7 to i8* (i8*, i64, ...)*
+  %11 = call i8* (i8*, i64, ...) %10(i8* %8, i64 %9) #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @nk_carat_instrument_calloc(i8*, i64) #3 {
+  %3 = alloca i8*, align 8
+  %4 = alloca i64, align 8
+  store i8* %0, i8** %3, align 8
+  store i64 %1, i64* %4, align 8
+  %5 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %6 = getelementptr inbounds i8* (...)*, i8* (...)** %5, i64 6
+  %7 = load i8* (...)*, i8* (...)** %6, align 8
+  %8 = load i8*, i8** %3, align 8
+  %9 = load i64, i64* %4, align 8
+  %10 = bitcast i8* (...)* %7 to i8* (i8*, i64, ...)*
+  %11 = call i8* (i8*, i64, ...) %10(i8* %8, i64 %9) #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @nk_carat_instrument_realloc(i8*, i64) #3 {
+  %3 = alloca i8*, align 8
+  %4 = alloca i64, align 8
+  store i8* %0, i8** %3, align 8
+  store i64 %1, i64* %4, align 8
+  %5 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %6 = getelementptr inbounds i8* (...)*, i8* (...)** %5, i64 7
+  %7 = load i8* (...)*, i8* (...)** %6, align 8
+  %8 = load i8*, i8** %3, align 8
+  %9 = load i64, i64* %4, align 8
+  %10 = bitcast i8* (...)* %7 to i8* (i8*, i64, ...)*
+  %11 = call i8* (i8*, i64, ...) %10(i8* %8, i64 %9) #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @nk_carat_instrument_free(i8*) #3 {
+  %2 = alloca i8*, align 8
+  store i8* %0, i8** %2, align 8
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 2
+  %5 = load i8* (...)*, i8* (...)** %4, align 8
+  %6 = load i8*, i8** %2, align 8
+  %7 = bitcast i8* (...)* %5 to i8* (i8*, ...)*
+  %8 = call i8* (i8*, ...) %7(i8* %6) #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @nk_carat_instrument_escapes(i8*) #3 {
+  %2 = alloca i8*, align 8
+  store i8* %0, i8** %2, align 8
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 3
+  %5 = load i8* (...)*, i8* (...)** %4, align 8
+  %6 = load i8*, i8** %2, align 8
+  %7 = bitcast i8* (...)* %5 to i8* (i8*, ...)*
+  %8 = call i8* (i8*, ...) %7(i8* %6) #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @_nk_carat_globals_compiler_target() #3 {
+  %1 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %2 = getelementptr inbounds i8* (...)*, i8* (...)** %1, i64 8
+  %3 = load i8* (...)*, i8* (...)** %2, align 8
+  %4 = call i8* (...) %3() #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @nk_carat_init() #3 {
+  %1 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %2 = getelementptr inbounds i8* (...)*, i8* (...)** %1, i64 9
+  %3 = load i8* (...)*, i8* (...)** %2, align 8
+  %4 = call i8* (...) %3() #7
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define i32 @nk_carat_check_protection(i8*, i32) #3 {
+  %3 = alloca i8*, align 8
+  %4 = alloca i32, align 4
+  store i8* %0, i8** %3, align 8
+  store i32 %1, i32* %4, align 4
+  %5 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8
+  %6 = getelementptr inbounds i8* (...)*, i8* (...)** %5, i64 4
+  %7 = load i8* (...)*, i8* (...)** %6, align 8
+  %8 = load i8*, i8** %3, align 8
+  %9 = load i32, i32* %4, align 4
+  %10 = bitcast i8* (...)* %7 to i8* (i8*, i32, ...)*
+  %11 = call i8* (i8*, i32, ...) %10(i8* %8, i32 %9) #7
+  %12 = ptrtoint i8* %11 to i32
+  ret i32 %12
+}
+
+attributes #0 = { noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { argmemonly nounwind }
+attributes #2 = { nofree noredzone nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { noinline noredzone nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { noredzone nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind }
+attributes #6 = { noredzone nounwind }
+attributes #7 = { noredzone }
+
+!llvm.ident = !{!0, !0}
+!llvm.module.flags = !{!1, !2}
+
+!0 = !{!"clang version 9.0.0 (git@github.com:scampanoni/LLVM_installer.git 713d2f6594d9a0b77e7f9a120aaa7c917715a640)"}
+!1 = !{i32 1, !"wchar_size", i32 4}
+!2 = !{i32 7, !"PIC Level", i32 2}
+!3 = !{!4, !4, i64 0}
+!4 = !{!"int", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!8, !9, i64 0}
+!8 = !{!"timeval", !9, i64 0, !9, i64 8}
+!9 = !{!"long", !5, i64 0}
+!10 = !{!8, !9, i64 8}
+!11 = !{!12, !12, i64 0}
+!12 = !{!"double", !5, i64 0}
+!13 = !{i32 480, i32 524, i32 576, i32 612, i32 697, i32 775, i32 818, i32 874, i32 896, i32 939, i32 980, i32 1023, i32 1047, i32 1090, i32 1116, i32 1138, i32 1151, i32 1187, i32 1247, i32 1269, i32 1296, i32 1335, i32 1376, i32 1408, i32 1607}

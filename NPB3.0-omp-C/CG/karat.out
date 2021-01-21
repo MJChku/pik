@@ -1,0 +1,44 @@
+Annotated: make_carat_pass_work
+Annotated: kmem_sys_free
+Annotated: _kmem_sys_malloc
+Fetching nk_carat_instrument_global ... 
+Fetching nk_carat_instrument_escapes ... 
+Fetching nk_carat_instrument_free ... 
+Fetching nk_carat_instrument_calloc ... 
+Fetching _nk_carat_globals_compiler_target ... 
+Fetching nk_carat_instrument_realloc ... 
+Fetching nk_carat_init ... 
+Fetching nk_carat_instrument_malloc ... 
+Fetching kmem_sys_free ... 
+Fetching _kmem_sys_malloc ... 
+Now intrinsics!
+llvm.lifetime.start.p0i8
+llvm.lifetime.end.p0i8
+llvm.fabs.f64
+llvm.memset.p0i8.i64
+Vetting _kmem_sys_malloc ...
+WARNING: Suspicious user: i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*)
+Vetting kmem_sys_free ...
+WARNING: Suspicious user: i8* bitcast (void (i8*)* @kmem_sys_free to i8*)
+NextMemUse:   store double* %21, double** %183, align 8
+NextMemUse:   store double* %17, double** %84, align 8
+NextMemUse:   store i8* (...)** %2, i8* (...)*** @__nk_func_table, align 8, !tbaa !3
+NextMemUse:   store double* %10, double** %54, align 8
+NextMemUse:   store i32* getelementptr inbounds ([7002 x i32], [7002 x i32]* @rowstr, i64 0, i64 0), i32** %4, align 8, !tbaa !9
+NextMemUse:   store i32* getelementptr inbounds ([637001 x i32], [637001 x i32]* @colidx, i64 0, i64 0), i32** %10, align 8, !tbaa !9
+NextMemUse:   store double* %9, double** %52, align 8
+NextMemUse:   store i32* getelementptr inbounds ([7002 x i32], [7002 x i32]* @rowstr, i64 0, i64 0), i32** %3, align 8, !tbaa !3
+NextMemUse:   store double* getelementptr inbounds ([7003 x double], [7003 x double]* @x, i64 0, i64 0), double** %4, align 8, !tbaa !3
+NextMemUse:   store double* %27, double** %253, align 8
+NextMemUse:   store double* getelementptr inbounds ([637001 x double], [637001 x double]* @a, i64 0, i64 0), double** %3, align 8, !tbaa !9
+NextMemUse:   store double* getelementptr inbounds ([7003 x double], [7003 x double]* @z, i64 0, i64 0), double** %5, align 8, !tbaa !3
+NextMemUse:   store double* getelementptr inbounds ([637001 x double], [637001 x double]* @a, i64 0, i64 0), double** %6, align 8, !tbaa !3
+NextMemUse:   store double* getelementptr inbounds ([7003 x double], [7003 x double]* @p, i64 0, i64 0), double** %7, align 8, !tbaa !3
+NextMemUse:   store double* %9, double** %52, align 8
+NextMemUse:   store double* %19, double** %118, align 8
+NextMemUse:   store double* getelementptr inbounds ([7002 x double], [7002 x double]* @v, i64 0, i64 0), double** %6, align 8, !tbaa !9
+NextMemUse:   store double* getelementptr inbounds ([7003 x double], [7003 x double]* @q, i64 0, i64 0), double** %8, align 8, !tbaa !3
+NextMemUse:   store i32* getelementptr inbounds ([637001 x i32], [637001 x i32]* @colidx, i64 0, i64 0), i32** %2, align 8, !tbaa !3
+NextMemUse:   store i32* getelementptr inbounds ([14002 x i32], [14002 x i32]* @iv, i64 0, i64 0), i32** %7, align 8, !tbaa !9
+NextMemUse:   store double* getelementptr inbounds ([7003 x double], [7003 x double]* @r, i64 0, i64 0), double** %9, align 8, !tbaa !3
+NextMemUse:   store double* %10, double** %55, align 8

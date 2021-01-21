@@ -1,0 +1,1778 @@
+; ModuleID = 'blob_simplify.bc'
+source_filename = "llvm-link"
+target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%struct.ident_t = type { i32, i32, i32, i32, i8* }
+%struct.timeval = type { i64, i64 }
+%struct.timezone = type { i32, i32 }
+
+@key_array = common local_unnamed_addr global [1048576 x i32] zeroinitializer, align 16
+@key_buff2 = common local_unnamed_addr global [1048576 x i32] zeroinitializer, align 16
+@key_buff_ptr_global = common local_unnamed_addr global i32* null, align 8
+@passed_verification = common local_unnamed_addr global i32 0, align 4
+@test_index_array = common local_unnamed_addr global [5 x i32] zeroinitializer, align 16
+@partial_verify_vals = common local_unnamed_addr global [5 x i32] zeroinitializer, align 16
+@key_buff1 = common global [1048576 x i32] zeroinitializer, align 16
+@.gomp_critical_user_.var = common global [8 x i32] zeroinitializer
+@test_rank_array = common local_unnamed_addr global [5 x i32] zeroinitializer, align 16
+@W_test_index_array = local_unnamed_addr global [5 x i32] [i32 357773, i32 934767, i32 875723, i32 898999, i32 404505], align 16
+@W_test_rank_array = local_unnamed_addr global [5 x i32] [i32 1249, i32 11698, i32 1039987, i32 1043896, i32 1048018], align 16
+@S_test_index_array = local_unnamed_addr global [5 x i32] [i32 48427, i32 17148, i32 23627, i32 62548, i32 4431], align 16
+@S_test_rank_array = local_unnamed_addr global [5 x i32] [i32 0, i32 18, i32 346, i32 64917, i32 65463], align 16
+@A_test_index_array = local_unnamed_addr global [5 x i32] [i32 2112377, i32 662041, i32 5336171, i32 3642833, i32 4250760], align 16
+@A_test_rank_array = local_unnamed_addr global [5 x i32] [i32 104, i32 17523, i32 123928, i32 8288932, i32 8388264], align 16
+@B_test_index_array = local_unnamed_addr global [5 x i32] [i32 41869, i32 812306, i32 5102857, i32 18232239, i32 26860214], align 16
+@B_test_rank_array = local_unnamed_addr global [5 x i32] [i32 33422937, i32 10244, i32 59149, i32 33135281, i32 99], align 16
+@C_test_index_array = local_unnamed_addr global [5 x i32] [i32 44172927, i32 72999161, i32 74326391, i32 129606274, i32 21736814], align 16
+@C_test_rank_array = local_unnamed_addr global [5 x i32] [i32 61147, i32 882988, i32 266290, i32 133997595, i32 133525895], align 16
+@randlc.KS = internal unnamed_addr global i1 false, align 4
+@randlc.R23 = internal unnamed_addr global double 0.000000e+00, align 8
+@randlc.T23 = internal unnamed_addr global double 0.000000e+00, align 8
+@randlc.R46 = internal unnamed_addr global double 0.000000e+00, align 8
+@randlc.T46 = internal unnamed_addr global double 0.000000e+00, align 8
+@.str = private unnamed_addr constant [45 x i8] c"Full_verify: number of keys out of sort: %d\0A\00", align 1
+@0 = private unnamed_addr global %struct.ident_t { i32 0, i32 2, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1, i32 0, i32 0) }, align 8
+@1 = private unnamed_addr global %struct.ident_t { i32 0, i32 34, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1, i32 0, i32 0) }, align 8
+@2 = private unnamed_addr global %struct.ident_t { i32 0, i32 514, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1, i32 0, i32 0) }, align 8
+@.str.2 = private unnamed_addr constant [56 x i8] c"Failed partial verification: iteration %d, test key %d\0A\00", align 1
+@.str.1 = private unnamed_addr constant [23 x i8] c";unknown;unknown;0;0;;\00", align 1
+@str = private unnamed_addr constant [64 x i8] c"\0A\0A NAS Parallel Benchmarks 2.3 OpenMP C version - IS Benchmark\0A\00", align 1
+@.str.4 = private unnamed_addr constant [24 x i8] c" Size:  %d  (class %c)\0A\00", align 1
+@.str.5 = private unnamed_addr constant [19 x i8] c" Iterations:   %d\0A\00", align 1
+@str.19 = private unnamed_addr constant [14 x i8] c"\0A   iteration\00", align 1
+@.str.9 = private unnamed_addr constant [3 x i8] c"IS\00", align 1
+@.str.10 = private unnamed_addr constant [12 x i8] c"keys ranked\00", align 1
+@.str.11 = private unnamed_addr constant [15 x i8] c"3.0 structured\00", align 1
+@.str.12 = private unnamed_addr constant [12 x i8] c"12 Jan 2021\00", align 1
+@.str.13 = private unnamed_addr constant [6 x i8] c"wllvm\00", align 1
+@.str.14 = private unnamed_addr constant [30 x i8] c"~/nautilus/user/framework/nld\00", align 1
+@.str.15 = private unnamed_addr constant [7 x i8] c"(none)\00", align 1
+@.str.16 = private unnamed_addr constant [12 x i8] c"-I../common\00", align 1
+@.str.17 = private unnamed_addr constant [33 x i8] c"-O3 -fopenmp -fPIC -mno-red-zone\00", align 1
+@.str.18 = private unnamed_addr constant [7 x i8] c"randlc\00", align 1
+@.str.8 = private unnamed_addr constant [12 x i8] c"        %d\0A\00", align 1
+@.str.1.3 = private unnamed_addr constant [27 x i8] c"\0A\0A %s Benchmark Completed\0A\00", align 1
+@.str.2.4 = private unnamed_addr constant [46 x i8] c" Class           =                        %c\0A\00", align 1
+@.str.3 = private unnamed_addr constant [37 x i8] c" Size            =             %12d\0A\00", align 1
+@.str.4.5 = private unnamed_addr constant [45 x i8] c" Size            =              %3dx%3dx%3d\0A\00", align 1
+@.str.5.6 = private unnamed_addr constant [37 x i8] c" Iterations      =             %12d\0A\00", align 1
+@.str.6 = private unnamed_addr constant [37 x i8] c" Threads         =             %12d\0A\00", align 1
+@.str.7 = private unnamed_addr constant [39 x i8] c" Time in seconds =             %12.2f\0A\00", align 1
+@.str.8.7 = private unnamed_addr constant [39 x i8] c" Mop/s total     =             %12.2f\0A\00", align 1
+@.str.9.8 = private unnamed_addr constant [25 x i8] c" Operation type  = %24s\0A\00", align 1
+@str.9 = private unnamed_addr constant [44 x i8] c" Verification    =             UNSUCCESSFUL\00", align 1
+@str.23 = private unnamed_addr constant [44 x i8] c" Verification    =               SUCCESSFUL\00", align 1
+@.str.12.10 = private unnamed_addr constant [35 x i8] c" Version         =           %12s\0A\00", align 1
+@.str.13.11 = private unnamed_addr constant [37 x i8] c" Compile date    =             %12s\0A\00", align 1
+@str.22 = private unnamed_addr constant [19 x i8] c"\0A Compile options:\00", align 1
+@.str.15.12 = private unnamed_addr constant [23 x i8] c"    CC           = %s\0A\00", align 1
+@.str.16.13 = private unnamed_addr constant [23 x i8] c"    CLINK        = %s\0A\00", align 1
+@.str.17.14 = private unnamed_addr constant [23 x i8] c"    C_LIB        = %s\0A\00", align 1
+@.str.18.15 = private unnamed_addr constant [23 x i8] c"    C_INC        = %s\0A\00", align 1
+@.str.19 = private unnamed_addr constant [23 x i8] c"    CFLAGS       = %s\0A\00", align 1
+@.str.20 = private unnamed_addr constant [23 x i8] c"    CLINKFLAGS   = %s\0A\00", align 1
+@.str.21 = private unnamed_addr constant [23 x i8] c"    RAND         = %s\0A\00", align 1
+@elapsed = common local_unnamed_addr global [64 x double] zeroinitializer, align 16
+@start = common local_unnamed_addr global [64 x double] zeroinitializer, align 16
+@wtime_.sec = internal unnamed_addr global i32 -1, align 4
+@__NAUT_SIGNATURE = local_unnamed_addr global [16 x i8] zeroinitializer, section ".naut_secure", align 16
+@__gcc_personality_v0 = common local_unnamed_addr global i8* null, align 8
+@str.26 = private unnamed_addr constant [28 x i8] c"Call to fake _Unwind_Resume\00", align 1
+@str.3 = private unnamed_addr constant [24 x i8] c"Call to fake __unordtf2\00", align 1
+@str.4 = private unnamed_addr constant [21 x i8] c"Call to fake __letf2\00", align 1
+@__nk_func_table = common local_unnamed_addr global i8* (...)** null, align 8
+@llvm.global.annotations = appending global [3 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (i8*)* @kmem_sys_free to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.27, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1.28, i32 0, i32 0), i32 88 }, { i8*, i8*, i8*, i32 } { i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.27, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1.28, i32 0, i32 0), i32 93 }, { i8*, i8*, i8*, i32 } { i8* bitcast (void ()* @make_carat_pass_work to i8*), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.27, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1.28, i32 0, i32 0), i32 104 }], section "llvm.metadata"
+@.str.27 = private unnamed_addr constant [8 x i8] c"nocarat\00", section "llvm.metadata"
+@.str.1.28 = private unnamed_addr constant [12 x i8] c"framework.c\00", section "llvm.metadata"
+@llvm.used = appending global [3 x i8*] [i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*), i8* bitcast (void (i8*)* @kmem_sys_free to i8*), i8* bitcast (void ()* @make_carat_pass_work to i8*)], section "llvm.metadata"
+
+; Function Attrs: nofree norecurse noredzone nounwind uwtable
+define double @randlc(double* nocapture, double* nocapture readonly) local_unnamed_addr #0 {
+  %3 = load i1, i1* @randlc.KS, align 4
+  br i1 %3, label %4, label %9
+
+4:                                                ; preds = %2
+  %5 = load double, double* @randlc.R23, align 8, !tbaa !3
+  %6 = load double, double* @randlc.T23, align 8, !tbaa !3
+  %7 = load double, double* @randlc.R46, align 8, !tbaa !3
+  %8 = load double, double* @randlc.T46, align 8, !tbaa !3
+  br label %10
+
+9:                                                ; preds = %2
+  store double 0x3E80000000000000, double* @randlc.R23, align 8, !tbaa !3
+  store double 0x4160000000000000, double* @randlc.T23, align 8, !tbaa !3
+  store double 0x3D10000000000000, double* @randlc.R46, align 8, !tbaa !3
+  store double 0x42D0000000000000, double* @randlc.T46, align 8, !tbaa !3
+  store i1 true, i1* @randlc.KS, align 4
+  br label %10
+
+10:                                               ; preds = %9, %4
+  %11 = phi double [ %8, %4 ], [ 0x42D0000000000000, %9 ]
+  %12 = phi double [ %7, %4 ], [ 0x3D10000000000000, %9 ]
+  %13 = phi double [ %6, %4 ], [ 0x4160000000000000, %9 ]
+  %14 = phi double [ %5, %4 ], [ 0x3E80000000000000, %9 ]
+  %15 = load double, double* %1, align 8, !tbaa !3
+  %16 = fmul double %14, %15
+  %17 = fptosi double %16 to i32
+  %18 = sitofp i32 %17 to double
+  %19 = fmul double %13, %18
+  %20 = fsub double %15, %19
+  %21 = load double, double* %0, align 8, !tbaa !3
+  %22 = fmul double %14, %21
+  %23 = fptosi double %22 to i32
+  %24 = sitofp i32 %23 to double
+  %25 = fmul double %13, %24
+  %26 = fsub double %21, %25
+  %27 = fmul double %26, %18
+  %28 = fmul double %20, %24
+  %29 = fadd double %28, %27
+  %30 = fmul double %14, %29
+  %31 = fptosi double %30 to i32
+  %32 = sitofp i32 %31 to double
+  %33 = fmul double %13, %32
+  %34 = fsub double %29, %33
+  %35 = fmul double %13, %34
+  %36 = fmul double %20, %26
+  %37 = fadd double %36, %35
+  %38 = fmul double %12, %37
+  %39 = fptosi double %38 to i32
+  %40 = sitofp i32 %39 to double
+  %41 = fmul double %11, %40
+  %42 = fsub double %37, %41
+  store double %42, double* %0, align 8, !tbaa !3
+  %43 = fmul double %12, %42
+  ret double %43
+}
+
+; Function Attrs: nofree norecurse noredzone nounwind uwtable
+define void @create_seq(double, double) local_unnamed_addr #0 {
+  %3 = load i1, i1* @randlc.KS, align 4
+  br i1 %3, label %5, label %4
+
+4:                                                ; preds = %2
+  store double 0x3E80000000000000, double* @randlc.R23, align 8, !tbaa !3
+  store double 0x4160000000000000, double* @randlc.T23, align 8, !tbaa !3
+  store double 0x3D10000000000000, double* @randlc.R46, align 8, !tbaa !3
+  store double 0x42D0000000000000, double* @randlc.T46, align 8, !tbaa !3
+  store i1 true, i1* @randlc.KS, align 4
+  br label %10
+
+5:                                                ; preds = %2
+  %6 = load double, double* @randlc.R23, align 8, !tbaa !3
+  %7 = load double, double* @randlc.T23, align 8, !tbaa !3
+  %8 = load double, double* @randlc.R46, align 8, !tbaa !3
+  %9 = load double, double* @randlc.T46, align 8, !tbaa !3
+  br label %10
+
+10:                                               ; preds = %5, %4
+  %11 = phi i1 [ %3, %5 ], [ true, %4 ]
+  %12 = phi double [ %9, %5 ], [ 0x42D0000000000000, %4 ]
+  %13 = phi double [ %8, %5 ], [ 0x3D10000000000000, %4 ]
+  %14 = phi double [ %7, %5 ], [ 0x4160000000000000, %4 ]
+  %15 = phi double [ %6, %5 ], [ 0x3E80000000000000, %4 ]
+  %16 = fmul double %15, %1
+  %17 = fptosi double %16 to i32
+  %18 = sitofp i32 %17 to double
+  %19 = fmul double %14, %18
+  %20 = fsub double %1, %19
+  %21 = fmul double %15, %0
+  %22 = fptosi double %21 to i32
+  %23 = sitofp i32 %22 to double
+  %24 = fmul double %14, %23
+  %25 = fsub double %0, %24
+  %26 = fmul double %25, %18
+  %27 = fmul double %20, %23
+  %28 = fadd double %27, %26
+  %29 = fmul double %15, %28
+  %30 = fptosi double %29 to i32
+  %31 = sitofp i32 %30 to double
+  %32 = fmul double %14, %31
+  %33 = fsub double %28, %32
+  %34 = fmul double %14, %33
+  %35 = fmul double %20, %25
+  %36 = fadd double %35, %34
+  %37 = fmul double %13, %36
+  %38 = fptosi double %37 to i32
+  %39 = sitofp i32 %38 to double
+  %40 = fmul double %12, %39
+  %41 = fsub double %36, %40
+  %42 = fmul double %13, %41
+  %43 = fmul double %41, %15
+  %44 = fptosi double %43 to i32
+  %45 = sitofp i32 %44 to double
+  %46 = fmul double %14, %45
+  %47 = fsub double %41, %46
+  %48 = fmul double %47, %18
+  %49 = fmul double %20, %45
+  %50 = fadd double %49, %48
+  %51 = fmul double %15, %50
+  %52 = fptosi double %51 to i32
+  %53 = sitofp i32 %52 to double
+  %54 = fmul double %14, %53
+  %55 = fsub double %50, %54
+  %56 = fmul double %14, %55
+  %57 = fmul double %20, %47
+  %58 = fadd double %57, %56
+  %59 = fmul double %13, %58
+  %60 = fptosi double %59 to i32
+  %61 = sitofp i32 %60 to double
+  %62 = fmul double %12, %61
+  %63 = fsub double %58, %62
+  %64 = fmul double %13, %63
+  %65 = fadd double %42, %64
+  %66 = fmul double %63, %15
+  %67 = fptosi double %66 to i32
+  %68 = sitofp i32 %67 to double
+  %69 = fmul double %14, %68
+  %70 = fsub double %63, %69
+  %71 = fmul double %70, %18
+  %72 = fmul double %20, %68
+  %73 = fadd double %72, %71
+  %74 = fmul double %15, %73
+  %75 = fptosi double %74 to i32
+  %76 = sitofp i32 %75 to double
+  %77 = fmul double %14, %76
+  %78 = fsub double %73, %77
+  %79 = fmul double %14, %78
+  %80 = fmul double %20, %70
+  %81 = fadd double %80, %79
+  %82 = fmul double %13, %81
+  %83 = fptosi double %82 to i32
+  %84 = sitofp i32 %83 to double
+  %85 = fmul double %12, %84
+  %86 = fsub double %81, %85
+  %87 = fmul double %13, %86
+  %88 = fadd double %65, %87
+  br i1 %11, label %90, label %89
+
+89:                                               ; preds = %10
+  store double 0x3E80000000000000, double* @randlc.R23, align 8, !tbaa !3
+  store double 0x4160000000000000, double* @randlc.T23, align 8, !tbaa !3
+  store double 0x3D10000000000000, double* @randlc.R46, align 8, !tbaa !3
+  store double 0x42D0000000000000, double* @randlc.T46, align 8, !tbaa !3
+  store i1 true, i1* @randlc.KS, align 4
+  br label %90
+
+90:                                               ; preds = %89, %10
+  %91 = phi double [ 0x42D0000000000000, %89 ], [ %12, %10 ]
+  %92 = phi double [ 0x3D10000000000000, %89 ], [ %13, %10 ]
+  %93 = phi double [ 0x4160000000000000, %89 ], [ %14, %10 ]
+  %94 = phi double [ 0x3E80000000000000, %89 ], [ %15, %10 ]
+  %95 = fmul double %94, %1
+  %96 = fptosi double %95 to i32
+  %97 = sitofp i32 %96 to double
+  %98 = fmul double %93, %97
+  %99 = fsub double %1, %98
+  %100 = fmul double %86, %94
+  %101 = fptosi double %100 to i32
+  %102 = sitofp i32 %101 to double
+  %103 = fmul double %93, %102
+  %104 = fsub double %86, %103
+  %105 = fmul double %104, %97
+  %106 = fmul double %99, %102
+  %107 = fadd double %106, %105
+  %108 = fmul double %94, %107
+  %109 = fptosi double %108 to i32
+  %110 = sitofp i32 %109 to double
+  %111 = fmul double %93, %110
+  %112 = fsub double %107, %111
+  %113 = fmul double %93, %112
+  %114 = fmul double %99, %104
+  %115 = fadd double %114, %113
+  %116 = fmul double %92, %115
+  %117 = fptosi double %116 to i32
+  %118 = sitofp i32 %117 to double
+  %119 = fmul double %91, %118
+  %120 = fsub double %115, %119
+  %121 = fmul double %92, %120
+  %122 = fadd double %88, %121
+  %123 = fmul double %122, 1.638400e+04
+  %124 = fptosi double %123 to i32
+  store i32 %124, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 0), align 16, !tbaa !7
+  %125 = load double, double* @randlc.R23, align 8
+  %126 = load double, double* @randlc.T23, align 8
+  %127 = load double, double* @randlc.R46, align 8
+  %128 = load double, double* @randlc.T46, align 8
+  br label %129
+
+129:                                              ; preds = %129, %90
+  %130 = phi i64 [ 1, %90 ], [ %236, %129 ]
+  %131 = phi double [ %120, %90 ], [ %230, %129 ]
+  %132 = fmul double %125, %1
+  %133 = fptosi double %132 to i32
+  %134 = sitofp i32 %133 to double
+  %135 = fmul double %126, %134
+  %136 = fsub double %1, %135
+  %137 = fmul double %131, %125
+  %138 = fptosi double %137 to i32
+  %139 = sitofp i32 %138 to double
+  %140 = fmul double %126, %139
+  %141 = fsub double %131, %140
+  %142 = fmul double %141, %134
+  %143 = fmul double %136, %139
+  %144 = fadd double %143, %142
+  %145 = fmul double %125, %144
+  %146 = fptosi double %145 to i32
+  %147 = sitofp i32 %146 to double
+  %148 = fmul double %126, %147
+  %149 = fsub double %144, %148
+  %150 = fmul double %126, %149
+  %151 = fmul double %136, %141
+  %152 = fadd double %151, %150
+  %153 = fmul double %127, %152
+  %154 = fptosi double %153 to i32
+  %155 = sitofp i32 %154 to double
+  %156 = fmul double %128, %155
+  %157 = fsub double %152, %156
+  %158 = fmul double %127, %157
+  %159 = fmul double %157, %125
+  %160 = fptosi double %159 to i32
+  %161 = sitofp i32 %160 to double
+  %162 = fmul double %126, %161
+  %163 = fsub double %157, %162
+  %164 = fmul double %163, %134
+  %165 = fmul double %136, %161
+  %166 = fadd double %165, %164
+  %167 = fmul double %125, %166
+  %168 = fptosi double %167 to i32
+  %169 = sitofp i32 %168 to double
+  %170 = fmul double %126, %169
+  %171 = fsub double %166, %170
+  %172 = fmul double %126, %171
+  %173 = fmul double %136, %163
+  %174 = fadd double %173, %172
+  %175 = fmul double %127, %174
+  %176 = fptosi double %175 to i32
+  %177 = sitofp i32 %176 to double
+  %178 = fmul double %128, %177
+  %179 = fsub double %174, %178
+  %180 = fmul double %127, %179
+  %181 = fadd double %158, %180
+  %182 = fmul double %179, %125
+  %183 = fptosi double %182 to i32
+  %184 = sitofp i32 %183 to double
+  %185 = fmul double %126, %184
+  %186 = fsub double %179, %185
+  %187 = fmul double %186, %134
+  %188 = fmul double %136, %184
+  %189 = fadd double %188, %187
+  %190 = fmul double %125, %189
+  %191 = fptosi double %190 to i32
+  %192 = sitofp i32 %191 to double
+  %193 = fmul double %126, %192
+  %194 = fsub double %189, %193
+  %195 = fmul double %126, %194
+  %196 = fmul double %136, %186
+  %197 = fadd double %196, %195
+  %198 = fmul double %127, %197
+  %199 = fptosi double %198 to i32
+  %200 = sitofp i32 %199 to double
+  %201 = fmul double %128, %200
+  %202 = fsub double %197, %201
+  %203 = fmul double %127, %202
+  %204 = fadd double %181, %203
+  %205 = fmul double %125, %1
+  %206 = fptosi double %205 to i32
+  %207 = sitofp i32 %206 to double
+  %208 = fmul double %126, %207
+  %209 = fsub double %1, %208
+  %210 = fmul double %202, %125
+  %211 = fptosi double %210 to i32
+  %212 = sitofp i32 %211 to double
+  %213 = fmul double %126, %212
+  %214 = fsub double %202, %213
+  %215 = fmul double %214, %207
+  %216 = fmul double %209, %212
+  %217 = fadd double %216, %215
+  %218 = fmul double %125, %217
+  %219 = fptosi double %218 to i32
+  %220 = sitofp i32 %219 to double
+  %221 = fmul double %126, %220
+  %222 = fsub double %217, %221
+  %223 = fmul double %126, %222
+  %224 = fmul double %209, %214
+  %225 = fadd double %224, %223
+  %226 = fmul double %127, %225
+  %227 = fptosi double %226 to i32
+  %228 = sitofp i32 %227 to double
+  %229 = fmul double %128, %228
+  %230 = fsub double %225, %229
+  %231 = fmul double %127, %230
+  %232 = fadd double %204, %231
+  %233 = fmul double %232, 1.638400e+04
+  %234 = fptosi double %233 to i32
+  %235 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %130
+  store i32 %234, i32* %235, align 4, !tbaa !7
+  %236 = add nuw nsw i64 %130, 1
+  %237 = icmp eq i64 %236, 1048576
+  br i1 %237, label %238, label %129, !llvm.loop !9
+
+238:                                              ; preds = %129
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define void @full_verify() local_unnamed_addr #1 {
+  %1 = load i32*, i32** @key_buff_ptr_global, align 8, !tbaa !11
+  br label %2
+
+2:                                                ; preds = %2, %0
+  %3 = phi i64 [ 0, %0 ], [ %21, %2 ]
+  %4 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff2, i64 0, i64 %3
+  %5 = load i32, i32* %4, align 8, !tbaa !7
+  %6 = sext i32 %5 to i64
+  %7 = getelementptr inbounds i32, i32* %1, i64 %6
+  %8 = load i32, i32* %7, align 4, !tbaa !7
+  %9 = add nsw i32 %8, -1
+  store i32 %9, i32* %7, align 4, !tbaa !7
+  %10 = sext i32 %9 to i64
+  %11 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %10
+  store i32 %5, i32* %11, align 4, !tbaa !7
+  %12 = or i64 %3, 1
+  %13 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff2, i64 0, i64 %12
+  %14 = load i32, i32* %13, align 4, !tbaa !7
+  %15 = sext i32 %14 to i64
+  %16 = getelementptr inbounds i32, i32* %1, i64 %15
+  %17 = load i32, i32* %16, align 4, !tbaa !7
+  %18 = add nsw i32 %17, -1
+  store i32 %18, i32* %16, align 4, !tbaa !7
+  %19 = sext i32 %18 to i64
+  %20 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %19
+  store i32 %14, i32* %20, align 4, !tbaa !7
+  %21 = add nuw nsw i64 %3, 2
+  %22 = icmp eq i64 %21, 1048576
+  br i1 %22, label %23, label %2
+
+23:                                               ; preds = %2
+  %24 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 0), align 16, !tbaa !7
+  %25 = insertelement <4 x i32> undef, i32 %24, i32 3
+  br label %26
+
+26:                                               ; preds = %91, %23
+  %27 = phi i64 [ 0, %23 ], [ %107, %91 ]
+  %28 = phi <4 x i32> [ %25, %23 ], [ %98, %91 ]
+  %29 = phi <4 x i32> [ zeroinitializer, %23 ], [ %105, %91 ]
+  %30 = phi <4 x i32> [ zeroinitializer, %23 ], [ %106, %91 ]
+  %31 = or i64 %27, 1
+  %32 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %31
+  %33 = bitcast i32* %32 to <4 x i32>*
+  %34 = load <4 x i32>, <4 x i32>* %33, align 4, !tbaa !7
+  %35 = getelementptr inbounds i32, i32* %32, i64 4
+  %36 = bitcast i32* %35 to <4 x i32>*
+  %37 = load <4 x i32>, <4 x i32>* %36, align 4, !tbaa !7
+  %38 = shufflevector <4 x i32> %28, <4 x i32> %34, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %39 = shufflevector <4 x i32> %34, <4 x i32> %37, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %40 = icmp sgt <4 x i32> %38, %34
+  %41 = icmp sgt <4 x i32> %39, %37
+  %42 = zext <4 x i1> %40 to <4 x i32>
+  %43 = zext <4 x i1> %41 to <4 x i32>
+  %44 = add nuw nsw <4 x i32> %29, %42
+  %45 = add nuw nsw <4 x i32> %30, %43
+  %46 = or i64 %27, 8
+  %47 = icmp eq i64 %46, 1048568
+  br i1 %47, label %48, label %91, !llvm.loop !13
+
+48:                                               ; preds = %26
+  %49 = add nuw <4 x i32> %45, %44
+  %50 = shufflevector <4 x i32> %49, <4 x i32> undef, <4 x i32> <i32 2, i32 3, i32 undef, i32 undef>
+  %51 = add <4 x i32> %49, %50
+  %52 = extractelement <4 x i32> %37, i32 3
+  %53 = shufflevector <4 x i32> %51, <4 x i32> undef, <4 x i32> <i32 1, i32 undef, i32 undef, i32 undef>
+  %54 = add <4 x i32> %51, %53
+  %55 = extractelement <4 x i32> %54, i32 0
+  %56 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048569), align 4, !tbaa !7
+  %57 = icmp sgt i32 %52, %56
+  %58 = zext i1 %57 to i32
+  %59 = add nuw nsw i32 %55, %58
+  %60 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048570), align 8, !tbaa !7
+  %61 = icmp sgt i32 %56, %60
+  %62 = zext i1 %61 to i32
+  %63 = add nuw nsw i32 %59, %62
+  %64 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048571), align 4, !tbaa !7
+  %65 = icmp sgt i32 %60, %64
+  %66 = zext i1 %65 to i32
+  %67 = add nuw nsw i32 %63, %66
+  %68 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048572), align 16, !tbaa !7
+  %69 = icmp sgt i32 %64, %68
+  %70 = zext i1 %69 to i32
+  %71 = add nuw nsw i32 %67, %70
+  %72 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048573), align 4, !tbaa !7
+  %73 = icmp sgt i32 %68, %72
+  %74 = zext i1 %73 to i32
+  %75 = add nuw nsw i32 %71, %74
+  %76 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048574), align 8, !tbaa !7
+  %77 = icmp sgt i32 %72, %76
+  %78 = zext i1 %77 to i32
+  %79 = add nuw nsw i32 %75, %78
+  %80 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048575), align 4, !tbaa !7
+  %81 = icmp sgt i32 %76, %80
+  %82 = zext i1 %81 to i32
+  %83 = add nuw nsw i32 %79, %82
+  %84 = icmp eq i32 %83, 0
+  br i1 %84, label %87, label %85
+
+85:                                               ; preds = %48
+  %86 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([45 x i8], [45 x i8]* @.str, i64 0, i64 0), i32 %83) #15
+  br label %90
+
+87:                                               ; preds = %48
+  %88 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  %89 = add nsw i32 %88, 1
+  store i32 %89, i32* @passed_verification, align 4, !tbaa !7
+  br label %90
+
+90:                                               ; preds = %87, %85
+  ret void
+
+91:                                               ; preds = %26
+  %92 = or i64 %27, 9
+  %93 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %92
+  %94 = bitcast i32* %93 to <4 x i32>*
+  %95 = load <4 x i32>, <4 x i32>* %94, align 4, !tbaa !7
+  %96 = getelementptr inbounds i32, i32* %93, i64 4
+  %97 = bitcast i32* %96 to <4 x i32>*
+  %98 = load <4 x i32>, <4 x i32>* %97, align 4, !tbaa !7
+  %99 = shufflevector <4 x i32> %37, <4 x i32> %95, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %100 = shufflevector <4 x i32> %95, <4 x i32> %98, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %101 = icmp sgt <4 x i32> %99, %95
+  %102 = icmp sgt <4 x i32> %100, %98
+  %103 = zext <4 x i1> %101 to <4 x i32>
+  %104 = zext <4 x i1> %102 to <4 x i32>
+  %105 = add nuw nsw <4 x i32> %44, %103
+  %106 = add nuw nsw <4 x i32> %45, %104
+  %107 = add nuw nsw i64 %27, 16
+  br label %26
+}
+
+; Function Attrs: nofree noredzone nounwind
+declare i32 @printf(i8* nocapture readonly, ...) local_unnamed_addr #2
+
+; Function Attrs: noredzone nounwind uwtable
+define void @rank(i32) local_unnamed_addr #3 {
+  %2 = alloca [65536 x i32], align 16
+  %3 = bitcast [65536 x i32]* %2 to i8*
+  %4 = alloca i32, align 4
+  %5 = alloca i32, align 4
+  %6 = alloca i32, align 4
+  %7 = alloca i32, align 4
+  %8 = tail call i32 @__kmpc_global_thread_num(%struct.ident_t* nonnull @0) #16
+  call void @llvm.lifetime.start.p0i8(i64 262144, i8* nonnull %3) #16
+  %9 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %8) #16
+  %10 = icmp eq i32 %9, 0
+  br i1 %10, label %38, label %11
+
+11:                                               ; preds = %1
+  %12 = sext i32 %0 to i64
+  %13 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %12
+  store i32 %0, i32* %13, align 4, !tbaa !7
+  %14 = sub nsw i32 65536, %0
+  %15 = add nsw i32 %0, 10
+  %16 = sext i32 %15 to i64
+  %17 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %16
+  store i32 %14, i32* %17, align 4, !tbaa !7
+  %18 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_index_array, i64 0, i64 0), align 16, !tbaa !7
+  %19 = sext i32 %18 to i64
+  %20 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %19
+  %21 = load i32, i32* %20, align 4, !tbaa !7
+  store i32 %21, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 0), align 16, !tbaa !7
+  %22 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_index_array, i64 0, i64 1), align 4, !tbaa !7
+  %23 = sext i32 %22 to i64
+  %24 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %23
+  %25 = load i32, i32* %24, align 4, !tbaa !7
+  store i32 %25, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 1), align 4, !tbaa !7
+  %26 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_index_array, i64 0, i64 2), align 8, !tbaa !7
+  %27 = sext i32 %26 to i64
+  %28 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %27
+  %29 = load i32, i32* %28, align 4, !tbaa !7
+  store i32 %29, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 2), align 8, !tbaa !7
+  %30 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_index_array, i64 0, i64 3), align 4, !tbaa !7
+  %31 = sext i32 %30 to i64
+  %32 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %31
+  %33 = load i32, i32* %32, align 4, !tbaa !7
+  store i32 %33, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 3), align 4, !tbaa !7
+  %34 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_index_array, i64 0, i64 4), align 16, !tbaa !7
+  %35 = sext i32 %34 to i64
+  %36 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %35
+  %37 = load i32, i32* %36, align 4, !tbaa !7
+  store i32 %37, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 4), align 16, !tbaa !7
+  call void @llvm.memset.p0i8.i64(i8* align 16 bitcast ([1048576 x i32]* @key_buff1 to i8*), i8 0, i64 262144, i1 false)
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %8) #16
+  br label %38
+
+38:                                               ; preds = %11, %1
+  tail call void @__kmpc_barrier(%struct.ident_t* nonnull @1, i32 %8) #16
+  call void @llvm.memset.p0i8.i64(i8* nonnull align 16 %3, i8 0, i64 262144, i1 false)
+  %39 = bitcast i32* %4 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %39) #16
+  store i32 0, i32* %4, align 4, !tbaa !7
+  %40 = bitcast i32* %5 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %40) #16
+  store i32 1048575, i32* %5, align 4, !tbaa !7
+  %41 = bitcast i32* %6 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %41) #16
+  store i32 1, i32* %6, align 4, !tbaa !7
+  %42 = bitcast i32* %7 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %42) #16
+  store i32 0, i32* %7, align 4, !tbaa !7
+  call void @__kmpc_for_static_init_4(%struct.ident_t* nonnull @2, i32 %8, i32 34, i32* nonnull %7, i32* nonnull %4, i32* nonnull %5, i32* nonnull %6, i32 1, i32 1) #16
+  %43 = load i32, i32* %5, align 4, !tbaa !7
+  %44 = icmp slt i32 %43, 1048575
+  %45 = select i1 %44, i32 %43, i32 1048575
+  store i32 %45, i32* %5, align 4, !tbaa !7
+  %46 = load i32, i32* %4, align 4, !tbaa !7
+  %47 = icmp slt i32 %45, %46
+  br i1 %47, label %94, label %48
+
+48:                                               ; preds = %38
+  %49 = sext i32 %46 to i64
+  %50 = sext i32 %45 to i64
+  %51 = getelementptr [1048576 x i32], [1048576 x i32]* @key_buff2, i64 0, i64 %49
+  %52 = bitcast i32* %51 to i8*
+  %53 = getelementptr [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %49
+  %54 = bitcast i32* %53 to i8*
+  %55 = sub i32 %45, %46
+  %56 = zext i32 %55 to i64
+  %57 = shl nuw nsw i64 %56, 2
+  %58 = add nuw nsw i64 %57, 4
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 4 %52, i8* align 4 %54, i64 %58, i1 false)
+  %59 = add nsw i64 %50, 1
+  %60 = sub nsw i64 %59, %49
+  %61 = and i64 %60, 1
+  %62 = icmp eq i64 %61, 0
+  br i1 %62, label %71, label %63
+
+63:                                               ; preds = %48
+  %64 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %49
+  %65 = load i32, i32* %64, align 4, !tbaa !7
+  %66 = sext i32 %65 to i64
+  %67 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %66
+  %68 = load i32, i32* %67, align 4, !tbaa !7
+  %69 = add nsw i32 %68, 1
+  store i32 %69, i32* %67, align 4, !tbaa !7
+  %70 = add nsw i64 %49, 1
+  br label %71
+
+71:                                               ; preds = %63, %48
+  %72 = phi i64 [ %49, %48 ], [ %70, %63 ]
+  %73 = icmp eq i32 %45, %46
+  br i1 %73, label %91, label %74
+
+74:                                               ; preds = %74, %71
+  %75 = phi i64 [ %89, %74 ], [ %72, %71 ]
+  %76 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %75
+  %77 = load i32, i32* %76, align 4, !tbaa !7
+  %78 = sext i32 %77 to i64
+  %79 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %78
+  %80 = load i32, i32* %79, align 4, !tbaa !7
+  %81 = add nsw i32 %80, 1
+  store i32 %81, i32* %79, align 4, !tbaa !7
+  %82 = add nsw i64 %75, 1
+  %83 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %82
+  %84 = load i32, i32* %83, align 4, !tbaa !7
+  %85 = sext i32 %84 to i64
+  %86 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %85
+  %87 = load i32, i32* %86, align 4, !tbaa !7
+  %88 = add nsw i32 %87, 1
+  store i32 %88, i32* %86, align 4, !tbaa !7
+  %89 = add nsw i64 %75, 2
+  %90 = icmp slt i64 %82, %50
+  br i1 %90, label %74, label %91
+
+91:                                               ; preds = %74, %71
+  %92 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 0
+  %93 = load i32, i32* %92, align 16, !tbaa !7
+  br label %94
+
+94:                                               ; preds = %91, %38
+  %95 = phi i32 [ %93, %91 ], [ 0, %38 ]
+  call void @__kmpc_for_static_fini(%struct.ident_t* nonnull @2, i32 %8) #16
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %42) #16
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %41) #16
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %40) #16
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %39) #16
+  br label %96
+
+96:                                               ; preds = %96, %94
+  %97 = phi i32 [ %95, %94 ], [ %118, %96 ]
+  %98 = phi i64 [ 0, %94 ], [ %115, %96 ]
+  %99 = add nuw nsw i64 %98, 1
+  %100 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %99
+  %101 = load i32, i32* %100, align 4, !tbaa !7
+  %102 = add nsw i32 %101, %97
+  store i32 %102, i32* %100, align 4, !tbaa !7
+  %103 = add nuw nsw i64 %98, 2
+  %104 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %103
+  %105 = load i32, i32* %104, align 4, !tbaa !7
+  %106 = add nsw i32 %105, %102
+  store i32 %106, i32* %104, align 4, !tbaa !7
+  %107 = add nuw nsw i64 %98, 3
+  %108 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %107
+  %109 = load i32, i32* %108, align 4, !tbaa !7
+  %110 = add nsw i32 %109, %106
+  store i32 %110, i32* %108, align 4, !tbaa !7
+  %111 = add nuw nsw i64 %98, 4
+  %112 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %111
+  %113 = load i32, i32* %112, align 4, !tbaa !7
+  %114 = add nsw i32 %113, %110
+  store i32 %114, i32* %112, align 4, !tbaa !7
+  %115 = add nuw nsw i64 %98, 5
+  %116 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %115
+  %117 = load i32, i32* %116, align 4, !tbaa !7
+  %118 = add nsw i32 %117, %114
+  store i32 %118, i32* %116, align 4, !tbaa !7
+  %119 = icmp eq i64 %115, 65535
+  br i1 %119, label %120, label %96
+
+120:                                              ; preds = %96
+  call void @__kmpc_critical(%struct.ident_t* nonnull @0, i32 %8, [8 x i32]* nonnull @.gomp_critical_user_.var) #16
+  %121 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 0), align 16, !tbaa !7
+  %122 = add nsw i32 %121, %95
+  store i32 %122, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 0), align 16, !tbaa !7
+  br label %123
+
+123:                                              ; preds = %261, %120
+  %124 = phi i64 [ 0, %120 ], [ %279, %261 ]
+  %125 = or i64 %124, 1
+  %126 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %125
+  %127 = bitcast i32* %126 to <4 x i32>*
+  %128 = load <4 x i32>, <4 x i32>* %127, align 4, !tbaa !7
+  %129 = getelementptr inbounds i32, i32* %126, i64 4
+  %130 = bitcast i32* %129 to <4 x i32>*
+  %131 = load <4 x i32>, <4 x i32>* %130, align 4, !tbaa !7
+  %132 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 %125
+  %133 = bitcast i32* %132 to <4 x i32>*
+  %134 = load <4 x i32>, <4 x i32>* %133, align 4, !tbaa !7
+  %135 = getelementptr inbounds i32, i32* %132, i64 4
+  %136 = bitcast i32* %135 to <4 x i32>*
+  %137 = load <4 x i32>, <4 x i32>* %136, align 4, !tbaa !7
+  %138 = add nsw <4 x i32> %134, %128
+  %139 = add nsw <4 x i32> %137, %131
+  %140 = bitcast i32* %132 to <4 x i32>*
+  store <4 x i32> %138, <4 x i32>* %140, align 4, !tbaa !7
+  %141 = bitcast i32* %135 to <4 x i32>*
+  store <4 x i32> %139, <4 x i32>* %141, align 4, !tbaa !7
+  %142 = or i64 %124, 8
+  %143 = icmp eq i64 %142, 65528
+  br i1 %143, label %144, label %261, !llvm.loop !15
+
+144:                                              ; preds = %123
+  %145 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 65529
+  %146 = load i32, i32* %145, align 4, !tbaa !7
+  %147 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65529), align 4, !tbaa !7
+  %148 = add nsw i32 %147, %146
+  store i32 %148, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65529), align 4, !tbaa !7
+  %149 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 65530
+  %150 = load i32, i32* %149, align 8, !tbaa !7
+  %151 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65530), align 8, !tbaa !7
+  %152 = add nsw i32 %151, %150
+  store i32 %152, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65530), align 8, !tbaa !7
+  %153 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 65531
+  %154 = load i32, i32* %153, align 4, !tbaa !7
+  %155 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65531), align 4, !tbaa !7
+  %156 = add nsw i32 %155, %154
+  store i32 %156, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65531), align 4, !tbaa !7
+  %157 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 65532
+  %158 = load i32, i32* %157, align 16, !tbaa !7
+  %159 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65532), align 16, !tbaa !7
+  %160 = add nsw i32 %159, %158
+  store i32 %160, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65532), align 16, !tbaa !7
+  %161 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 65533
+  %162 = load i32, i32* %161, align 4, !tbaa !7
+  %163 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65533), align 4, !tbaa !7
+  %164 = add nsw i32 %163, %162
+  store i32 %164, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65533), align 4, !tbaa !7
+  %165 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 65534
+  %166 = load i32, i32* %165, align 8, !tbaa !7
+  %167 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65534), align 8, !tbaa !7
+  %168 = add nsw i32 %167, %166
+  store i32 %168, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65534), align 8, !tbaa !7
+  %169 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 65535
+  %170 = load i32, i32* %169, align 4, !tbaa !7
+  %171 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65535), align 4, !tbaa !7
+  %172 = add nsw i32 %171, %170
+  store i32 %172, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 65535), align 4, !tbaa !7
+  call void @__kmpc_end_critical(%struct.ident_t* nonnull @0, i32 %8, [8 x i32]* nonnull @.gomp_critical_user_.var) #16
+  call void @__kmpc_barrier(%struct.ident_t* nonnull @1, i32 %8) #16
+  %173 = call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %8) #16
+  %174 = icmp eq i32 %173, 0
+  br i1 %174, label %197, label %175
+
+175:                                              ; preds = %144
+  %176 = add nsw i32 %0, -2
+  %177 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 0), align 16, !tbaa !7
+  %178 = icmp ult i32 %177, 1048576
+  br i1 %178, label %179, label %192
+
+179:                                              ; preds = %175
+  %180 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_rank_array, i64 0, i64 0), align 16, !tbaa !7
+  %181 = add nsw i32 %177, -1
+  %182 = sext i32 %181 to i64
+  %183 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 %182
+  %184 = load i32, i32* %183, align 4, !tbaa !7
+  %185 = add nsw i32 %176, %180
+  %186 = icmp eq i32 %184, %185
+  br i1 %186, label %189, label %187
+
+187:                                              ; preds = %179
+  %188 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([56 x i8], [56 x i8]* @.str.2, i64 0, i64 0), i32 %0, i32 0) #15
+  br label %192
+
+189:                                              ; preds = %179
+  %190 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  %191 = add nsw i32 %190, 1
+  store i32 %191, i32* @passed_verification, align 4, !tbaa !7
+  br label %192
+
+192:                                              ; preds = %189, %187, %175
+  %193 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 1), align 4, !tbaa !7
+  %194 = icmp ult i32 %193, 1048576
+  br i1 %194, label %198, label %211
+
+195:                                              ; preds = %259
+  store i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 0), i32** @key_buff_ptr_global, align 8, !tbaa !11
+  call void @nk_carat_instrument_escapes(i8* bitcast (i32** @key_buff_ptr_global to i8*))
+  br label %196
+
+196:                                              ; preds = %259, %195
+  call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %8) #16
+  br label %197
+
+197:                                              ; preds = %196, %144
+  call void @llvm.lifetime.end.p0i8(i64 262144, i8* nonnull %3) #16
+  ret void
+
+198:                                              ; preds = %192
+  %199 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_rank_array, i64 0, i64 1), align 4, !tbaa !7
+  %200 = add nsw i32 %193, -1
+  %201 = sext i32 %200 to i64
+  %202 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 %201
+  %203 = load i32, i32* %202, align 4, !tbaa !7
+  %204 = add nsw i32 %176, %199
+  %205 = icmp eq i32 %203, %204
+  br i1 %205, label %208, label %206
+
+206:                                              ; preds = %198
+  %207 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([56 x i8], [56 x i8]* @.str.2, i64 0, i64 0), i32 %0, i32 1) #15
+  br label %211
+
+208:                                              ; preds = %198
+  %209 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  %210 = add nsw i32 %209, 1
+  store i32 %210, i32* @passed_verification, align 4, !tbaa !7
+  br label %211
+
+211:                                              ; preds = %208, %206, %192
+  %212 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 2), align 8, !tbaa !7
+  %213 = icmp ult i32 %212, 1048576
+  br i1 %213, label %214, label %227
+
+214:                                              ; preds = %211
+  %215 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_rank_array, i64 0, i64 2), align 8, !tbaa !7
+  %216 = add nsw i32 %212, -1
+  %217 = sext i32 %216 to i64
+  %218 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 %217
+  %219 = load i32, i32* %218, align 4, !tbaa !7
+  %220 = sub nsw i32 %215, %0
+  %221 = icmp eq i32 %219, %220
+  br i1 %221, label %224, label %222
+
+222:                                              ; preds = %214
+  %223 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([56 x i8], [56 x i8]* @.str.2, i64 0, i64 0), i32 %0, i32 2) #15
+  br label %227
+
+224:                                              ; preds = %214
+  %225 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  %226 = add nsw i32 %225, 1
+  store i32 %226, i32* @passed_verification, align 4, !tbaa !7
+  br label %227
+
+227:                                              ; preds = %224, %222, %211
+  %228 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 3), align 4, !tbaa !7
+  %229 = icmp ult i32 %228, 1048576
+  br i1 %229, label %230, label %243
+
+230:                                              ; preds = %227
+  %231 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_rank_array, i64 0, i64 3), align 4, !tbaa !7
+  %232 = add nsw i32 %228, -1
+  %233 = sext i32 %232 to i64
+  %234 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 %233
+  %235 = load i32, i32* %234, align 4, !tbaa !7
+  %236 = sub nsw i32 %231, %0
+  %237 = icmp eq i32 %235, %236
+  br i1 %237, label %240, label %238
+
+238:                                              ; preds = %230
+  %239 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([56 x i8], [56 x i8]* @.str.2, i64 0, i64 0), i32 %0, i32 3) #15
+  br label %243
+
+240:                                              ; preds = %230
+  %241 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  %242 = add nsw i32 %241, 1
+  store i32 %242, i32* @passed_verification, align 4, !tbaa !7
+  br label %243
+
+243:                                              ; preds = %240, %238, %227
+  %244 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @partial_verify_vals, i64 0, i64 4), align 16, !tbaa !7
+  %245 = icmp ult i32 %244, 1048576
+  br i1 %245, label %246, label %259
+
+246:                                              ; preds = %243
+  %247 = load i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @test_rank_array, i64 0, i64 4), align 16, !tbaa !7
+  %248 = add nsw i32 %244, -1
+  %249 = sext i32 %248 to i64
+  %250 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 %249
+  %251 = load i32, i32* %250, align 4, !tbaa !7
+  %252 = sub nsw i32 %247, %0
+  %253 = icmp eq i32 %251, %252
+  br i1 %253, label %256, label %254
+
+254:                                              ; preds = %246
+  %255 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([56 x i8], [56 x i8]* @.str.2, i64 0, i64 0), i32 %0, i32 4) #15
+  br label %259
+
+256:                                              ; preds = %246
+  %257 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  %258 = add nsw i32 %257, 1
+  store i32 %258, i32* @passed_verification, align 4, !tbaa !7
+  br label %259
+
+259:                                              ; preds = %256, %254, %243
+  %260 = icmp eq i32 %0, 10
+  br i1 %260, label %195, label %196
+
+261:                                              ; preds = %123
+  %262 = or i64 %124, 9
+  %263 = getelementptr inbounds [65536 x i32], [65536 x i32]* %2, i64 0, i64 %262
+  %264 = bitcast i32* %263 to <4 x i32>*
+  %265 = load <4 x i32>, <4 x i32>* %264, align 4, !tbaa !7
+  %266 = getelementptr inbounds i32, i32* %263, i64 4
+  %267 = bitcast i32* %266 to <4 x i32>*
+  %268 = load <4 x i32>, <4 x i32>* %267, align 4, !tbaa !7
+  %269 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff1, i64 0, i64 %262
+  %270 = bitcast i32* %269 to <4 x i32>*
+  %271 = load <4 x i32>, <4 x i32>* %270, align 4, !tbaa !7
+  %272 = getelementptr inbounds i32, i32* %269, i64 4
+  %273 = bitcast i32* %272 to <4 x i32>*
+  %274 = load <4 x i32>, <4 x i32>* %273, align 4, !tbaa !7
+  %275 = add nsw <4 x i32> %271, %265
+  %276 = add nsw <4 x i32> %274, %268
+  %277 = bitcast i32* %269 to <4 x i32>*
+  store <4 x i32> %275, <4 x i32>* %277, align 4, !tbaa !7
+  %278 = bitcast i32* %272 to <4 x i32>*
+  store <4 x i32> %276, <4 x i32>* %278, align 4, !tbaa !7
+  %279 = add nuw nsw i64 %124, 16
+  br label %123
+}
+
+declare i32 @__kmpc_global_thread_num(%struct.ident_t*) local_unnamed_addr
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.start.p0i8(i64 immarg, i8* nocapture) #4
+
+declare i32 @__kmpc_master(%struct.ident_t*, i32) local_unnamed_addr
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #4
+
+declare void @__kmpc_end_master(%struct.ident_t*, i32) local_unnamed_addr
+
+declare void @__kmpc_barrier(%struct.ident_t*, i32) local_unnamed_addr
+
+declare void @__kmpc_for_static_init_4(%struct.ident_t*, i32, i32, i32*, i32*, i32*, i32*, i32, i32) local_unnamed_addr
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture writeonly, i8* nocapture readonly, i64, i1 immarg) #4
+
+declare void @__kmpc_for_static_fini(%struct.ident_t*, i32) local_unnamed_addr
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.end.p0i8(i64 immarg, i8* nocapture) #4
+
+declare void @__kmpc_critical(%struct.ident_t*, i32, [8 x i32]*) local_unnamed_addr
+
+declare void @__kmpc_end_critical(%struct.ident_t*, i32, [8 x i32]*) local_unnamed_addr
+
+; Function Attrs: noredzone nounwind uwtable
+define i32 @main(i32, i8** nocapture readnone) local_unnamed_addr #3 {
+  %3 = alloca i32, align 4
+  %4 = bitcast i32* %3 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* nonnull %4) #16
+  store i32 1, i32* %3, align 4, !tbaa !7
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 bitcast ([5 x i32]* @test_index_array to i8*), i8* align 16 bitcast ([5 x i32]* @W_test_index_array to i8*), i64 20, i1 false)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 bitcast ([5 x i32]* @test_rank_array to i8*), i8* align 16 bitcast ([5 x i32]* @W_test_rank_array to i8*), i64 20, i1 false)
+  %5 = tail call i32 @puts(i8* getelementptr inbounds ([64 x i8], [64 x i8]* @str, i64 0, i64 0))
+  %6 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @.str.4, i64 0, i64 0), i32 1048576, i32 87) #15
+  %7 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.5, i64 0, i64 0), i32 10) #15
+  %8 = tail call i32 (i32, ...) bitcast (void (i32)* @timer_clear to i32 (i32, ...)*)(i32 0) #17
+  tail call void @create_seq(double 0x41B2B9B0A1000000, double 0x41D2309CE5400000) #15
+  tail call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 0, void (i32*, i32*, ...)* bitcast (void (i32*, i32*)* @.omp_outlined. to void (i32*, i32*, ...)*)) #16
+  store i32 0, i32* @passed_verification, align 4, !tbaa !7
+  %9 = tail call i32 @puts(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @str.19, i64 0, i64 0))
+  %10 = tail call i32 (i32, ...) bitcast (void (i32)* @timer_start to i32 (i32, ...)*)(i32 0) #17
+  call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* nonnull @0, i32 1, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i32*)* @.omp_outlined..7 to void (i32*, i32*, ...)*), i32* nonnull %3) #16
+  %11 = call i32 (i32, ...) bitcast (void (i32)* @timer_stop to i32 (i32, ...)*)(i32 0) #17
+  %12 = call i32 (i32, ...) bitcast (double (i32)* @timer_read to i32 (i32, ...)*)(i32 0) #17
+  %13 = load i32*, i32** @key_buff_ptr_global, align 8, !tbaa !11
+  br label %14
+
+14:                                               ; preds = %14, %2
+  %15 = phi i64 [ 0, %2 ], [ %33, %14 ]
+  %16 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff2, i64 0, i64 %15
+  %17 = load i32, i32* %16, align 8, !tbaa !7
+  %18 = sext i32 %17 to i64
+  %19 = getelementptr inbounds i32, i32* %13, i64 %18
+  %20 = load i32, i32* %19, align 4, !tbaa !7
+  %21 = add nsw i32 %20, -1
+  store i32 %21, i32* %19, align 4, !tbaa !7
+  %22 = sext i32 %21 to i64
+  %23 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %22
+  store i32 %17, i32* %23, align 4, !tbaa !7
+  %24 = or i64 %15, 1
+  %25 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_buff2, i64 0, i64 %24
+  %26 = load i32, i32* %25, align 4, !tbaa !7
+  %27 = sext i32 %26 to i64
+  %28 = getelementptr inbounds i32, i32* %13, i64 %27
+  %29 = load i32, i32* %28, align 4, !tbaa !7
+  %30 = add nsw i32 %29, -1
+  store i32 %30, i32* %28, align 4, !tbaa !7
+  %31 = sext i32 %30 to i64
+  %32 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %31
+  store i32 %26, i32* %32, align 4, !tbaa !7
+  %33 = add nuw nsw i64 %15, 2
+  %34 = icmp eq i64 %33, 1048576
+  br i1 %34, label %35, label %14
+
+35:                                               ; preds = %14
+  %36 = sitofp i32 %12 to double
+  %37 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 0), align 16, !tbaa !7
+  %38 = insertelement <4 x i32> undef, i32 %37, i32 3
+  br label %39
+
+39:                                               ; preds = %114, %35
+  %40 = phi i64 [ 0, %35 ], [ %130, %114 ]
+  %41 = phi <4 x i32> [ %38, %35 ], [ %121, %114 ]
+  %42 = phi <4 x i32> [ zeroinitializer, %35 ], [ %128, %114 ]
+  %43 = phi <4 x i32> [ zeroinitializer, %35 ], [ %129, %114 ]
+  %44 = or i64 %40, 1
+  %45 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %44
+  %46 = bitcast i32* %45 to <4 x i32>*
+  %47 = load <4 x i32>, <4 x i32>* %46, align 4, !tbaa !7
+  %48 = getelementptr inbounds i32, i32* %45, i64 4
+  %49 = bitcast i32* %48 to <4 x i32>*
+  %50 = load <4 x i32>, <4 x i32>* %49, align 4, !tbaa !7
+  %51 = shufflevector <4 x i32> %41, <4 x i32> %47, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %52 = shufflevector <4 x i32> %47, <4 x i32> %50, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %53 = icmp sgt <4 x i32> %51, %47
+  %54 = icmp sgt <4 x i32> %52, %50
+  %55 = zext <4 x i1> %53 to <4 x i32>
+  %56 = zext <4 x i1> %54 to <4 x i32>
+  %57 = add nuw nsw <4 x i32> %42, %55
+  %58 = add nuw nsw <4 x i32> %43, %56
+  %59 = or i64 %40, 8
+  %60 = icmp eq i64 %59, 1048568
+  br i1 %60, label %61, label %114, !llvm.loop !16
+
+61:                                               ; preds = %39
+  %62 = add nuw <4 x i32> %58, %57
+  %63 = shufflevector <4 x i32> %62, <4 x i32> undef, <4 x i32> <i32 2, i32 3, i32 undef, i32 undef>
+  %64 = add <4 x i32> %62, %63
+  %65 = extractelement <4 x i32> %50, i32 3
+  %66 = shufflevector <4 x i32> %64, <4 x i32> undef, <4 x i32> <i32 1, i32 undef, i32 undef, i32 undef>
+  %67 = add <4 x i32> %64, %66
+  %68 = extractelement <4 x i32> %67, i32 0
+  %69 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048569), align 4, !tbaa !7
+  %70 = icmp sgt i32 %65, %69
+  %71 = zext i1 %70 to i32
+  %72 = add nuw nsw i32 %68, %71
+  %73 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048570), align 8, !tbaa !7
+  %74 = icmp sgt i32 %69, %73
+  %75 = zext i1 %74 to i32
+  %76 = add nuw nsw i32 %72, %75
+  %77 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048571), align 4, !tbaa !7
+  %78 = icmp sgt i32 %73, %77
+  %79 = zext i1 %78 to i32
+  %80 = add nuw nsw i32 %76, %79
+  %81 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048572), align 16, !tbaa !7
+  %82 = icmp sgt i32 %77, %81
+  %83 = zext i1 %82 to i32
+  %84 = add nuw nsw i32 %80, %83
+  %85 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048573), align 4, !tbaa !7
+  %86 = icmp sgt i32 %81, %85
+  %87 = zext i1 %86 to i32
+  %88 = add nuw nsw i32 %84, %87
+  %89 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048574), align 8, !tbaa !7
+  %90 = icmp sgt i32 %85, %89
+  %91 = zext i1 %90 to i32
+  %92 = add nuw nsw i32 %88, %91
+  %93 = load i32, i32* getelementptr inbounds ([1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 1048575), align 4, !tbaa !7
+  %94 = icmp sgt i32 %89, %93
+  %95 = zext i1 %94 to i32
+  %96 = add nuw nsw i32 %92, %95
+  %97 = icmp eq i32 %96, 0
+  br i1 %97, label %101, label %98
+
+98:                                               ; preds = %61
+  %99 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([45 x i8], [45 x i8]* @.str, i64 0, i64 0), i32 %96) #17
+  %100 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  br label %104
+
+101:                                              ; preds = %61
+  %102 = load i32, i32* @passed_verification, align 4, !tbaa !7
+  %103 = add nsw i32 %102, 1
+  store i32 %103, i32* @passed_verification, align 4, !tbaa !7
+  br label %104
+
+104:                                              ; preds = %101, %98
+  %105 = phi i32 [ %100, %98 ], [ %103, %101 ]
+  %106 = icmp eq i32 %105, 51
+  br i1 %106, label %108, label %107
+
+107:                                              ; preds = %104
+  store i32 0, i32* @passed_verification, align 4, !tbaa !7
+  br label %108
+
+108:                                              ; preds = %107, %104
+  %109 = phi i32 [ 51, %104 ], [ 0, %107 ]
+  %110 = load i32, i32* %3, align 4, !tbaa !7
+  %111 = fdiv double 0x4164000000000000, %36
+  %112 = fdiv double %111, 1.000000e+06
+  %113 = call i32 (i8*, i32, i32, i32, i32, i32, i32, double, double, i8*, i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, ...) bitcast (void (i8*, i8, i32, i32, i32, i32, i32, double, double, i8*, i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*)* @c_print_results to i32 (i8*, i32, i32, i32, i32, i32, i32, double, double, i8*, i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, ...)*)(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.9, i64 0, i64 0), i32 87, i32 1048576, i32 0, i32 0, i32 10, i32 %110, double %36, double %112, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.10, i64 0, i64 0), i32 %109, i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.11, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.12, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.13, i64 0, i64 0), i8* getelementptr inbounds ([30 x i8], [30 x i8]* @.str.14, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.15, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.16, i64 0, i64 0), i8* getelementptr inbounds ([33 x i8], [33 x i8]* @.str.17, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.15, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.18, i64 0, i64 0)) #17
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* nonnull %4) #16
+  ret i32 0
+
+114:                                              ; preds = %39
+  %115 = or i64 %40, 9
+  %116 = getelementptr inbounds [1048576 x i32], [1048576 x i32]* @key_array, i64 0, i64 %115
+  %117 = bitcast i32* %116 to <4 x i32>*
+  %118 = load <4 x i32>, <4 x i32>* %117, align 4, !tbaa !7
+  %119 = getelementptr inbounds i32, i32* %116, i64 4
+  %120 = bitcast i32* %119 to <4 x i32>*
+  %121 = load <4 x i32>, <4 x i32>* %120, align 4, !tbaa !7
+  %122 = shufflevector <4 x i32> %50, <4 x i32> %118, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %123 = shufflevector <4 x i32> %118, <4 x i32> %121, <4 x i32> <i32 3, i32 4, i32 5, i32 6>
+  %124 = icmp sgt <4 x i32> %122, %118
+  %125 = icmp sgt <4 x i32> %123, %121
+  %126 = zext <4 x i1> %124 to <4 x i32>
+  %127 = zext <4 x i1> %125 to <4 x i32>
+  %128 = add nuw nsw <4 x i32> %57, %126
+  %129 = add nuw nsw <4 x i32> %58, %127
+  %130 = add nuw nsw i64 %40, 16
+  br label %39
+}
+
+; Function Attrs: nofree nounwind
+declare i32 @puts(i8* nocapture readonly) local_unnamed_addr #5
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined.(i32* noalias nocapture readnone, i32* noalias nocapture readnone) #6 {
+  tail call void @rank(i32 1) #15
+  ret void
+}
+
+declare !callback !17 void @__kmpc_fork_call(%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) local_unnamed_addr
+
+; Function Attrs: norecurse noredzone nounwind uwtable
+define internal void @.omp_outlined..7(i32* noalias nocapture readonly, i32* noalias nocapture readnone, i32* nocapture dereferenceable(4)) #6 {
+  %4 = load i32, i32* %0, align 4, !tbaa !7
+  %5 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %6 = icmp eq i32 %5, 0
+  br i1 %6, label %9, label %7
+
+7:                                                ; preds = %3
+  %8 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 1) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %9
+
+9:                                                ; preds = %7, %3
+  tail call void @rank(i32 1) #15
+  %10 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %11 = icmp eq i32 %10, 0
+  br i1 %11, label %14, label %12
+
+12:                                               ; preds = %9
+  %13 = tail call i32 @omp_get_num_threads() #17
+  store i32 %13, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %14
+
+14:                                               ; preds = %12, %9
+  %15 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %16 = icmp eq i32 %15, 0
+  br i1 %16, label %19, label %17
+
+17:                                               ; preds = %14
+  %18 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 2) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %19
+
+19:                                               ; preds = %17, %14
+  tail call void @rank(i32 2) #15
+  %20 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %21 = icmp eq i32 %20, 0
+  br i1 %21, label %24, label %22
+
+22:                                               ; preds = %19
+  %23 = tail call i32 @omp_get_num_threads() #17
+  store i32 %23, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %24
+
+24:                                               ; preds = %22, %19
+  %25 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %26 = icmp eq i32 %25, 0
+  br i1 %26, label %29, label %27
+
+27:                                               ; preds = %24
+  %28 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 3) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %29
+
+29:                                               ; preds = %27, %24
+  tail call void @rank(i32 3) #15
+  %30 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %31 = icmp eq i32 %30, 0
+  br i1 %31, label %34, label %32
+
+32:                                               ; preds = %29
+  %33 = tail call i32 @omp_get_num_threads() #17
+  store i32 %33, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %34
+
+34:                                               ; preds = %32, %29
+  %35 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %36 = icmp eq i32 %35, 0
+  br i1 %36, label %39, label %37
+
+37:                                               ; preds = %34
+  %38 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 4) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %39
+
+39:                                               ; preds = %37, %34
+  tail call void @rank(i32 4) #15
+  %40 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %41 = icmp eq i32 %40, 0
+  br i1 %41, label %44, label %42
+
+42:                                               ; preds = %39
+  %43 = tail call i32 @omp_get_num_threads() #17
+  store i32 %43, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %44
+
+44:                                               ; preds = %42, %39
+  %45 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %46 = icmp eq i32 %45, 0
+  br i1 %46, label %49, label %47
+
+47:                                               ; preds = %44
+  %48 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 5) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %49
+
+49:                                               ; preds = %47, %44
+  tail call void @rank(i32 5) #15
+  %50 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %51 = icmp eq i32 %50, 0
+  br i1 %51, label %54, label %52
+
+52:                                               ; preds = %49
+  %53 = tail call i32 @omp_get_num_threads() #17
+  store i32 %53, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %54
+
+54:                                               ; preds = %52, %49
+  %55 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %56 = icmp eq i32 %55, 0
+  br i1 %56, label %59, label %57
+
+57:                                               ; preds = %54
+  %58 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 6) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %59
+
+59:                                               ; preds = %57, %54
+  tail call void @rank(i32 6) #15
+  %60 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %61 = icmp eq i32 %60, 0
+  br i1 %61, label %64, label %62
+
+62:                                               ; preds = %59
+  %63 = tail call i32 @omp_get_num_threads() #17
+  store i32 %63, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %64
+
+64:                                               ; preds = %62, %59
+  %65 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %66 = icmp eq i32 %65, 0
+  br i1 %66, label %69, label %67
+
+67:                                               ; preds = %64
+  %68 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 7) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %69
+
+69:                                               ; preds = %67, %64
+  tail call void @rank(i32 7) #15
+  %70 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %71 = icmp eq i32 %70, 0
+  br i1 %71, label %74, label %72
+
+72:                                               ; preds = %69
+  %73 = tail call i32 @omp_get_num_threads() #17
+  store i32 %73, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %74
+
+74:                                               ; preds = %72, %69
+  %75 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %76 = icmp eq i32 %75, 0
+  br i1 %76, label %79, label %77
+
+77:                                               ; preds = %74
+  %78 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 8) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %79
+
+79:                                               ; preds = %77, %74
+  tail call void @rank(i32 8) #15
+  %80 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %81 = icmp eq i32 %80, 0
+  br i1 %81, label %84, label %82
+
+82:                                               ; preds = %79
+  %83 = tail call i32 @omp_get_num_threads() #17
+  store i32 %83, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %84
+
+84:                                               ; preds = %82, %79
+  %85 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %86 = icmp eq i32 %85, 0
+  br i1 %86, label %89, label %87
+
+87:                                               ; preds = %84
+  %88 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 9) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %89
+
+89:                                               ; preds = %87, %84
+  tail call void @rank(i32 9) #15
+  %90 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %91 = icmp eq i32 %90, 0
+  br i1 %91, label %94, label %92
+
+92:                                               ; preds = %89
+  %93 = tail call i32 @omp_get_num_threads() #17
+  store i32 %93, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %94
+
+94:                                               ; preds = %92, %89
+  %95 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %96 = icmp eq i32 %95, 0
+  br i1 %96, label %99, label %97
+
+97:                                               ; preds = %94
+  %98 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i64 0, i64 0), i32 10) #15
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %99
+
+99:                                               ; preds = %97, %94
+  tail call void @rank(i32 10) #15
+  %100 = tail call i32 @__kmpc_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  %101 = icmp eq i32 %100, 0
+  br i1 %101, label %104, label %102
+
+102:                                              ; preds = %99
+  %103 = tail call i32 @omp_get_num_threads() #17
+  store i32 %103, i32* %2, align 4, !tbaa !7
+  tail call void @__kmpc_end_master(%struct.ident_t* nonnull @0, i32 %4) #16
+  br label %104
+
+104:                                              ; preds = %102, %99
+  ret void
+}
+
+; Function Attrs: noredzone
+declare i32 @omp_get_num_threads() local_unnamed_addr #7
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define void @c_print_results(i8*, i8 signext, i32, i32, i32, i32, i32, double, double, i8*, i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*) local_unnamed_addr #1 {
+  %21 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str.1.3, i64 0, i64 0), i8* %0) #15
+  %22 = sext i8 %1 to i32
+  %23 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([46 x i8], [46 x i8]* @.str.2.4, i64 0, i64 0), i32 %22) #15
+  %24 = or i32 %4, %3
+  %25 = icmp eq i32 %24, 0
+  br i1 %25, label %26, label %28
+
+26:                                               ; preds = %20
+  %27 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.3, i64 0, i64 0), i32 %2) #15
+  br label %30
+
+28:                                               ; preds = %20
+  %29 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([45 x i8], [45 x i8]* @.str.4.5, i64 0, i64 0), i32 %2, i32 %3, i32 %4) #15
+  br label %30
+
+30:                                               ; preds = %28, %26
+  %31 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.5.6, i64 0, i64 0), i32 %5) #15
+  %32 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.6, i64 0, i64 0), i32 %6) #15
+  %33 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([39 x i8], [39 x i8]* @.str.7, i64 0, i64 0), double %7) #15
+  %34 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([39 x i8], [39 x i8]* @.str.8.7, i64 0, i64 0), double %8) #15
+  %35 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.9.8, i64 0, i64 0), i8* %9) #15
+  %36 = icmp eq i32 %10, 0
+  %37 = select i1 %36, i8* getelementptr inbounds ([44 x i8], [44 x i8]* @str.9, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8], [44 x i8]* @str.23, i64 0, i64 0)
+  %38 = tail call i32 @puts(i8* %37)
+  %39 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([35 x i8], [35 x i8]* @.str.12.10, i64 0, i64 0), i8* %11) #15
+  %40 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([37 x i8], [37 x i8]* @.str.13.11, i64 0, i64 0), i8* %12) #15
+  %41 = tail call i32 @puts(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @str.22, i64 0, i64 0))
+  %42 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.15.12, i64 0, i64 0), i8* %13) #15
+  %43 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.16.13, i64 0, i64 0), i8* %14) #15
+  %44 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.17.14, i64 0, i64 0), i8* %15) #15
+  %45 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.18.15, i64 0, i64 0), i8* %16) #15
+  %46 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.19, i64 0, i64 0), i8* %17) #15
+  %47 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.20, i64 0, i64 0), i8* %18) #15
+  %48 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.21, i64 0, i64 0), i8* %19) #15
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define double @elapsed_time() local_unnamed_addr #3 {
+  %1 = alloca double, align 8
+  %2 = bitcast double* %1 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %2) #16
+  call void @wtime_(double* nonnull %1) #17
+  %3 = load double, double* %1, align 8, !tbaa !3
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %2) #16
+  ret double %3
+}
+
+; Function Attrs: nofree norecurse noredzone nounwind uwtable writeonly
+define void @timer_clear(i32) local_unnamed_addr #8 {
+  %2 = sext i32 %0 to i64
+  %3 = getelementptr inbounds [64 x double], [64 x double]* @elapsed, i64 0, i64 %2
+  store double 0.000000e+00, double* %3, align 8, !tbaa !3
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @timer_start(i32) local_unnamed_addr #3 {
+  %2 = alloca double, align 8
+  %3 = bitcast double* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %3) #16
+  call void @wtime_(double* nonnull %2) #17
+  %4 = bitcast double* %2 to i64*
+  %5 = load i64, i64* %4, align 8, !tbaa !3
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %3) #16
+  %6 = sext i32 %0 to i64
+  %7 = getelementptr inbounds [64 x double], [64 x double]* @start, i64 0, i64 %6
+  %8 = bitcast double* %7 to i64*
+  store i64 %5, i64* %8, align 8, !tbaa !3
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @timer_stop(i32) local_unnamed_addr #3 {
+  %2 = alloca double, align 8
+  %3 = bitcast double* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %3) #16
+  call void @wtime_(double* nonnull %2) #17
+  %4 = load double, double* %2, align 8, !tbaa !3
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %3) #16
+  %5 = sext i32 %0 to i64
+  %6 = getelementptr inbounds [64 x double], [64 x double]* @start, i64 0, i64 %5
+  %7 = load double, double* %6, align 8, !tbaa !3
+  %8 = fsub double %4, %7
+  %9 = getelementptr inbounds [64 x double], [64 x double]* @elapsed, i64 0, i64 %5
+  %10 = load double, double* %9, align 8, !tbaa !3
+  %11 = fadd double %10, %8
+  store double %11, double* %9, align 8, !tbaa !3
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind readonly uwtable
+define double @timer_read(i32) local_unnamed_addr #9 {
+  %2 = sext i32 %0 to i64
+  %3 = getelementptr inbounds [64 x double], [64 x double]* @elapsed, i64 0, i64 %2
+  %4 = load double, double* %3, align 8, !tbaa !3
+  ret double %4
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @wtime_(double* nocapture) local_unnamed_addr #3 {
+  %2 = alloca %struct.timeval, align 8
+  %3 = bitcast %struct.timeval* %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 16, i8* nonnull %3) #16
+  %4 = call i32 @gettimeofday(%struct.timeval* nonnull %2, %struct.timezone* null) #17
+  %5 = load i32, i32* @wtime_.sec, align 4, !tbaa !7
+  %6 = icmp slt i32 %5, 0
+  %7 = getelementptr inbounds %struct.timeval, %struct.timeval* %2, i64 0, i32 0
+  %8 = load i64, i64* %7, align 8, !tbaa !19
+  br i1 %6, label %9, label %11
+
+9:                                                ; preds = %1
+  %10 = trunc i64 %8 to i32
+  store i32 %10, i32* @wtime_.sec, align 4, !tbaa !7
+  br label %11
+
+11:                                               ; preds = %9, %1
+  %12 = phi i32 [ %10, %9 ], [ %5, %1 ]
+  %13 = sext i32 %12 to i64
+  %14 = sub nsw i64 %8, %13
+  %15 = sitofp i64 %14 to double
+  %16 = getelementptr inbounds %struct.timeval, %struct.timeval* %2, i64 0, i32 1
+  %17 = load i64, i64* %16, align 8, !tbaa !22
+  %18 = sitofp i64 %17 to double
+  %19 = fmul double %18, 0x3EB0C6F7A0B5ED8D
+  %20 = fadd double %19, %15
+  store double %20, double* %0, align 8, !tbaa !3
+  call void @llvm.lifetime.end.p0i8(i64 16, i8* nonnull %3) #16
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind
+declare i32 @gettimeofday(%struct.timeval* nocapture, %struct.timezone* nocapture) local_unnamed_addr #2
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define void @_Unwind_Resume() local_unnamed_addr #1 {
+  %1 = tail call i32 @puts(i8* getelementptr inbounds ([28 x i8], [28 x i8]* @str.26, i64 0, i64 0))
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind readnone uwtable
+define void @_Unwind_GetCFA() local_unnamed_addr #10 {
+  ret void
+}
+
+; Function Attrs: norecurse noredzone nounwind readnone uwtable
+define void @_Unwind_ForcedUnwind() local_unnamed_addr #10 {
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define double @__unordtf2() local_unnamed_addr #1 {
+  %1 = tail call i32 @puts(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @str.3, i64 0, i64 0))
+  ret double 0.000000e+00
+}
+
+; Function Attrs: nofree noredzone nounwind uwtable
+define void @__letf2() local_unnamed_addr #1 {
+  %1 = tail call i32 @puts(i8* getelementptr inbounds ([21 x i8], [21 x i8]* @str.4, i64 0, i64 0))
+  ret void
+}
+
+; Function Attrs: noinline noredzone nounwind uwtable
+define void @kmem_sys_free(i8* nocapture) #11 {
+  tail call void @free(i8* %0) #17
+  ret void
+}
+
+; Function Attrs: nofree noinline noredzone nounwind uwtable
+define noalias i8* @_kmem_sys_malloc(i64) #12 {
+  %2 = tail call noalias i8* @malloc(i64 %0) #17
+  ret i8* %2
+}
+
+; Function Attrs: noinline noredzone nounwind optnone uwtable
+define void @make_carat_pass_work() #13 {
+  ret void
+}
+
+; Function Attrs: nofree noredzone nounwind
+declare noalias i8* @malloc(i64) local_unnamed_addr #2
+
+; Function Attrs: noredzone nounwind
+declare void @free(i8* nocapture) local_unnamed_addr #14
+
+; Function Attrs: noredzone nounwind uwtable
+define void @__nk_exec_entry(i8* nocapture readonly, i8** nocapture readnone, i8* (...)**) local_unnamed_addr #3 {
+  store i8* (...)** %2, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  call void @nk_carat_instrument_escapes(i8* bitcast (i8* (...)*** @__nk_func_table to i8*))
+  %4 = getelementptr inbounds i8, i8* %0, i64 16
+  %5 = bitcast i8* %4 to i32*
+  %6 = load i32, i32* %5, align 8, !tbaa !23
+  %7 = sext i32 %6 to i64
+  %8 = bitcast i8* %0 to i8***
+  %9 = load i8**, i8*** %8, align 8, !tbaa !25
+  %10 = getelementptr inbounds i8, i8* %0, i64 8
+  %11 = bitcast i8* %10 to i8***
+  %12 = load i8**, i8*** %11, align 8, !tbaa !26
+  tail call void asm sideeffect "pushq $$0\0Amov $$0, %rax\0Ank_loader_crt_env_loop:\0Amov ($2, %rax, 8), %rcx\0Acmpq $$0, %rcx\0Aje nk_loader_crt_env_loop_done\0Apushq %rcx\0Ainc %rax\0Aje nk_loader_crt_env_loop_done\0Ank_loader_crt_env_loop_done:\0Apushq $$0\0Atest $0, $0\0Aje nk_loader_crt_arg_loop_done\0Amov $0, %rax\0Adec %rax\0A\0Ank_loader_crt_arg_loop:\0Apushq ($1, %rax, 8)\0Adec %rax\0Acmpq $$0, %rax\0Ajge nk_loader_crt_arg_loop\0Ank_loader_crt_arg_loop_done:\0Apushq $0\0Amovq $$0, %rdx\0Ajmp _start\0A", "r,r,r,~{rax},~{rcx},~{dirflag},~{fpsr},~{flags}"(i64 %7, i8** %9, i8** %12) #16, !srcloc !27
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define i8* @nk_func_table_access(i32, i8*, i8*) local_unnamed_addr #3 {
+  %4 = alloca i32, align 4
+  store volatile i32 %0, i32* %4, align 4, !tbaa !7
+  %5 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %6 = load volatile i32, i32* %4, align 4, !tbaa !7
+  %7 = sext i32 %6 to i64
+  %8 = getelementptr inbounds i8* (...)*, i8* (...)** %5, i64 %7
+  %9 = bitcast i8* (...)** %8 to i8* (i8*, i8*, ...)**
+  %10 = load i8* (i8*, i8*, ...)*, i8* (i8*, i8*, ...)** %9, align 8, !tbaa !11
+  %11 = tail call i8* (i8*, i8*, ...) %10(i8* %1, i8* %2) #17
+  ret i8* %11
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_global(i8*, i64, i64) local_unnamed_addr #3 {
+  %4 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %5 = getelementptr inbounds i8* (...)*, i8* (...)** %4, i64 5
+  %6 = bitcast i8* (...)** %5 to i8* (i8*, i64, i64, ...)**
+  %7 = load i8* (i8*, i64, i64, ...)*, i8* (i8*, i64, i64, ...)** %6, align 8, !tbaa !11
+  %8 = tail call i8* (i8*, i64, i64, ...) %7(i8* %0, i64 %1, i64 %2) #17
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_malloc(i8*, i64) local_unnamed_addr #3 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 1
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i64, ...)**
+  %6 = load i8* (i8*, i64, ...)*, i8* (i8*, i64, ...)** %5, align 8, !tbaa !11
+  %7 = tail call i8* (i8*, i64, ...) %6(i8* %0, i64 %1) #17
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_calloc(i8*, i64) local_unnamed_addr #3 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 6
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i64, ...)**
+  %6 = load i8* (i8*, i64, ...)*, i8* (i8*, i64, ...)** %5, align 8, !tbaa !11
+  %7 = tail call i8* (i8*, i64, ...) %6(i8* %0, i64 %1) #17
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_realloc(i8*, i64) local_unnamed_addr #3 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 7
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i64, ...)**
+  %6 = load i8* (i8*, i64, ...)*, i8* (i8*, i64, ...)** %5, align 8, !tbaa !11
+  %7 = tail call i8* (i8*, i64, ...) %6(i8* %0, i64 %1) #17
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_free(i8*) local_unnamed_addr #3 {
+  %2 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %3 = getelementptr inbounds i8* (...)*, i8* (...)** %2, i64 2
+  %4 = bitcast i8* (...)** %3 to i8* (i8*, ...)**
+  %5 = load i8* (i8*, ...)*, i8* (i8*, ...)** %4, align 8, !tbaa !11
+  %6 = tail call i8* (i8*, ...) %5(i8* %0) #17
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_instrument_escapes(i8*) local_unnamed_addr #3 {
+  %2 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %3 = getelementptr inbounds i8* (...)*, i8* (...)** %2, i64 3
+  %4 = bitcast i8* (...)** %3 to i8* (i8*, ...)**
+  %5 = load i8* (i8*, ...)*, i8* (i8*, ...)** %4, align 8, !tbaa !11
+  %6 = tail call i8* (i8*, ...) %5(i8* %0) #17
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @_nk_carat_globals_compiler_target() local_unnamed_addr #3 {
+  %1 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %2 = getelementptr inbounds i8* (...)*, i8* (...)** %1, i64 8
+  %3 = load i8* (...)*, i8* (...)** %2, align 8, !tbaa !11
+  %4 = tail call i8* (...) %3() #17
+  call void @nk_carat_instrument_global(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @__NAUT_SIGNATURE, i32 0, i32 0), i64 16, i64 16)
+  call void @nk_carat_instrument_global(i8* bitcast (double* @randlc.R23 to i8*), i64 8, i64 11)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @S_test_index_array to i8*), i64 20, i64 2)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @C_test_rank_array to i8*), i64 20, i64 9)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @W_test_index_array to i8*), i64 20, i64 0)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @A_test_index_array to i8*), i64 20, i64 4)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @W_test_rank_array to i8*), i64 20, i64 1)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @A_test_rank_array to i8*), i64 20, i64 5)
+  call void @nk_carat_instrument_global(i8* bitcast (i32* @wtime_.sec to i8*), i64 4, i64 15)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @B_test_index_array to i8*), i64 20, i64 6)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @B_test_rank_array to i8*), i64 20, i64 7)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @C_test_index_array to i8*), i64 20, i64 8)
+  call void @nk_carat_instrument_global(i8* bitcast ([5 x i32]* @S_test_rank_array to i8*), i64 20, i64 3)
+  call void @nk_carat_instrument_global(i8* bitcast (double* @randlc.T46 to i8*), i64 8, i64 14)
+  call void @nk_carat_instrument_global(i8* bitcast (double* @randlc.R46 to i8*), i64 8, i64 13)
+  call void @nk_carat_instrument_global(i8* bitcast (i1* @randlc.KS to i8*), i64 1, i64 10)
+  call void @nk_carat_instrument_global(i8* bitcast (double* @randlc.T23 to i8*), i64 8, i64 12)
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define void @nk_carat_init() local_unnamed_addr #3 {
+  %1 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %2 = getelementptr inbounds i8* (...)*, i8* (...)** %1, i64 9
+  %3 = load i8* (...)*, i8* (...)** %2, align 8, !tbaa !11
+  %4 = tail call i8* (...) %3() #17
+  ret void
+}
+
+; Function Attrs: noredzone nounwind uwtable
+define i32 @nk_carat_check_protection(i8*, i32) local_unnamed_addr #3 {
+  %3 = load i8* (...)**, i8* (...)*** @__nk_func_table, align 8, !tbaa !11
+  %4 = getelementptr inbounds i8* (...)*, i8* (...)** %3, i64 4
+  %5 = bitcast i8* (...)** %4 to i8* (i8*, i32, ...)**
+  %6 = load i8* (i8*, i32, ...)*, i8* (i8*, i32, ...)** %5, align 8, !tbaa !11
+  %7 = tail call i8* (i8*, i32, ...) %6(i8* %0, i32 %1) #17
+  %8 = ptrtoint i8* %7 to i64
+  %9 = trunc i64 %8 to i32
+  ret i32 %9
+}
+
+attributes #0 = { nofree norecurse noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nofree noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nofree noredzone nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { argmemonly nounwind }
+attributes #5 = { nofree nounwind }
+attributes #6 = { norecurse noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #7 = { noredzone "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #8 = { nofree norecurse noredzone nounwind uwtable writeonly "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #9 = { norecurse noredzone nounwind readonly uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #10 = { norecurse noredzone nounwind readnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #11 = { noinline noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #12 = { nofree noinline noredzone nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #13 = { noinline noredzone nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #14 = { noredzone nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #15 = { noredzone }
+attributes #16 = { nounwind }
+attributes #17 = { noredzone nounwind }
+
+!llvm.ident = !{!0, !0, !0, !0, !0, !0}
+!llvm.module.flags = !{!1, !2}
+
+!0 = !{!"clang version 9.0.0 (git@github.com:scampanoni/LLVM_installer.git 713d2f6594d9a0b77e7f9a120aaa7c917715a640)"}
+!1 = !{i32 1, !"wchar_size", i32 4}
+!2 = !{i32 7, !"PIC Level", i32 2}
+!3 = !{!4, !4, i64 0}
+!4 = !{!"double", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!8, !8, i64 0}
+!8 = !{!"int", !5, i64 0}
+!9 = distinct !{!9, !10}
+!10 = !{!"llvm.loop.unroll.disable"}
+!11 = !{!12, !12, i64 0}
+!12 = !{!"any pointer", !5, i64 0}
+!13 = distinct !{!13, !14}
+!14 = !{!"llvm.loop.isvectorized", i32 1}
+!15 = distinct !{!15, !14}
+!16 = distinct !{!16, !14}
+!17 = !{!18}
+!18 = !{i64 2, i64 -1, i64 -1, i1 true}
+!19 = !{!20, !21, i64 0}
+!20 = !{!"timeval", !21, i64 0, !21, i64 8}
+!21 = !{!"long", !5, i64 0}
+!22 = !{!20, !21, i64 8}
+!23 = !{!24, !8, i64 16}
+!24 = !{!"nk_crt_proc_args", !12, i64 0, !12, i64 8, !8, i64 16}
+!25 = !{!24, !12, i64 0}
+!26 = !{!24, !12, i64 8}
+!27 = !{i32 480, i32 524, i32 576, i32 612, i32 697, i32 775, i32 818, i32 874, i32 896, i32 939, i32 980, i32 1023, i32 1047, i32 1090, i32 1116, i32 1138, i32 1151, i32 1187, i32 1247, i32 1269, i32 1296, i32 1335, i32 1376, i32 1408, i32 1607}

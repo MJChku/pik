@@ -1,0 +1,49 @@
+Annotated: make_carat_pass_work
+Annotated: kmem_sys_free
+Annotated: _kmem_sys_malloc
+Fetching nk_carat_instrument_global ... 
+Fetching nk_carat_instrument_escapes ... 
+Fetching nk_carat_instrument_free ... 
+Fetching nk_carat_instrument_calloc ... 
+Fetching _nk_carat_globals_compiler_target ... 
+Fetching nk_carat_instrument_realloc ... 
+Fetching nk_carat_init ... 
+Fetching nk_carat_instrument_malloc ... 
+Fetching kmem_sys_free ... 
+Fetching _kmem_sys_malloc ... 
+Now intrinsics!
+llvm.lifetime.start.p0i8
+llvm.memset.p0i8.i64
+llvm.lifetime.end.p0i8
+llvm.fabs.f64
+llvm.umul.with.overflow.i64
+Vetting _kmem_sys_malloc ...
+WARNING: Suspicious user: i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*)
+Vetting kmem_sys_free ...
+WARNING: Suspicious user: i8* bitcast (void (i8*)* @kmem_sys_free to i8*)
+NextMemUse:   store i8* (...)** %2, i8* (...)*** @__nk_func_table, align 8, !tbaa !3
+NextMemUse:   store double*** %4, double**** %26, align 8, !tbaa !3
+NextMemUse:   store double*** %0, double**** %22, align 8, !tbaa !3
+NextMemUse:   store double* %5, double** %23, align 8, !tbaa !3
+NextMemUse:   store double*** %1, double**** %19, align 8, !tbaa !3
+NextMemUse:   store double*** %0, double**** %18, align 8, !tbaa !3
+NextMemUse:   store double*** %1, double**** %20, align 8, !tbaa !3
+NextMemUse:   store double*** %0, double**** %19, align 8, !tbaa !3
+NextMemUse:   store i8* %218, i8** %221, align 8, !tbaa !10
+NextMemUse:   store double* %14, double** %114, align 8
+NextMemUse:   store i8* %171, i8** %174, align 8, !tbaa !10
+NextMemUse:   store i8* %211, i8** %213, align 8, !tbaa !10
+NextMemUse:   store i8* %146, i8** %148, align 8, !tbaa !10
+NextMemUse:   store i8* %233, i8** %235, align 8, !tbaa !10
+NextMemUse:   store i8* %184, i8** %186, align 8, !tbaa !10
+NextMemUse:   store i8* %248, i8** %250, align 8, !tbaa !10
+NextMemUse:   store double* %13, double** %112, align 8
+NextMemUse:   store i8* %266, i8** %268, align 8, !tbaa !10
+NextMemUse:   store i8* %164, i8** %166, align 8, !tbaa !10
+NextMemUse:   store i8* %199, i8** %328, align 8, !tbaa !10
+NextMemUse:   store double*** %2, double**** %21, align 8, !tbaa !3
+NextMemUse:   store i8* %276, i8** %279, align 8, !tbaa !10
+NextMemUse:   store i8* %288, i8** %290, align 8, !tbaa !10
+NextMemUse:   store double* %6, double** %25, align 8, !tbaa !3
+NextMemUse:   store double*** %0, double**** %21, align 8, !tbaa !3
+NextMemUse:   store double*** %711, double**** %7, align 8, !tbaa !3

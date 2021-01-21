@@ -1,0 +1,48 @@
+Annotated: make_carat_pass_work
+Annotated: kmem_sys_free
+Annotated: _kmem_sys_malloc
+Fetching nk_carat_instrument_global ... 
+Fetching nk_carat_instrument_escapes ... 
+Fetching nk_carat_instrument_free ... 
+Fetching nk_carat_instrument_calloc ... 
+Fetching _nk_carat_globals_compiler_target ... 
+Fetching nk_carat_instrument_realloc ... 
+Fetching nk_carat_init ... 
+Fetching nk_carat_instrument_malloc ... 
+Fetching kmem_sys_free ... 
+Fetching _kmem_sys_malloc ... 
+Now intrinsics!
+llvm.lifetime.start.p0i8
+llvm.lifetime.end.p0i8
+llvm.memset.p0i8.i64
+llvm.fabs.f64
+Vetting _kmem_sys_malloc ...
+WARNING: Suspicious user: i8* bitcast (i8* (i64)* @_kmem_sys_malloc to i8*)
+Vetting kmem_sys_free ...
+WARNING: Suspicious user: i8* bitcast (void (i8*)* @kmem_sys_free to i8*)
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* %1, [128 x [128 x %struct.dcomplex]]** %6, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %5, align 8, !tbaa !7
+NextMemUse:   store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), i32** %4, align 8, !tbaa !7
+NextMemUse:   store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 0), i32** %8, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %14, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %13, align 8, !tbaa !7
+NextMemUse:   store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), i32** %11, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %25, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x i32]]* getelementptr inbounds ([32 x [128 x [128 x i32]]], [32 x [128 x [128 x i32]]]* @main.indexmap, i64 0, i64 0), [128 x [128 x i32]]** %10, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %8, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u0, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %7, align 8, !tbaa !7
+NextMemUse:   store i8* (...)** %2, i8* (...)*** @__nk_func_table, align 8, !tbaa !3
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %10, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %21, align 8, !tbaa !7
+NextMemUse:   store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 0), i32** %12, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x i32]]* getelementptr inbounds ([32 x [128 x [128 x i32]]], [32 x [128 x [128 x i32]]]* @main.indexmap, i64 0, i64 0), [128 x [128 x i32]]** %12, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u2, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %6, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %22, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %26, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %9, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x i32]]* getelementptr inbounds ([32 x [128 x [128 x i32]]], [32 x [128 x [128 x i32]]]* @main.indexmap, i64 0, i64 0), [128 x [128 x i32]]** %13, align 8, !tbaa !7
+NextMemUse:   store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 1, i64 0), i32** %20, align 8, !tbaa !7
+NextMemUse:   store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 2, i64 0), i32** %16, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* getelementptr inbounds ([32 x [128 x [128 x %struct.dcomplex]]], [32 x [128 x [128 x %struct.dcomplex]]]* @main.u1, i64 0, i64 0), [128 x [128 x %struct.dcomplex]]** %17, align 8, !tbaa !7
+NextMemUse:   store i32* getelementptr inbounds ([3 x [3 x i32]], [3 x [3 x i32]]* @dims, i64 0, i64 0, i64 0), i32** %24, align 8, !tbaa !7
+NextMemUse:   store [128 x [128 x %struct.dcomplex]]* %1, [128 x [128 x %struct.dcomplex]]** %18, align 8, !tbaa !7
